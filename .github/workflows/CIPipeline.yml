@@ -5,6 +5,11 @@ on:
     branches-ignore:
       - main
 
+env:
+  DATABASE_USER: ${{ secrets.DATABASE_USER }}
+  DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+  DATABASE_HOST_PORT: ${{ secrets.DATABASE_HOST_PORT }}
+
 jobs:
   push-checks:
     name: Code checks
