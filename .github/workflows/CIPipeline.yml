@@ -18,6 +18,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Init fail flag
+        run: echo "FAILED=0" >> $GITHUB_ENV
+
       - name: Cache Maven dependencies
         uses: actions/cache@v3
         with:
@@ -35,33 +38,29 @@ jobs:
       - name: Run Lint (Spotless)
         run: |
           mkdir -p target
-          mvn spotless:check > target/spotless-report.txt
-
-      - name: Upload Spotless Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: spotless-report
-          path: target/spotless-report.txt
+          mvn spotless:check > target/spotless-report.txt || echo "FAILED=1" >> $GITHUB_ENV
 
       - name: Run SCA (Sonatype)
         continue-on-error: true
-        run: mvn org.sonatype.ossindex.maven:ossindex-maven-plugin:audit > target/sonatype-report.txt
-
-      - name: Upload Sonatype Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: sonatype-report
-          path: target/sonatype-report.txt
+        run: mvn org.sonatype.ossindex.maven:ossindex-maven-plugin:audit > target/sonatype-report.txt || echo "FAILED=1" >> $GITHUB_ENV
 
       - name: Run Unit Tests + JaCoCo (Code Coverage)
         continue-on-error: true
-        run: mvn clean verify
+        run: mvn clean verify || echo "FAILED=1" >> $GITHUB_ENV
 
-      - name: Upload JaCoCo Report
+      - name: Upload Reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: JaCoCo-report
-          path: target/site/jacoco
+          name: all-reports
+          path: |
+            target/spotless-report.txt
+            target/sonatype-report.txt
+            target/site/jacoco
+
+      - name: Fail the job if any step failed
+        run: |
+          if [ "$FAILED" = "1" ]; then
+            echo "At least one check failed. Failing job."
+            exit 1
+          fi
