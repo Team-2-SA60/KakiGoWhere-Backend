@@ -38,11 +38,13 @@ jobs:
       - name: Run Lint (Spotless)
         run: |
           mkdir -p target
-          mvn spotless:check > target/spotless-report.txt || echo "FAILED=1" >> $GITHUB_ENV
+          mvn spotless:check | tee target/spotless-report.txt || echo "FAILED=1" >> $GITHUB_ENV
 
       - name: Run SCA (Sonatype)
         continue-on-error: true
-        run: mvn org.sonatype.ossindex.maven:ossindex-maven-plugin:audit > target/sonatype-report.txt || echo "FAILED=1" >> $GITHUB_ENV
+        run: |
+          mvn org.sonatype.ossindex.maven:ossindex-maven-plugin:audit \
+            | tee target/sonatype-report.txt || echo "FAILED=1" >> $GITHUB_ENV
 
       - name: Run Unit Tests + JaCoCo (Code Coverage)
         continue-on-error: true
