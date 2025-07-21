@@ -40,25 +40,36 @@ jobs:
           mkdir -p target
           mvn spotless:check | tee target/spotless-report.txt || echo "FAILED=1" >> $GITHUB_ENV
 
+      - name: Upload Spotless Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spotless-report
+          path: target/spotless-report.txt
+
       - name: Run SCA (Sonatype)
         continue-on-error: true
         run: |
           mvn org.sonatype.ossindex.maven:ossindex-maven-plugin:audit \
             | tee target/sonatype-report.txt || echo "FAILED=1" >> $GITHUB_ENV
 
+      - name: Upload SonaType Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonatype-report
+          path: target/sonatype-report.txt
+
       - name: Run Unit Tests + JaCoCo (Code Coverage)
         continue-on-error: true
         run: mvn clean verify || echo "FAILED=1" >> $GITHUB_ENV
 
-      - name: Upload Reports
+      - name: Upload JaCoCo Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: all-reports
-          path: |
-            target/spotless-report.txt
-            target/sonatype-report.txt
-            target/site/jacoco
+          name: jacoco-report
+          path: target/site/jacoco
 
       - name: Fail the job if any step failed
         run: |
