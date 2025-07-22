@@ -1,5 +1,5 @@
 #### Commands for local testing
-1. SCA (SonaType)
+1. Software Composition Analysis (SonaType)
 ```
 mvn org.sonatype.ossindex.maven:ossindex-maven-plugin:audit   
 ```

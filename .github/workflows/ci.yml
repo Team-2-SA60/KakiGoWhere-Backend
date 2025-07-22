@@ -1,4 +1,4 @@
-name: SCA + Lint + JaCoCo + Unit Test
+name: CI pipeline
 
 on:
   push:
@@ -12,14 +12,14 @@ env:
 
 jobs:
   push-checks:
-    name: Code checks
+    name: Code checks (Spotless, Sonatype, JaCoCo, Unit test)
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Init fail flag
-        run: echo "FAILED=0" >> $GITHUB_ENV
+        run: echo 0 > failed.flag
 
       - name: Cache Maven dependencies
         uses: actions/cache@v3
@@ -38,7 +38,7 @@ jobs:
       - name: Run Lint (Spotless)
         run: |
           mkdir -p target
-          mvn spotless:check | tee target/spotless-report.txt || echo "FAILED=1" >> $GITHUB_ENV
+          mvn spotless:check | tee target/spotless-report.txt || echo 1 > failed.flag
 
       - name: Upload Spotless Report
         if: always()
@@ -48,10 +48,9 @@ jobs:
           path: target/spotless-report.txt
 
       - name: Run SCA (Sonatype)
-        continue-on-error: true
         run: |
           mvn org.sonatype.ossindex.maven:ossindex-maven-plugin:audit \
-            | tee target/sonatype-report.txt || echo "FAILED=1" >> $GITHUB_ENV
+            | tee target/sonatype-report.txt || echo 1 > failed.flag
 
       - name: Upload SonaType Report
         if: always()
@@ -61,8 +60,7 @@ jobs:
           path: target/sonatype-report.txt
 
       - name: Run Unit Tests + JaCoCo (Code Coverage)
-        continue-on-error: true
-        run: mvn clean verify || echo "FAILED=1" >> $GITHUB_ENV
+        run: mvn clean verify || echo 1 > failed.flag
 
       - name: Upload JaCoCo Report
         if: always()
@@ -73,7 +71,7 @@ jobs:
 
       - name: Fail the job if any step failed
         run: |
-          if [ "$FAILED" = "1" ]; then
+          if [ "$(cat failed.flag)" = "1" ]; then
             echo "At least one check failed. Failing job."
             exit 1
           fi
