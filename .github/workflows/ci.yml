@@ -10,10 +10,14 @@ env:
   DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
   DATABASE_HOST_PORT: ${{ secrets.DATABASE_HOST_PORT }}
 
+
 jobs:
   push-checks:
     name: Code checks (Spotless, Sonatype, JaCoCo, Unit test)
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -45,7 +49,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: spotless-report
-          path: target/spotless-report.txt
+          path: app/target/spotless-report.txt
 
       - name: Run SCA (Sonatype)
         run: |
@@ -57,7 +61,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: sonatype-report
-          path: target/sonatype-report.txt
+          path: app/target/sonatype-report.txt
 
       - name: Run Unit Tests + JaCoCo (Code Coverage)
         run: mvn clean verify || echo 1 > failed.flag
@@ -67,7 +71,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
-          path: target/site/jacoco
+          path: app/target/site/jacoco
 
       - name: Fail the job if any step failed
         run: |
