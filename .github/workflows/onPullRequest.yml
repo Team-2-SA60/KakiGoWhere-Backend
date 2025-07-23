@@ -9,6 +9,10 @@ env:
   DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
   DATABASE_HOST_PORT: ${{ secrets.DATABASE_HOST_PORT }}
 
+defaults:
+  run:
+    working-directory: app
+
 jobs:
   build:
     name: Build and analyze

@@ -10,6 +10,10 @@ env:
   DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
   DATABASE_HOST_PORT: ${{ secrets.DATABASE_HOST_PORT }}
 
+defaults:
+  run:
+    working-directory: app
+
 jobs:
   push-checks:
     name: Code checks (Spotless, Sonatype, JaCoCo, Unit test)
