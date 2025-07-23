@@ -10,14 +10,14 @@ env:
   DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
   DATABASE_HOST_PORT: ${{ secrets.DATABASE_HOST_PORT }}
 
-defaults:
-  run:
-    working-directory: app
 
 jobs:
   push-checks:
     name: Code checks (Spotless, Sonatype, JaCoCo, Unit test)
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
