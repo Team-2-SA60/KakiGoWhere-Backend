@@ -23,7 +23,7 @@ provider "digitalocean" {
 }
 
 resource "digitalocean_droplet" "app" {
-  name       = [var.name]
+  name       = "KakiGoWhere"
   region     = "sgp1"
   image      = "ubuntu-24-04-x64"
   size       = "s-2vcpu-2gb"
