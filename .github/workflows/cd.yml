@@ -71,8 +71,17 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE }}" > ~/.ssh/id_rsa
           chmod 400 ~/.ssh/id_rsa
 
+      - name: Cache pip & Ansible
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            pip-${{ runner.os }}-
+
       - name: Setup Ansible
-        run: sudo apt-get update && sudo apt-get install -y ansible
+        run: |
+          pip install ansible
 
       - name: Make Ansible Inventory
         working-directory: ansible
