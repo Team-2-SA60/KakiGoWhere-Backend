@@ -52,7 +52,7 @@ jobs:
         working-directory: terraform
         run: |
           terraform apply -auto-approve \
-            -var="name=${{ secrets.NAME }}" \
+            -var="name=${{ env.NAME }}" \
             -var="do_token=${{ secrets.DO_PAT }}" \
             -var="ssh_key_fingerprint=${{ secrets.DO_SSH }}"
 
