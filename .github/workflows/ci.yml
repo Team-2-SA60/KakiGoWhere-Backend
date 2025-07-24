@@ -4,6 +4,7 @@ on:
   push:
     branches-ignore:
       - main
+      - cd
 
 env:
   DATABASE_USER: ${{ secrets.DATABASE_USER }}

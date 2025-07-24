@@ -1,22 +1,22 @@
-- name: Deploy Spring Boot app
+- name: Deploy KakiGoWhere-Backend SpringBoot + MySQL
   hosts: app
   become: yes
 
   vars:
-    docker_image: "docker_username/repo:latest"
-    db_user: "user"
-    db_pass: "password"
-    db_name: "mydb"
-    db_root_pass: "rootpassword"
+    docker_image: "{{ docker_image }}"
+    db_user: "{{ db_user }}"
+    db_pass: "{{ db_pass }}"
+    db_name: "kakigowhere"
+    db_root_pass: "{{ db_root_pass }}"
 
   tasks:
-    - name: Install Docker and Docker Compose
+    - name: Ensure Docker is installed
       apt:
         name:
-          - docker.io
-          - docker-compose
-        update_cache: yes
+        - docker.io
+        - docker-compose
         state: present
+        update_cache: yes
 
     - name: Create app directory
       file:
@@ -40,6 +40,8 @@
                 MYSQL_ROOT_PASSWORD: {{ db_root_pass }}
               volumes:
                 - db_data:/var/lib/mysql
+              ports:
+                - "3306:3306"
 
             app:
               image: {{ docker_image }}
@@ -53,11 +55,14 @@
                 SPRING_DATASOURCE_USERNAME: {{ db_user }}
                 SPRING_DATASOURCE_PASSWORD: {{ db_pass }}
                 SPRING_JPA_HIBERNATE_DDL_AUTO: update
+              volumes:
+                - app_images:/data/images
 
           volumes:
             db_data:
+            app_images:
 
     - name: Start application
-      command: docker compose up -d
+      command: docker-compose -f docker-compose.yml up -d
       args:
         chdir: /opt/springboot-app

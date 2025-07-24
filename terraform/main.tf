@@ -7,6 +7,17 @@ terraform {
   }
 }
 
+terraform {
+  cloud {
+
+    organization = "Team2_SA60"
+
+    workspaces {
+      name = "KakiGoWhere"
+    }
+  }
+}
+
 provider "digitalocean" {
   token = var.do_token
 }
@@ -14,8 +25,8 @@ provider "digitalocean" {
 resource "digitalocean_droplet" "app" {
   name       = "springboot-local-test"
   region     = "sgp1"
-  image      = "ubuntu-22-04-x64"
-  size       = "s-1vcpu-1gb"
+  image      = "ubuntu-24-04-x64"
+  size       = "s-2vcpu-2gb"
   ssh_keys   = [var.ssh_key_fingerprint]
 }
 
