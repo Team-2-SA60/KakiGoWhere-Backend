@@ -64,7 +64,8 @@
 
     - name: Pull latest images
       command: docker-compose pull
-      chdir: /opt/springboot-app
+      args:
+        chdir: /opt/springboot-app
 
     - name: Start containers
       command: docker-compose up -d
