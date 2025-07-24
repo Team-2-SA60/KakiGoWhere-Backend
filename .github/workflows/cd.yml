@@ -47,8 +47,8 @@ jobs:
         working-directory: terraform
         run: |
           terraform apply -auto-approve \
-            -var="do_token=${{ secrets.DO_PAT }}
-            -var="ssh_key_fingerprint=${{ secrets.DO_SSH }}
+            -var="do_token=${{ secrets.DO_PAT }}" \
+            -var="ssh_key_fingerprint=${{ secrets.DO_SSH }}"
 
       - name: Get Droplet IP
         working-directory: terraform
