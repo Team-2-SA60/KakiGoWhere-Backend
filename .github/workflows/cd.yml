@@ -58,6 +58,7 @@ jobs:
         id: droplet_ip
         run: |
           ip=$(terraform output -raw droplet_ip)
+          echo "DROPLET_IP=$ip"
           echo "DROPLET_IP=$ip" >> $GITHUB_OUTPUT
 
       - name: Add SSH host to known_hosts
