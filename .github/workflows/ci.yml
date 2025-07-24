@@ -1,16 +1,13 @@
-name: CI pipeline
+name: CI Pipeline
 
 on:
   push:
-    branches-ignore:
-      - main
-      - cd
+    branches: ['**']
 
 env:
   DATABASE_USER: ${{ secrets.DATABASE_USER }}
   DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
   DATABASE_HOST_PORT: ${{ secrets.DATABASE_HOST_PORT }}
-
 
 jobs:
   push-checks:
