@@ -5,6 +5,7 @@ on:
     branches: [ "**" ]
 
 env:
+  NAME: kakigowhere
   IMAGE_NAME: kakigowhere-backend:latest
 
 jobs:
@@ -51,6 +52,7 @@ jobs:
         working-directory: terraform
         run: |
           terraform apply -auto-approve \
+            -var="name=${{ NAME }}" \
             -var="do_token=${{ secrets.DO_PAT }}" \
             -var="ssh_key_fingerprint=${{ secrets.DO_SSH }}"
 
@@ -59,12 +61,12 @@ jobs:
         id: droplet_ip
         run: |
           ip=$(terraform output -raw droplet_ip)
-          echo "DROPLET_IP=$ip" >> $GITHUB_ENV
+          echo "DROPLET_IP=$ip" >> $GITHUB_OUTPUT
 
       - name: Add SSH host to known_hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan $DROPLET_IP > ~/.ssh/known_hosts
+          ssh-keyscan ${{ steps.droplet_ip.DROPLET_IP }} > ~/.ssh/known_hosts
           
       - name: Write private SSH key
         run: |
@@ -77,7 +79,7 @@ jobs:
       - name: Make Ansible Inventory
         working-directory: ansible
         run: |
-          echo "$DROPLET_IP ansible_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa" > inventory.ini
+          echo "${{ steps.droplet_ip.DROPLET_IP }} ansible_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa" > inventory.ini
 
       - name: Run Ansible Playbook
         working-directory: ansible

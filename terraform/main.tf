@@ -23,7 +23,7 @@ provider "digitalocean" {
 }
 
 resource "digitalocean_droplet" "app" {
-  name       = "springboot-local-test"
+  name       = [var.name]
   region     = "sgp1"
   image      = "ubuntu-24-04-x64"
   size       = "s-2vcpu-2gb"
