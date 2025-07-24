@@ -10,7 +10,7 @@
     db_root_pass: "{{ db_root_pass }}"
 
   tasks:
-    - name: Ensure Docker is installed
+    - name: Check and ensure docker is installed
       apt:
         name:
         - docker.io
@@ -63,6 +63,6 @@
             app_images:
 
     - name: Start application
-      command: docker-compose -f docker-compose.yml up -d
+      command: docker-compose pull && docker-compose up -d
       args:
         chdir: /opt/springboot-app
