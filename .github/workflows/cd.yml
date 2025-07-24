@@ -77,6 +77,7 @@ jobs:
       - name: Make Ansible Inventory
         working-directory: ansible
         run: |
+          echo "[app]" > inventory.ini
           echo "${{ steps.droplet_ip.outputs.DROPLET_IP }} ansible_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa" > inventory.ini
 
       - name: Run Ansible Playbook
