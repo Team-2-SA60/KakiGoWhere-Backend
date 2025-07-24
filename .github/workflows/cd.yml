@@ -64,7 +64,7 @@ jobs:
       - name: Add SSH host to known_hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan ${{ steps.droplet_ip.DROPLET_IP }} > ~/.ssh/known_hosts
+          ssh-keyscan ${{ steps.droplet_ip.outputs.DROPLET_IP }} > ~/.ssh/known_hosts
           
       - name: Write private SSH key
         run: |
@@ -77,7 +77,7 @@ jobs:
       - name: Make Ansible Inventory
         working-directory: ansible
         run: |
-          echo "${{ steps.droplet_ip.DROPLET_IP }} ansible_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa" > inventory.ini
+          echo "${{ steps.droplet_ip.outputs.DROPLET_IP }} ansible_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa" > inventory.ini
 
       - name: Run Ansible Playbook
         working-directory: ansible
