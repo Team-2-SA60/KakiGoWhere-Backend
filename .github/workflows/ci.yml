@@ -1,15 +1,13 @@
-name: CI pipeline
+name: CI Pipeline
 
 on:
   push:
-    branches-ignore:
-      - main
+    branches: ['**']
 
 env:
   DATABASE_USER: ${{ secrets.DATABASE_USER }}
   DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
   DATABASE_HOST_PORT: ${{ secrets.DATABASE_HOST_PORT }}
-
 
 jobs:
   push-checks:
@@ -42,7 +40,7 @@ jobs:
       - name: Run Lint (Spotless)
         run: |
           mkdir -p target
-          mvn spotless:check | tee target/spotless-report.txt || echo 1 > failed.flag
+          mvn spotless:check -Dprofile=prod | tee target/spotless-report.txt || echo 1 > failed.flag
 
       - name: Upload Spotless Report
         if: always()
@@ -53,7 +51,7 @@ jobs:
 
       - name: Run SCA (Sonatype)
         run: |
-          mvn org.sonatype.ossindex.maven:ossindex-maven-plugin:audit \
+          mvn org.sonatype.ossindex.maven:ossindex-maven-plugin:audit -Dprofile=prod \
             | tee target/sonatype-report.txt || echo 1 > failed.flag
 
       - name: Upload SonaType Report
@@ -64,7 +62,7 @@ jobs:
           path: app/target/sonatype-report.txt
 
       - name: Run Unit Tests + JaCoCo (Code Coverage)
-        run: mvn clean verify || echo 1 > failed.flag
+        run: mvn clean verify -Dprofile=prod || echo 1 > failed.flag
 
       - name: Upload JaCoCo Report
         if: always()

@@ -1,0 +1,73 @@
+- name: Deploy KakiGoWhere-Backend SpringBoot + MySQL
+  hosts: app
+  become: yes
+
+  vars:
+    docker_image: "{{ docker_image }}"
+    db_user: "{{ db_user }}"
+    db_pass: "{{ db_pass }}"
+    db_name: "kakigowhere"
+    db_root_pass: "{{ db_root_pass }}"
+
+  tasks:
+    - name: Check and ensure docker is installed
+      apt:
+        name:
+        - docker.io
+        - docker-compose
+        state: present
+        update_cache: yes
+
+    - name: Create app directory
+      file:
+        path: /opt/springboot-app
+        state: directory
+
+    - name: Create docker-compose.yml from template
+      copy:
+        dest: /opt/springboot-app/docker-compose.yml
+        content: |
+          version: '3.8'
+
+          services:
+            db:
+              image: mysql:8.0
+              restart: always
+              environment:
+                MYSQL_DATABASE: {{ db_name }}
+                MYSQL_USER: {{ db_user }}
+                MYSQL_PASSWORD: {{ db_pass }}
+                MYSQL_ROOT_PASSWORD: {{ db_root_pass }}
+              volumes:
+                - db_data:/var/lib/mysql
+              ports:
+                - "3306:3306"
+
+            app:
+              image: {{ docker_image }}
+              restart: always
+              depends_on:
+                - db
+              ports:
+                - "8080:8080"
+              environment:
+                SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/{{ db_name }}
+                SPRING_DATASOURCE_USERNAME: {{ db_user }}
+                SPRING_DATASOURCE_PASSWORD: {{ db_pass }}
+                SPRING_JPA_HIBERNATE_DDL_AUTO: update
+              volumes:
+                - app_images:/data/images
+
+          volumes:
+            db_data:
+            app_images:
+
+    - name: Pull latest images
+      command: docker-compose pull
+      args:
+        chdir: /opt/springboot-app
+
+    - name: Start containers
+      command: docker-compose up -d
+      args:
+        chdir: /opt/springboot-app
