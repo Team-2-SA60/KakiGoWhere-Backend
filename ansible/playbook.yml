@@ -62,7 +62,11 @@
             db_data:
             app_images:
 
-    - name: Start application
-      command: docker-compose pull && docker-compose up -d
+    - name: Pull latest images
+      command: docker-compose pull
+      chdir: /opt/springboot-app
+
+    - name: Start containers
+      command: docker-compose up -d
       args:
         chdir: /opt/springboot-app
