@@ -11,9 +11,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Tourist {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int touristId;
+    private long touristId;
     private String touristEmail;
     private String touristPassword;
     private String touristName;
