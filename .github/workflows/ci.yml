@@ -2,8 +2,7 @@ name: CI Pipeline
 
 on:
   push:
-    branches:
-      - main
+    branches: ['**']
 
 env:
   DATABASE_USER: ${{ secrets.DATABASE_USER }}
