@@ -104,6 +104,6 @@ jobs:
         run: |
           ansible-playbook -i inventory.ini playbook.yml \
             --extra-vars "db_user=${{ secrets.MYSQL_USER }} \
-                          db_pass=${{ secrets.MYSQL_PASS }} \
+                          db_pass=${{ secrets.MYSQL_PASSWORD }} \
                           db_root_pass=${{ secrets.MYSQL_ROOT_PASSWORD }} \
                           docker_image=${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}"
