@@ -1,5 +1,10 @@
 #### Commands for local testing
-1. Software Composition Analysis (SonaType)
+1. Change directory to app
+```
+cd app
+```
+
+2. Software Composition Analysis (SonaType)
 ```
 mvn org.sonatype.ossindex.maven:ossindex-maven-plugin:audit   
 ```
