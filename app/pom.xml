@@ -34,7 +34,6 @@
         <sonatype.version>3.2.0</sonatype.version>
         <sonar.organization>team2sa60</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <profile>dev</profile>
     </properties>
     <dependencies>
         <dependency>
