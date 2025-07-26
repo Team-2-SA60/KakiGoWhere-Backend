@@ -1,19 +1,19 @@
-version: '3.8'
-
 services:
   db:
     image: mysql:8.0
     environment:
-      MYSQL_DATABASE: mydb
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: kakigowhere
+      MYSQL_USER: test
+      MYSQL_PASSWORD: pw
+      MYSQL_ROOT_PASSWORD: pw
     ports:
       - "3305:3306"
     volumes:
       - db_data:/var/lib/mysql
 
   app:
+    image: kakigowhere-springboot
+    pull_policy: never
     build:
       context: ../app
       dockerfile: ../docker/Dockerfile
@@ -22,10 +22,12 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/mydb
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/kakigowhere
+      SPRING_DATASOURCE_USERNAME: test
+      SPRING_DATASOURCE_PASSWORD: pw
+    volumes:
+      - app_images:/data/images
 
 volumes:
   db_data:
+  app_images:
