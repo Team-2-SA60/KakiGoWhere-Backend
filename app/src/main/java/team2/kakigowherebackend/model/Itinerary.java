@@ -1,0 +1,32 @@
+package team2.kakigowherebackend.model;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@Entity
+@Getter
+@Setter
+public class Itinerary {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long itineraryId;
+    private String itineraryTitle;
+    private LocalDate itineraryStartDate;
+
+    @OneToOne(mappedBy = "itinerary")
+    private Tourist tourist;
+
+    @OneToMany(mappedBy = "itinerary")
+    private List<ItineraryDetail> itineraryDetails;
+
+    public Itinerary() { }
+    public Itinerary(String itineraryTitle, LocalDate itineraryStartDate) {
+        this.itineraryTitle = itineraryTitle;
+        this.itineraryStartDate = itineraryStartDate;
+    }
+}
