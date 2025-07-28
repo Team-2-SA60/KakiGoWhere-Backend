@@ -32,13 +32,12 @@ jobs:
           distribution: 'temurin'
 
       - name: Run Lint (Spotless)
-        continue-on-error: true
         run: |
           mkdir -p report
           mvn spotless:check | tee report/spotless-report.txt
 
       - name: Run SCA (Sonatype)
-        continue-on-error: true
+        if: always()
         run: mvn org.sonatype.ossindex.maven:ossindex-maven-plugin:audit | tee report/sonatype-report.txt
 
       - name: Upload Lint and SCA Reports
@@ -49,6 +48,7 @@ jobs:
           path: app/report/
 
       - name: Run Unit Tests + JaCoCo (Code Coverage)
+        if: always()
         run: |
           mkdir -p target
           mvn clean verify
