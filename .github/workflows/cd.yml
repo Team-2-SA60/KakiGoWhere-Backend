@@ -1,10 +1,15 @@
 name: CD Pipeline
 
+#on:
+#  workflow_run:
+#    workflows: ["CI Pipeline"]
+#    types:
+#      - completed
+
 on:
-  workflow_run:
-    workflows: ["CI Pipeline"]
-    types:
-      - completed
+  push:
+    branches:
+      - cd
 
 env:
   IMAGE_NAME: kakigowhere-backend:latest
@@ -12,9 +17,9 @@ env:
 jobs:
   docker-build-and-push:
     name: Docker build and push
-    if: >
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_branch == 'main'
+#    if: >
+#      github.event.workflow_run.conclusion == 'success' &&
+#      github.event.workflow_run.head_branch == 'main'
     runs-on: ubuntu-latest
 
     steps:

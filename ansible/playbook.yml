@@ -10,13 +10,31 @@
     db_root_pass: "{{ db_root_pass }}"
 
   tasks:
-    - name: Check and ensure docker is installed
+    - name: Install required packages
       apt:
         name:
-        - docker.io
-        - docker-compose
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
         state: present
-        update_cache: yes
+        update_cache: true
+
+    - name: Add Docker’s official GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: true
 
     - name: Create app directory
       file:
@@ -61,11 +79,11 @@
             app_images:
 
     - name: Pull latest images
-      command: docker-compose pull
+      command: docker compose pull
       args:
         chdir: /opt/springboot-app
 
     - name: Start containers
-      command: docker-compose up -d
+      command: docker compose up -d
       args:
         chdir: /opt/springboot-app
