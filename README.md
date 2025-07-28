@@ -6,25 +6,25 @@ cd app
 
 2. Software Composition Analysis (SonaType)
 ```
-mvn org.sonatype.ossindex.maven:ossindex-maven-plugin:audit   
+./mvnw org.sonatype.ossindex.maven:ossindex-maven-plugin:audit   
 ```
 
 2. Lint (Spotless)
 
 - Check linting issues
 ```
-mvn spotless:check
+./mvnw spotless:check
 ```
 - Auto-Correct linting issues
 ```
-mvn spotless:apply
+./mvnw spotless:apply
 ```
 
 3. JaCoCo and Unit Test
 
 JaCoCo report in **target/site/jacoco**
 ```
-mvn clean verify
+./mvnw clean verify
 ```
 
 ## Docker
@@ -52,7 +52,7 @@ The following will run on your **OWN** local database container
 
 1. Build and run Springboot + MySQL containers
 ```
-docker compose -f ../docker/docker-compose.dev.yml up -d
+docker compose -f ../docker/docker-compose.dev.yml up -d --build
 ```
 
 Add and access local database on your workbench using below:

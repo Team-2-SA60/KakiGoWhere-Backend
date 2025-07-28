@@ -27,8 +27,6 @@
       copy:
         dest: /opt/springboot-app/docker-compose.yml
         content: |
-          version: '3.8'
-
           services:
             db:
               image: mysql:8.0
@@ -66,12 +64,6 @@
       command: docker-compose pull
       args:
         chdir: /opt/springboot-app
-
-    - name: Stop old containers
-      command: docker-compose down
-      args:
-        chdir: /opt/springboot-app
-      ignore_errors: yes
 
     - name: Start containers
       command: docker-compose up -d

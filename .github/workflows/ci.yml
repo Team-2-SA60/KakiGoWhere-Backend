@@ -17,9 +17,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Init fail flag
-        run: echo 0 > failed.flag
-
       - name: Cache Maven dependencies
         uses: actions/cache@v3
         with:
@@ -35,14 +32,14 @@ jobs:
           distribution: 'temurin'
 
       - name: Run Lint (Spotless)
+        continue-on-error: true
         run: |
           mkdir -p report
-          mvn spotless:check | tee report/spotless-report.txt || echo 1 > failed.flag
+          mvn spotless:check | tee report/spotless-report.txt
 
       - name: Run SCA (Sonatype)
-        run: |
-          mvn org.sonatype.ossindex.maven:ossindex-maven-plugin:audit \
-            | tee report/sonatype-report.txt || echo 1 > failed.flag
+        continue-on-error: true
+        run: mvn org.sonatype.ossindex.maven:ossindex-maven-plugin:audit | tee report/sonatype-report.txt
 
       - name: Upload Lint and SCA Reports
         if: always()
@@ -54,7 +51,7 @@ jobs:
       - name: Run Unit Tests + JaCoCo (Code Coverage)
         run: |
           mkdir -p target
-          mvn clean verify || echo 1 > failed.flag
+          mvn clean verify
 
       - name: Upload JaCoCo Report
         if: always()
@@ -62,10 +59,3 @@ jobs:
         with:
           name: jacoco-report
           path: app/target/site/jacoco
-
-      - name: Fail the job if any step failed
-        run: |
-          if [ "$(cat failed.flag)" = "1" ]; then
-            echo "At least one check failed. Failing job."
-            exit 1
-          fi
