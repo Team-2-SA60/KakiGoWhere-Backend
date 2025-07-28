@@ -13,20 +13,20 @@ public class PlaceEvent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long eventId;
-    private String eventName;
-    private String eventDescription;
-    private LocalDate eventStartDate;
-    private LocalDate eventEndDate;
+    private long id;
+    private String name;
+    private String description;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     @ManyToOne
     private Place place;
 
     public PlaceEvent() { }
-    public PlaceEvent(String eventName, String eventDescription, LocalDate eventStartDate, LocalDate eventEndDate) {
-        this.eventName = eventName;
-        this.eventDescription = eventDescription;
-        this.eventStartDate = eventStartDate;
-        this.eventEndDate = eventEndDate;
+    public PlaceEvent(String name, String description, LocalDate startDate, LocalDate endDate) {
+        this.name = name;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 }

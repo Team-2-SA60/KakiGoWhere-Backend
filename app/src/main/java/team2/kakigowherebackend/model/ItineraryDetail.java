@@ -13,9 +13,9 @@ public class ItineraryDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long itineraryDetailId;
-    private LocalDate itemDate;
-    private String itemNotes;
+    private long id;
+    private LocalDate date;
+    private String notes;
     private int sequentialOrder;
 
     @ManyToOne
@@ -25,9 +25,9 @@ public class ItineraryDetail {
     private Place place;
 
     public ItineraryDetail() { }
-    public ItineraryDetail(LocalDate itemDate, String itemNotes, int sequentialOrder) {
-        this.itemDate = itemDate;
-        this.itemNotes = itemNotes;
+    public ItineraryDetail(LocalDate date, String notes, int sequentialOrder) {
+        this.date = date;
+        this.notes = notes;
         this.sequentialOrder = sequentialOrder;
     }
 }

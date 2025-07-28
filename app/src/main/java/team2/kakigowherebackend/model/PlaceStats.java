@@ -11,7 +11,7 @@ public class PlaceStats {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long placeStatsId;
+    private long id;
     private int numberOfBookmarks;
     private int numberOfItinerary;
 

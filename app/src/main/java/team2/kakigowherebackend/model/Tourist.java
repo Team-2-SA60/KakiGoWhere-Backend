@@ -14,10 +14,10 @@ public class Tourist {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long touristId;
-    private String touristEmail;
-    private String touristPassword;
-    private String touristName;
+    private long id;
+    private String email;
+    private String password;
+    private String name;
 
     @OneToOne
     private Itinerary itinerary;
@@ -38,9 +38,9 @@ public class Tourist {
     private List<Rating> ratings;
 
     public Tourist() { }
-    public Tourist(String touristEmail, String touristPassword, String touristName) {
-        this.touristEmail = touristEmail;
-        this.touristPassword = touristPassword;
-        this.touristName = touristName;
+    public Tourist(String email, String password, String name) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
     }
 }

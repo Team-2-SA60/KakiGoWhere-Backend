@@ -14,9 +14,9 @@ public class Itinerary {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long itineraryId;
-    private String itineraryTitle;
-    private LocalDate itineraryStartDate;
+    private long id;
+    private String title;
+    private LocalDate startDate;
 
     @OneToOne(mappedBy = "itinerary")
     private Tourist tourist;
@@ -25,8 +25,8 @@ public class Itinerary {
     private List<ItineraryDetail> itineraryDetails;
 
     public Itinerary() { }
-    public Itinerary(String itineraryTitle, LocalDate itineraryStartDate) {
-        this.itineraryTitle = itineraryTitle;
-        this.itineraryStartDate = itineraryStartDate;
+    public Itinerary(String title, LocalDate startDate) {
+        this.title = title;
+        this.startDate = startDate;
     }
 }

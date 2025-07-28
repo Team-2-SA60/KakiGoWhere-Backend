@@ -13,14 +13,14 @@ public class Bookmark {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long bookmarkId;
-    private LocalDate bookmarkDate;
+    private long id;
+    private LocalDate bookmarkedDate;
 
     @ManyToOne
     private Place place;
 
     public Bookmark() { }
-    public Bookmark(LocalDate bookmarkDate) {
-        this.bookmarkDate = bookmarkDate;
+    public Bookmark(LocalDate bookmarkedDate) {
+        this.bookmarkedDate = bookmarkedDate;
     }
 }

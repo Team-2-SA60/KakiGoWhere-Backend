@@ -11,13 +11,13 @@ public class InterestCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long categoryId;
-    private String categoryName;
-    private String categoryDescription;
+    private long id;
+    private String name;
+    private String description;
 
     public InterestCategory() { }
-    public InterestCategory(String categoryName, String categoryDescription) {
-        this.categoryName = categoryName;
-        this.categoryDescription = categoryDescription;
+    public InterestCategory(String name, String description) {
+        this.name = name;
+        this.description = description;
     }
 }
