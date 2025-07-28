@@ -13,15 +13,15 @@ import lombok.Setter;
 public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long adminId;
-    private String adminEmail;
-    private String adminPassword;
-    private String adminName;
+    private long id;
+    private String email;
+    private String password;
+    private String name;
 
     public Admin() { }
-    public Admin(String adminEmail, String adminPassword, String adminName) {
-        this.adminEmail = adminEmail;
-        this.adminPassword = adminPassword;
-        this.adminName = adminName;
+    public Admin(String email, String password, String name) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
     }
 }

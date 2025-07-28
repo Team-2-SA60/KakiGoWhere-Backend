@@ -16,7 +16,7 @@ public class DailyStats {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long dailyStatsId;
+    private long id;
     private LocalDate date;
     private int numberOfUniqueVisits;
     private int numberOfSignUps;

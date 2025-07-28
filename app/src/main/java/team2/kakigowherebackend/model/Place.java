@@ -14,15 +14,15 @@ public class Place {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long placeId;
-    private String placeName;
-    private String placeDescription;
-    private String placeImagePath;
-    private String placeURL;
-    private LocalTime placeOpeningHour;
-    private LocalTime placeClosingHour;
-    private double placeLatitude;
-    private double placeLongitude;
+    private long id;
+    private String name;
+    private String description;
+    private String imagePath;
+    private String URL;
+    private LocalTime openingHour;
+    private LocalTime closingHour;
+    private double latitude;
+    private double longitude;
     private boolean activeStatus;
 
     @ManyToMany
@@ -38,14 +38,14 @@ public class Place {
     private List<ItineraryDetail> itineraryDetails;
 
     public Place() { }
-    public Place(String placeName, String placeDescription, String placeURL, LocalTime placeOpeningHour, LocalTime placeClosingHour, double placeLatitude, double placeLongitude, boolean activeStatus) {
-        this.placeName = placeName;
-        this.placeDescription = placeDescription;
-        this.placeURL = placeURL;
-        this.placeOpeningHour = placeOpeningHour;
-        this.placeClosingHour = placeClosingHour;
-        this.placeLatitude = placeLatitude;
-        this.placeLongitude = placeLongitude;
+    public Place(String name, String description, String URL, LocalTime openingHour, LocalTime closingHour, double latitude, double longitude, boolean activeStatus) {
+        this.name = name;
+        this.description = description;
+        this.URL = URL;
+        this.openingHour = openingHour;
+        this.closingHour = closingHour;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.activeStatus = activeStatus;
     }
 }
