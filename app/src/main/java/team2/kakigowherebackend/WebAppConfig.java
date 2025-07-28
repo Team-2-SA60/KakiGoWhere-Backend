@@ -1,4 +1,3 @@
-/* (C)2025 */
 package team2.kakigowherebackend;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,3 @@
-/* (C)2025 */
 package team2.kakigowherebackend;
 
 import org.springframework.boot.CommandLineRunner;
@@ -15,8 +14,6 @@ public class KakiGoWhereBackendApplication {
 
     @Bean
     CommandLineRunner commandLineRun() {
-        return args -> {
-
-        };
+        return args -> {};
     }
 }

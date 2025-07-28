@@ -14,11 +14,13 @@ public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     private String email;
     private String password;
     private String name;
 
-    public Admin() { }
+    public Admin() {}
+
     public Admin(String email, String password, String name) {
         this.email = email;
         this.password = password;

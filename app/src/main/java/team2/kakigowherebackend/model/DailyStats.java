@@ -4,10 +4,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -17,15 +16,16 @@ public class DailyStats {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     private LocalDate date;
     private int numberOfUniqueVisits;
     private int numberOfSignUps;
 
-    public DailyStats() { }
+    public DailyStats() {}
+
     public DailyStats(LocalDate date, int numberOfUniqueVisits, int numberOfSignUps) {
         this.date = date;
         this.numberOfUniqueVisits = numberOfUniqueVisits;
         this.numberOfSignUps = numberOfSignUps;
     }
-
 }
