@@ -54,7 +54,7 @@
                 SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/{{ db_name }}
                 SPRING_DATASOURCE_USERNAME: {{ db_user }}
                 SPRING_DATASOURCE_PASSWORD: {{ db_pass }}
-                SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+                SPRING_JPA_HIBERNATE_DDL_AUTO: update
               volumes:
                 - app_images:/data/images
 
