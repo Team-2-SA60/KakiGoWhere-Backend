@@ -1,9 +1,6 @@
 package team2.kakigowherebackend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,6 +14,9 @@ public class Rating {
     private long ratingId;
     private int rating;
     private String comment;
+
+    @ManyToOne
+    private Place place;
 
     public Rating() { }
     public Rating(int rating, String comment) {

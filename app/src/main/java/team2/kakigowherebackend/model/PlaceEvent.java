@@ -1,9 +1,6 @@
 package team2.kakigowherebackend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,6 +18,9 @@ public class PlaceEvent {
     private String eventDescription;
     private LocalDate eventStartDate;
     private LocalDate eventEndDate;
+
+    @ManyToOne
+    private Place place;
 
     public PlaceEvent() { }
     public PlaceEvent(String eventName, String eventDescription, LocalDate eventStartDate, LocalDate eventEndDate) {

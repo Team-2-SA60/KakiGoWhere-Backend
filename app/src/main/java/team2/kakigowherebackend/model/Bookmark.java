@@ -1,9 +1,6 @@
 package team2.kakigowherebackend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,6 +15,9 @@ public class Bookmark {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long bookmarkId;
     private LocalDate bookmarkDate;
+
+    @ManyToOne
+    private Place place;
 
     public Bookmark() { }
     public Bookmark(LocalDate bookmarkDate) {
