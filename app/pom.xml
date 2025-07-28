@@ -134,6 +134,13 @@
                         </licenseHeader>
                     </java>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <!-- Software Composition Analysis (Sonatype) -->
             <plugin>
