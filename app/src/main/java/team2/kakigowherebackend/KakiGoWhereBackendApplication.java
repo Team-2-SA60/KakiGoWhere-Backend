@@ -6,7 +6,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import team2.kakigowherebackend.model.Place;
-import team2.kakigowherebackend.repository.PlaceRepository;
 import team2.kakigowherebackend.service.PlaceService;
 
 import java.time.LocalTime;
