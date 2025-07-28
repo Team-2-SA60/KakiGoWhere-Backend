@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import team2.kakigowherebackend.model.Place;
 import team2.kakigowherebackend.repository.PlaceRepository;
+import team2.kakigowherebackend.service.PlaceService;
 
 import java.time.LocalTime;
 
@@ -18,7 +19,7 @@ public class KakiGoWhereBackendApplication {
     }
 
     @Bean
-    CommandLineRunner commandLineRun(PlaceRepository placeRepo) {
+    CommandLineRunner commandLineRun(PlaceService placeService) {
         return args -> {
 
             Place place1 = new Place();
@@ -30,7 +31,7 @@ public class KakiGoWhereBackendApplication {
             place1.setLatitude(1.257);
             place1.setLongitude(103.82033);
             place1.setActiveStatus(true);
-            placeRepo.save(place1);
+            placeService.savePlace(place1);
 
             Place place2 = new Place();
             place2.setName("Universal Studios Singapore");
@@ -41,7 +42,7 @@ public class KakiGoWhereBackendApplication {
             place2.setLatitude(1.254);
             place2.setLongitude(103.823808);
             place2.setActiveStatus(true);
-            placeRepo.save(place2);
+            placeService.savePlace(place2);
 
             Place place3 = new Place();
             place3.setName("Henderson Waves Bridge");
@@ -52,7 +53,7 @@ public class KakiGoWhereBackendApplication {
             place3.setLatitude(1.276);
             place3.setLongitude(103.815254);
             place3.setActiveStatus(true);
-            placeRepo.save(place3);
+            placeService.savePlace(place3);
 
         };
     }
