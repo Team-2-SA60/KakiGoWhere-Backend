@@ -1,4 +1,3 @@
-/* (C)2025 */
 package team2.kakigowherebackend.Interceptors;
 
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,11 +1,10 @@
 package team2.kakigowherebackend.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.time.LocalTime;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -15,6 +14,7 @@ public class Place {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     private String name;
     private String description;
     private String imagePath;
@@ -26,9 +26,10 @@ public class Place {
     private boolean activeStatus;
 
     @ManyToMany
-    @JoinTable(name = "place_interests",
-    joinColumns = @JoinColumn(name = "place_id"),
-    inverseJoinColumns = @JoinColumn(name = "category_id"))
+    @JoinTable(
+            name = "place_interests",
+            joinColumns = @JoinColumn(name = "place_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<InterestCategory> interestCategories;
 
     @OneToMany(mappedBy = "place")
@@ -37,8 +38,17 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private List<ItineraryDetail> itineraryDetails;
 
-    public Place() { }
-    public Place(String name, String description, String URL, LocalTime openingHour, LocalTime closingHour, double latitude, double longitude, boolean activeStatus) {
+    public Place() {}
+
+    public Place(
+            String name,
+            String description,
+            String URL,
+            LocalTime openingHour,
+            LocalTime closingHour,
+            double latitude,
+            double longitude,
+            boolean activeStatus) {
         this.name = name;
         this.description = description;
         this.URL = URL;
