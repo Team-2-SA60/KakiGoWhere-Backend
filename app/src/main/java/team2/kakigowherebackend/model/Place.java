@@ -23,7 +23,7 @@ public class Place {
     private LocalTime closingHour;
     private double latitude;
     private double longitude;
-    private boolean activeStatus;
+    private boolean active;
 
     @ManyToMany
     @JoinTable(
@@ -48,7 +48,7 @@ public class Place {
             LocalTime closingHour,
             double latitude,
             double longitude,
-            boolean activeStatus) {
+            boolean active) {
         this.name = name;
         this.description = description;
         this.URL = URL;
@@ -56,6 +56,7 @@ public class Place {
         this.closingHour = closingHour;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.activeStatus = activeStatus;
+        this.active = active;
     }
+
 }
