@@ -26,7 +26,7 @@ public class Place {
     private String openingDescription;
     private double latitude;
     private double longitude;
-    private boolean activeStatus;
+    private boolean active;
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OpeningHours> openingHours;
