@@ -5,6 +5,4 @@ import org.springframework.stereotype.Repository;
 import team2.kakigowherebackend.model.Place;
 
 @Repository
-public interface PlaceRepository extends JpaRepository<Place, Long> {
-
-}
+public interface PlaceRepository extends JpaRepository<Place, Long> {}
