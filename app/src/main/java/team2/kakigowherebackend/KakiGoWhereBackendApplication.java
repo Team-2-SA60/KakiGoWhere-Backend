@@ -4,6 +4,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import team2.kakigowherebackend.model.Place;
+import team2.kakigowherebackend.service.PlaceService;
+
+import java.time.LocalTime;
 
 @SpringBootApplication
 public class KakiGoWhereBackendApplication {
@@ -13,8 +17,6 @@ public class KakiGoWhereBackendApplication {
     }
 
     @Bean
-    CommandLineRunner commandLineRun() {
-        return args -> {};
     CommandLineRunner commandLineRun(PlaceService placeService) {
         return args -> {
 
