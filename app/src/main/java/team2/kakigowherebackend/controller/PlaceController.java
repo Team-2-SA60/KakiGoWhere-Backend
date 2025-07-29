@@ -1,5 +1,9 @@
 package team2.kakigowherebackend.controller;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
@@ -10,11 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import team2.kakigowherebackend.model.Place;
 import team2.kakigowherebackend.service.PlaceService;
-
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -33,7 +32,8 @@ public class PlaceController {
     }
 
     @GetMapping("/places/image/{filename}")
-    public ResponseEntity<Resource> getPlaceImage(@PathVariable String filename) throws IOException {
+    public ResponseEntity<Resource> getPlaceImage(@PathVariable String filename)
+            throws IOException {
         if (filename == null || filename.isEmpty()) {
             filename = "default_image.jpg";
         }
@@ -41,10 +41,6 @@ public class PlaceController {
         Path imagePath = Paths.get("app/src/main/resources/static/" + filename);
         Resource image = new UrlResource(imagePath.toUri());
 
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(image);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(image);
     }
-
 }
