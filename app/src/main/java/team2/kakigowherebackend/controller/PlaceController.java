@@ -1,15 +1,19 @@
 package team2.kakigowherebackend.controller;
 
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import team2.kakigowherebackend.dto.PlaceDTO;
 import team2.kakigowherebackend.model.Place;
 import team2.kakigowherebackend.service.PlaceService;
-import team2.kakigowherebackend.service.converter.PlaceDTOConverter;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -17,28 +21,30 @@ import java.util.List;
 public class PlaceController {
 
     private final PlaceService placeService;
-    private final PlaceDTOConverter dtoConverter;
 
-    public PlaceController(PlaceService placeService, PlaceDTOConverter dtoConverter) {
+    public PlaceController(PlaceService placeService) {
         this.placeService = placeService;
-        this.dtoConverter = dtoConverter;
     }
 
     @GetMapping("/places")
-    public ResponseEntity<List<PlaceDTO>> getPlaces() {
+    public ResponseEntity<List<Place>> getPlaces() {
         List<Place> places = placeService.getAllPlaces();
-        List<PlaceDTO> placeDtos = new ArrayList<>();
+        return ResponseEntity.ok(places);
+    }
 
-        for (Place place : places) {
-            try {
-                placeDtos.add(dtoConverter.convertToDto(place));
-            } catch (Exception e){
-                // add error message if error
-                System.out.println(e.getMessage());
-            }
+    @GetMapping("/places/image/{filename}")
+    public ResponseEntity<Resource> getPlaceImage(@PathVariable String filename) throws IOException {
+        if (filename == null || filename.isEmpty()) {
+            filename = "default_image.jpg";
         }
 
-        return ResponseEntity.ok(placeDtos);
+        Path imagePath = Paths.get("app/src/main/resources/static/" + filename);
+        Resource image = new UrlResource(imagePath.toUri());
+
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(image);
     }
 
 }
