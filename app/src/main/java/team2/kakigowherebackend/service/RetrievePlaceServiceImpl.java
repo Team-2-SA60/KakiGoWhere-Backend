@@ -14,12 +14,14 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import reactor.core.publisher.Mono;
+import reactor.netty.http.client.HttpClient;
 
 @Service
 public class RetrievePlaceServiceImpl implements RetrievePlaceService {
@@ -33,8 +35,11 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
     private final WebClient webClient;
 
     public RetrievePlaceServiceImpl(WebClient.Builder webClientBuilder) {
+        HttpClient httpClient = HttpClient.create().followRedirect(true);
+
         this.webClient =
                 webClientBuilder
+                        .clientConnector(new ReactorClientHttpConnector(httpClient))
                         .defaultHeader(HttpHeaders.ACCEPT, "application/json")
                         .defaultHeader(HttpHeaders.USER_AGENT, "SpringBootClient/1.0")
                         .codecs(
