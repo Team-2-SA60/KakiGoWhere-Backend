@@ -1,10 +1,8 @@
 package team2.kakigowherebackend.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import reactor.core.publisher.Mono;
+import team2.kakigowherebackend.model.Place;
 
 public interface RetrievePlaceService {
     boolean updatePlaces();
@@ -13,7 +11,5 @@ public interface RetrievePlaceService {
 
     List<Map<String, String>> parseKML(String kmlContent);
 
-    Mono<JsonNode> fetchGooglePlace(String placeTitle);
-
-    String downloadImage(URI imageUri);
+    Place fetchGooglePlace(Map<String, String> place);
 }

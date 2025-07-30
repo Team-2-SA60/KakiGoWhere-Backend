@@ -23,6 +23,4 @@ public class OpeningHours {
     private int closeDay;
     private int closeHour;
     private int closeMinute;
-
-    @ManyToOne private Place place;
 }

@@ -2,14 +2,10 @@ package team2.kakigowherebackend.model;
 
 import jakarta.persistence.*;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Place {
@@ -28,7 +24,8 @@ public class Place {
     private double longitude;
     private boolean active;
 
-    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "place_id")
     private List<OpeningHours> openingHours;
 
     @ManyToMany

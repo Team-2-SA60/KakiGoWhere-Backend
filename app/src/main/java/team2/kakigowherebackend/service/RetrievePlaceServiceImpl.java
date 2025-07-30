@@ -20,8 +20,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
+import team2.kakigowherebackend.model.Place;
+import team2.kakigowherebackend.repository.PlaceRepository;
 
 @Service
 public class RetrievePlaceServiceImpl implements RetrievePlaceService {
@@ -33,12 +34,16 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
             "https://api-open.data.gov.sg/v1/public/api/datasets/" + dataset + "/poll-download";
 
     private final WebClient webClient;
+    private final PlaceRepository pRepo;
+    private final GooglePlaceService gpService;
 
-    public RetrievePlaceServiceImpl(WebClient.Builder webClientBuilder) {
+    public RetrievePlaceServiceImpl(PlaceRepository pRepo, GooglePlaceService gpService) {
+        this.pRepo = pRepo;
+        this.gpService = gpService;
+
         HttpClient httpClient = HttpClient.create().followRedirect(true);
-
         this.webClient =
-                webClientBuilder
+                WebClient.builder()
                         .clientConnector(new ReactorClientHttpConnector(httpClient))
                         .defaultHeader(HttpHeaders.ACCEPT, "application/json")
                         .defaultHeader(HttpHeaders.USER_AGENT, "SpringBootClient/1.0")
@@ -56,10 +61,47 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
         if (kmlContent.isEmpty()) return false;
 
         List<Map<String, String>> placesList = parseKML(kmlContent);
-
-        log.info(placesList.toString());
+        log.info("Places: {}", placesList);
+        //        for (Map<String, String> fetchedPlace : placesList) {
+        //            Place existingPlace = this.pRepo.findByKmlId(fetchedPlace.get("kmlId"));
+        //            if (existingPlace == null) {
+        //                return false;
+        //
+        //            }
+        //        }
 
         return true;
+        //        JsonNode googlePlace = gpService.searchPlace("Old Supreme Court Singapore")
+        //                .map(response -> response.path("places").get(0))
+        //                .block();
+        //
+        //        Place place = new Place();
+        //        place.setKmlId("kml1");
+        //        JsonNode displayNameNode = googlePlace.path("displayName").path("text");
+        //        place.setName(displayNameNode.isMissingNode() ? "" : displayNameNode.asText());
+        //
+        //        JsonNode websiteUriNode = googlePlace.path("websiteUri");
+        //        place.setURL(websiteUriNode.isMissingNode() ? "" : websiteUriNode.asText());
+        //
+        //        JsonNode openingDescNode =
+        // googlePlace.path("regularOpeningHours").path("weekdayDescriptions");
+        //        place.setOpeningDescription(openingDescNode.isMissingNode() ? "" :
+        // openingDescNode.toString());
+        //
+        //        JsonNode latNode = googlePlace.path("location").path("latitude");
+        //        place.setLatitude(latNode.isMissingNode() ? 0.0 : latNode.asDouble());
+        //
+        //        JsonNode lngNode = googlePlace.path("location").path("longitude");
+        //        place.setLongitude(lngNode.isMissingNode() ? 0.0 : lngNode.asDouble());
+        //        place.setActive(true);
+        //
+        //        String photoName = googlePlace.path("photos").get(0).path("name").asText();
+        //        String imagePath = gpService.downloadPhoto(photoName, "test");
+        //        place.setImagePath(imagePath);
+        //
+        //        pRepo.save(place);
+
+        //        return true;
     }
 
     @Override
@@ -101,7 +143,7 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
 
             NodeList placemarks = doc.getElementsByTagNameNS("*", "Placemark");
 
-            for (int i = 0; i < placemarks.getLength(); i++) {
+            for (int i = 0; i < 1; i++) {
                 Map<String, String> map = new HashMap<>();
 
                 Element placemark = (Element) placemarks.item(i);
@@ -112,7 +154,7 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
                 NodeList simpleData = placemark.getElementsByTagNameNS("*", "SimpleData");
 
                 String placeTitle = null;
-                String image_path = null;
+                String imageUri = null;
 
                 for (int j = 0; j < simpleData.getLength(); j++) {
                     Element simpleDataElement = (Element) simpleData.item(j);
@@ -120,11 +162,6 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
                     if (simpleDataElement.getAttribute("name").equals("PAGETITLE")) {
                         placeTitle = simpleDataElement.getTextContent();
                         map.put("pageTitle", placeTitle);
-                    }
-
-                    if (simpleDataElement.getAttribute("name").equals("IMAGE_PATH")) {
-                        image_path = simpleDataElement.getTextContent();
-                        map.put("imagePath", image_path);
                     }
                 }
 
@@ -138,12 +175,8 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
     }
 
     @Override
-    public Mono<JsonNode> fetchGooglePlace(String placeTitle) {
-        return null;
-    }
+    public Place fetchGooglePlace(Map<String, String> place) {
 
-    @Override
-    public String downloadImage(URI imageUri) {
-        return "";
+        return null;
     }
 }
