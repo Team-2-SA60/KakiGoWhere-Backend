@@ -1,11 +1,10 @@
 package team2.kakigowherebackend.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team2.kakigowherebackend.model.Place;
 import team2.kakigowherebackend.repository.PlaceRepository;
-
-import java.util.List;
 
 @Service
 @Transactional

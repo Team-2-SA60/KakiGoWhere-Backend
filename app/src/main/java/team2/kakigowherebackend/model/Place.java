@@ -1,29 +1,32 @@
 package team2.kakigowherebackend.model;
 
 import jakarta.persistence.*;
-import java.time.LocalTime;
 import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Place {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    private String kmlId;
     private String name;
     private String description;
     private String imagePath;
     private String URL;
-    private LocalTime openingHour;
-    private LocalTime closingHour;
+    @Lob private String openingDescription;
     private double latitude;
     private double longitude;
     private boolean active;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "place_id")
+    private List<OpeningHours> openingHours;
 
     @ManyToMany
     @JoinTable(
@@ -38,25 +41,51 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private List<ItineraryDetail> itineraryDetails;
 
-    public Place() {}
+    @OneToMany(mappedBy = "place")
+    private List<Rating> ratings;
 
-    public Place(
-            String name,
-            String description,
-            String URL,
-            LocalTime openingHour,
-            LocalTime closingHour,
-            double latitude,
-            double longitude,
-            boolean active) {
-        this.name = name;
-        this.description = description;
-        this.URL = URL;
-        this.openingHour = openingHour;
-        this.closingHour = closingHour;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.active = active;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Place place = (Place) o;
+
+        if (!kmlId.equals(place.kmlId)
+                || !name.equals(place.name)
+                || !description.equals(place.description)
+                || !URL.equals(place.URL)
+                || latitude != place.latitude
+                || longitude != place.longitude
+                || !openingDescription.equals(place.openingDescription)
+                || interestCategories.isEmpty()
+                || interestCategories.size() != place.interestCategories.size()) {
+            return false;
+        }
+
+        for (int i = 0; i < interestCategories.size(); i++) {
+            if (!interestCategories.get(i).equals(place.interestCategories.get(i))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
+    @Override
+    public int hashCode() {
+        int result = kmlId.hashCode();
+        result = 31 * result + name.hashCode();
+        result = 31 * result + description.hashCode();
+        result = 31 * result + URL.hashCode();
+        result = 31 * result + Double.hashCode(latitude);
+        result = 31 * result + Double.hashCode(longitude);
+        result = 31 * result + openingDescription.hashCode();
+
+        for (InterestCategory ic : interestCategories) {
+            result = 31 * result + ic.hashCode();
+        }
+
+        return result;
+    }
 }

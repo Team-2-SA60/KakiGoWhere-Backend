@@ -1,10 +1,10 @@
 package team2.kakigowherebackend.service;
 
+import java.util.List;
 import team2.kakigowherebackend.model.Place;
 
-import java.util.List;
-
 public interface PlaceService {
-   void savePlace(Place place);
-   List<Place> getAllPlaces();
+    void savePlace(Place place);
+
+    List<Place> getAllPlaces();
 }
