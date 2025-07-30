@@ -8,6 +8,7 @@ public class TextEncoding {
                 .replace("â€œ", "“")
                 .replace("â€�", "”")
                 .replace("â€˜", "‘")
-                .replace("â€¢", "•");
+                .replace("â€¢", "•")
+                .replace("&amp;", "&");
     }
 }

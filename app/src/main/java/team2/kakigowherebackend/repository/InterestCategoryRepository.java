@@ -9,6 +9,6 @@ import team2.kakigowherebackend.model.InterestCategory;
 @Repository
 public interface InterestCategoryRepository extends JpaRepository<InterestCategory, Long> {
 
-    @Query("SELECT i " + "FROM InterestCategory i " + "WHERE i.name = :name")
+    @Query("SELECT i FROM InterestCategory i WHERE i.name = :name")
     InterestCategory findByName(@Param("name") String name);
 }

@@ -34,10 +34,12 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
     private static final String KMLID = "KMLID";
     private static final String PAGETITLE = "PAGETITLE";
     private static final String OVERVIEW = "OVERVIEW";
+    private static final String LATITUDE = "LATITUDE";
+    private static final String LONGITUDE = "LONGTITUDE";
 
-    private static final String dataset = "d_15a8ecc14700107f2b5696335a697b9c";
-    private static final String uri =
-            "https://api-open.data.gov.sg/v1/public/api/datasets/" + dataset + "/poll-download";
+    private static final String DATASET = "d_15a8ecc14700107f2b5696335a697b9c";
+    private static final String URL =
+            "https://api-open.data.gov.sg/v1/public/api/datasets/" + DATASET + "/poll-download";
 
     private final WebClient webClient;
     private final PlaceRepository pRepo;
@@ -81,16 +83,18 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
                 newPlace.setKmlId(fetchedPlace.get(KMLID));
                 newPlace.setDescription(fetchedPlace.get(OVERVIEW));
 
+                String pageTitle = fetchedPlace.get(PAGETITLE);
+                Double latitude = Double.parseDouble(fetchedPlace.get(LATITUDE));
+                Double longitude = Double.parseDouble(fetchedPlace.get(LONGITUDE));
+
                 JsonNode googlePlace =
                         gpService
-                                .searchPlace(fetchedPlace.get(PAGETITLE))
+                                .searchPlace(pageTitle, latitude, longitude)
                                 .map(response -> response.path("places").get(0))
                                 .block();
 
                 if (googlePlace == null) {
-                    log.info(
-                            "Failed to retrieve from Google place for: {}",
-                            fetchedPlace.get(PAGETITLE));
+                    log.info("Failed to retrieve from Google place for: {}", pageTitle);
                     continue;
                 }
 
@@ -110,8 +114,7 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
                 JsonNode photosNode = googlePlace.path("photos");
                 if (!photosNode.isMissingNode()) {
                     String photoName = photosNode.get(0).path("name").asText();
-                    String imageName =
-                            newPlace.getKmlId() + "_" + newPlace.getName().replaceAll(" ", "");
+                    String imageName = newPlace.getKmlId();
                     String imagePath = gpService.downloadPhoto(photoName, imageName);
                     newPlace.setImagePath(imagePath);
                 }
@@ -121,11 +124,9 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
             } catch (Exception e) {
                 log.info(
                         "Failed to update place for: {}",
-                        fetchedPlace.get(PAGETITLE) + "\n" + e.getMessage());
+                        fetchedPlace.get(PAGETITLE) + "\n" + Arrays.toString(e.getStackTrace()));
             }
         }
-
-        return;
     }
 
     @Override
@@ -133,7 +134,7 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
         URI kmlUri =
                 webClient
                         .get()
-                        .uri(uri)
+                        .uri(URL)
                         .retrieve()
                         .bodyToMono(JsonNode.class)
                         .map(
@@ -177,20 +178,26 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
 
                 NodeList simpleData = placemark.getElementsByTagNameNS("*", "SimpleData");
 
-                String placeTitle = null;
-                String description = null;
-
                 for (int j = 0; j < simpleData.getLength(); j++) {
                     Element simpleDataElement = (Element) simpleData.item(j);
 
                     if (simpleDataElement.getAttribute("name").equals(PAGETITLE)) {
-                        placeTitle = simpleDataElement.getTextContent();
+                        String placeTitle = simpleDataElement.getTextContent();
+                        placeTitle = TextEncoding.fixEncoding(placeTitle);
                         map.put(PAGETITLE, placeTitle);
                     }
                     if (simpleDataElement.getAttribute("name").equals(OVERVIEW)) {
-                        description = simpleDataElement.getTextContent();
+                        String description = simpleDataElement.getTextContent();
                         description = TextEncoding.fixEncoding(description);
                         map.put(OVERVIEW, description);
+                    }
+                    if (simpleDataElement.getAttribute("name").equals(LATITUDE)) {
+                        String latitude = simpleDataElement.getTextContent();
+                        map.put(LATITUDE, latitude);
+                    }
+                    if (simpleDataElement.getAttribute("name").equals(LONGITUDE)) {
+                        String longitude = simpleDataElement.getTextContent();
+                        map.put(LONGITUDE, longitude);
                     }
                 }
                 result.add(map);

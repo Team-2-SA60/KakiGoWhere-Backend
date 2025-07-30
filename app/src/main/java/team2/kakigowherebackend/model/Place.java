@@ -71,4 +71,21 @@ public class Place {
 
         return true;
     }
+
+    @Override
+    public int hashCode() {
+        int result = kmlId.hashCode();
+        result = 31 * result + name.hashCode();
+        result = 31 * result + description.hashCode();
+        result = 31 * result + URL.hashCode();
+        result = 31 * result + Double.hashCode(latitude);
+        result = 31 * result + Double.hashCode(longitude);
+        result = 31 * result + openingDescription.hashCode();
+
+        for (InterestCategory ic : interestCategories) {
+            result = 31 * result + ic.hashCode();
+        }
+
+        return result;
+    }
 }
