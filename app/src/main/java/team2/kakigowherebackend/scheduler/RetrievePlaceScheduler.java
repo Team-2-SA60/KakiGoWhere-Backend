@@ -16,6 +16,6 @@ public class RetrievePlaceScheduler {
 
     @Scheduled(fixedRate = 200000)
     public void retrievePlaces() {
-        rpService.updatePlaces();
+        rpService.retrievePlaces();
     }
 }

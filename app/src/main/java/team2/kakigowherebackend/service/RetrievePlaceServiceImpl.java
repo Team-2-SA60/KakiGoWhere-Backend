@@ -21,13 +21,19 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import reactor.netty.http.client.HttpClient;
+import team2.kakigowherebackend.model.OpeningHours;
 import team2.kakigowherebackend.model.Place;
 import team2.kakigowherebackend.repository.PlaceRepository;
+import team2.kakigowherebackend.utils.TextEncoding;
 
 @Service
 public class RetrievePlaceServiceImpl implements RetrievePlaceService {
 
     private static final Logger log = LoggerFactory.getLogger(RetrievePlaceServiceImpl.class);
+
+    private static final String KMLID = "KMLID";
+    private static final String PAGETITLE = "PAGETITLE";
+    private static final String OVERVIEW = "OVERVIEW";
 
     private static final String dataset = "d_15a8ecc14700107f2b5696335a697b9c";
     private static final String uri =
@@ -45,7 +51,7 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
         this.webClient =
                 WebClient.builder()
                         .clientConnector(new ReactorClientHttpConnector(httpClient))
-                        .defaultHeader(HttpHeaders.ACCEPT, "application/json")
+                        .defaultHeader(HttpHeaders.ACCEPT, "application/json; charset=ISO-8859-1")
                         .defaultHeader(HttpHeaders.USER_AGENT, "SpringBootClient/1.0")
                         .codecs(
                                 configurer ->
@@ -56,52 +62,38 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
     }
 
     @Override
-    public boolean updatePlaces() {
+    public boolean retrievePlaces() {
         String kmlContent = fetchPlacesKml();
         if (kmlContent.isEmpty()) return false;
 
         List<Map<String, String>> placesList = parseKML(kmlContent);
-        log.info("Places: {}", placesList);
-        //        for (Map<String, String> fetchedPlace : placesList) {
-        //            Place existingPlace = this.pRepo.findByKmlId(fetchedPlace.get("kmlId"));
-        //            if (existingPlace == null) {
-        //                return false;
-        //
-        //            }
-        //        }
+
+        for (Map<String, String> fetchedPlace : placesList) {
+            Place newPlace = new Place();
+
+            JsonNode googlePlace =
+                    gpService
+                            .searchPlace(fetchedPlace.get(PAGETITLE))
+                            .map(response -> response.path("places").get(0))
+                            .block();
+
+            if (googlePlace == null) {
+                log.info(
+                        "Failed to retrieve from Google place for: {}",
+                        fetchedPlace.get(PAGETITLE));
+                continue;
+            }
+
+            mapGooglePlace(newPlace, googlePlace);
+
+            String photoName = googlePlace.path("photos").get(0).path("name").asText();
+            String imagePath = gpService.downloadPhoto(photoName, newPlace.getName().strip());
+            newPlace.setImagePath(imagePath);
+
+            pRepo.save(newPlace);
+        }
 
         return true;
-        //        JsonNode googlePlace = gpService.searchPlace("Old Supreme Court Singapore")
-        //                .map(response -> response.path("places").get(0))
-        //                .block();
-        //
-        //        Place place = new Place();
-        //        place.setKmlId("kml1");
-        //        JsonNode displayNameNode = googlePlace.path("displayName").path("text");
-        //        place.setName(displayNameNode.isMissingNode() ? "" : displayNameNode.asText());
-        //
-        //        JsonNode websiteUriNode = googlePlace.path("websiteUri");
-        //        place.setURL(websiteUriNode.isMissingNode() ? "" : websiteUriNode.asText());
-        //
-        //        JsonNode openingDescNode =
-        // googlePlace.path("regularOpeningHours").path("weekdayDescriptions");
-        //        place.setOpeningDescription(openingDescNode.isMissingNode() ? "" :
-        // openingDescNode.toString());
-        //
-        //        JsonNode latNode = googlePlace.path("location").path("latitude");
-        //        place.setLatitude(latNode.isMissingNode() ? 0.0 : latNode.asDouble());
-        //
-        //        JsonNode lngNode = googlePlace.path("location").path("longitude");
-        //        place.setLongitude(lngNode.isMissingNode() ? 0.0 : lngNode.asDouble());
-        //        place.setActive(true);
-        //
-        //        String photoName = googlePlace.path("photos").get(0).path("name").asText();
-        //        String imagePath = gpService.downloadPhoto(photoName, "test");
-        //        place.setImagePath(imagePath);
-        //
-        //        pRepo.save(place);
-
-        //        return true;
     }
 
     @Override
@@ -143,28 +135,32 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
 
             NodeList placemarks = doc.getElementsByTagNameNS("*", "Placemark");
 
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < 3; i++) {
                 Map<String, String> map = new HashMap<>();
 
                 Element placemark = (Element) placemarks.item(i);
                 String placemarkId =
                         placemark.getElementsByTagName("name").item(0).getTextContent();
-                map.put("kmlId", placemarkId);
+                map.put(KMLID, placemarkId);
 
                 NodeList simpleData = placemark.getElementsByTagNameNS("*", "SimpleData");
 
                 String placeTitle = null;
-                String imageUri = null;
+                String description = null;
 
                 for (int j = 0; j < simpleData.getLength(); j++) {
                     Element simpleDataElement = (Element) simpleData.item(j);
 
-                    if (simpleDataElement.getAttribute("name").equals("PAGETITLE")) {
+                    if (simpleDataElement.getAttribute("name").equals(PAGETITLE)) {
                         placeTitle = simpleDataElement.getTextContent();
-                        map.put("pageTitle", placeTitle);
+                        map.put(PAGETITLE, placeTitle);
+                    }
+                    if (simpleDataElement.getAttribute("name").equals(OVERVIEW)) {
+                        description = simpleDataElement.getTextContent();
+                        description = TextEncoding.fixEncoding(description);
+                        map.put(OVERVIEW, description);
                     }
                 }
-
                 result.add(map);
             }
         } catch (Exception e) {
@@ -175,8 +171,60 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
     }
 
     @Override
-    public Place fetchGooglePlace(Map<String, String> place) {
+    public void mapGooglePlace(Place place, JsonNode googlePlace) {
 
-        return null;
+        JsonNode displayNameNode = googlePlace.path("displayName").path("text");
+        place.setName(displayNameNode.isMissingNode() ? "" : displayNameNode.asText());
+
+        JsonNode websiteUriNode = googlePlace.path("websiteUri");
+        place.setURL(websiteUriNode.isMissingNode() ? "" : websiteUriNode.asText());
+
+        JsonNode openingDescNode =
+                googlePlace.path("regularOpeningHours").path("weekdayDescriptions");
+        place.setOpeningDescription(
+                openingDescNode.isMissingNode() ? "" : openingDescNode.toString());
+
+        JsonNode latNode = googlePlace.path("location").path("latitude");
+        place.setLatitude(latNode.isMissingNode() ? 0.0 : latNode.asDouble());
+
+        JsonNode lngNode = googlePlace.path("location").path("longitude");
+        place.setLongitude(lngNode.isMissingNode() ? 0.0 : lngNode.asDouble());
+        place.setActive(true);
+
+        JsonNode periodsNode = googlePlace.path("regularOpeningHours").path("periods");
+        List<OpeningHours> openingHours = new ArrayList<>();
+        if (periodsNode.isArray()) {
+            for (JsonNode period : periodsNode) {
+                OpeningHours oh = new OpeningHours();
+
+                JsonNode openDay = period.path("open").path("day");
+                JsonNode openHour = period.path("open").path("hour");
+                JsonNode openMinute = period.path("open").path("minute");
+                JsonNode closeDay = period.path("close").path("day");
+                JsonNode closeHour = period.path("close").path("hour");
+                JsonNode closeMinute = period.path("close").path("minute");
+
+                if (!openDay.isMissingNode()) {
+                    oh.setOpenDay(openDay.asInt());
+                }
+                if (!openHour.isMissingNode()) {
+                    oh.setOpenHour(openHour.asInt());
+                }
+                if (!openMinute.isMissingNode()) {
+                    oh.setOpenMinute(openMinute.asInt());
+                }
+                if (!closeDay.isMissingNode()) {
+                    oh.setCloseDay(closeDay.asInt());
+                }
+                if (!closeHour.isMissingNode()) {
+                    oh.setCloseHour(closeHour.asInt());
+                }
+                if (!closeMinute.isMissingNode()) {
+                    oh.setCloseMinute(closeMinute.asInt());
+                }
+                openingHours.add(oh);
+            }
+        }
+        place.setOpeningHours(openingHours);
     }
 }

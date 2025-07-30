@@ -19,7 +19,7 @@ public class Place {
     private String description;
     private String imagePath;
     private String URL;
-    private String openingDescription;
+    @Lob private String openingDescription;
     private double latitude;
     private double longitude;
     private boolean active;
