@@ -13,4 +13,6 @@ public interface RetrievePlaceService {
     List<Map<String, String>> parseKML(String kmlContent);
 
     void mapGooglePlace(Place place, JsonNode googlePlace);
+
+    void checkAndAddInterestCategories(Place place, JsonNode googlePlace);
 }

@@ -40,4 +40,32 @@ public class Place {
 
     @OneToMany(mappedBy = "place")
     private List<ItineraryDetail> itineraryDetails;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Place place = (Place) o;
+
+        if (!kmlId.equals(place.kmlId)
+                || !name.equals(place.name)
+                || !description.equals(place.description)
+                || !URL.equals(place.URL)
+                || latitude != place.latitude
+                || longitude != place.longitude
+                || !openingDescription.equals(place.openingDescription)
+                || interestCategories.isEmpty()
+                || interestCategories.size() != place.interestCategories.size()) {
+            return false;
+        }
+
+        for (int i = 0; i < interestCategories.size(); i++) {
+            if (!interestCategories.get(i).equals(place.interestCategories.get(i))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

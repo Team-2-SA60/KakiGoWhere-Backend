@@ -9,6 +9,6 @@ import team2.kakigowherebackend.model.Place;
 @Repository
 public interface PlaceRepository extends JpaRepository<Place, Long> {
 
-    @Query("SELECT p " + "FROM Place p " + "WHERE p.kmlId = :kmlId")
+    @Query("SELECT p FROM Place p LEFT JOIN FETCH p.interestCategories WHERE p.kmlId = :kmlId")
     Place findByKmlId(@Param("kmlId") String kmlId);
 }

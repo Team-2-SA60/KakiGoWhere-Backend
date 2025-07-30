@@ -5,10 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.slf4j.Logger;
@@ -16,13 +13,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import reactor.netty.http.client.HttpClient;
+import team2.kakigowherebackend.model.InterestCategory;
 import team2.kakigowherebackend.model.OpeningHours;
 import team2.kakigowherebackend.model.Place;
+import team2.kakigowherebackend.repository.InterestCategoryRepository;
 import team2.kakigowherebackend.repository.PlaceRepository;
 import team2.kakigowherebackend.utils.TextEncoding;
 
@@ -41,10 +41,15 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
 
     private final WebClient webClient;
     private final PlaceRepository pRepo;
+    private final InterestCategoryRepository icRepo;
     private final GooglePlaceService gpService;
 
-    public RetrievePlaceServiceImpl(PlaceRepository pRepo, GooglePlaceService gpService) {
+    public RetrievePlaceServiceImpl(
+            PlaceRepository pRepo,
+            InterestCategoryRepository icRepo,
+            GooglePlaceService gpService) {
         this.pRepo = pRepo;
+        this.icRepo = icRepo;
         this.gpService = gpService;
 
         HttpClient httpClient = HttpClient.create().followRedirect(true);
@@ -69,28 +74,53 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
         List<Map<String, String>> placesList = parseKML(kmlContent);
 
         for (Map<String, String> fetchedPlace : placesList) {
-            Place newPlace = new Place();
+            try {
+                Place newPlace = new Place();
+                newPlace.setKmlId(fetchedPlace.get(KMLID));
+                newPlace.setDescription(fetchedPlace.get(OVERVIEW));
 
-            JsonNode googlePlace =
-                    gpService
-                            .searchPlace(fetchedPlace.get(PAGETITLE))
-                            .map(response -> response.path("places").get(0))
-                            .block();
+                JsonNode googlePlace =
+                        gpService
+                                .searchPlace(fetchedPlace.get(PAGETITLE))
+                                .map(response -> response.path("places").get(0))
+                                .block();
 
-            if (googlePlace == null) {
+                if (googlePlace == null) {
+                    log.info(
+                            "Failed to retrieve from Google place for: {}",
+                            fetchedPlace.get(PAGETITLE));
+                    continue;
+                }
+
+                mapGooglePlace(newPlace, googlePlace);
+                checkAndAddInterestCategories(newPlace, googlePlace);
+
+                Place existingPlace = pRepo.findByKmlId(fetchedPlace.get(KMLID));
+                if (existingPlace != null) {
+                    if (newPlace.equals(existingPlace)) {
+                        log.info("Not updated as it already exists for: {}", newPlace.getName());
+                        continue;
+                    } else {
+                        newPlace.setId(existingPlace.getId());
+                    }
+                }
+
+                JsonNode photosNode = googlePlace.path("photos");
+                if (!photosNode.isMissingNode()) {
+                    String photoName = photosNode.get(0).path("name").asText();
+                    String imagePath =
+                            gpService.downloadPhoto(
+                                    photoName, newPlace.getName().replaceAll(" ", ""));
+                    newPlace.setImagePath(imagePath);
+                }
+
+                pRepo.save(newPlace);
+                log.info("Updated place for: {}", newPlace.getName());
+            } catch (Exception e) {
                 log.info(
-                        "Failed to retrieve from Google place for: {}",
-                        fetchedPlace.get(PAGETITLE));
-                continue;
+                        "Failed to update place for: {}",
+                        fetchedPlace.get(PAGETITLE) + "\n" + e.getMessage());
             }
-
-            mapGooglePlace(newPlace, googlePlace);
-
-            String photoName = googlePlace.path("photos").get(0).path("name").asText();
-            String imagePath = gpService.downloadPhoto(photoName, newPlace.getName().strip());
-            newPlace.setImagePath(imagePath);
-
-            pRepo.save(newPlace);
         }
 
         return true;
@@ -135,7 +165,7 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
 
             NodeList placemarks = doc.getElementsByTagNameNS("*", "Placemark");
 
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < placemarks.getLength(); i++) {
                 Map<String, String> map = new HashMap<>();
 
                 Element placemark = (Element) placemarks.item(i);
@@ -181,8 +211,13 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
 
         JsonNode openingDescNode =
                 googlePlace.path("regularOpeningHours").path("weekdayDescriptions");
-        place.setOpeningDescription(
-                openingDescNode.isMissingNode() ? "" : openingDescNode.toString());
+        StringBuilder openingDesc = new StringBuilder();
+        if (openingDescNode.isArray()) {
+            for (JsonNode desc : openingDescNode) {
+                openingDesc.append(desc.asText()).append("\n");
+            }
+        }
+        place.setOpeningDescription(openingDesc.toString());
 
         JsonNode latNode = googlePlace.path("location").path("latitude");
         place.setLatitude(latNode.isMissingNode() ? 0.0 : latNode.asDouble());
@@ -226,5 +261,35 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
             }
         }
         place.setOpeningHours(openingHours);
+    }
+
+    @Override
+    public void checkAndAddInterestCategories(Place place, JsonNode googlePlace) {
+        String[] excludedCategories = {
+            "point_of_interest", "tourist_attraction", "establishment", "event_venue"
+        };
+
+        JsonNode typesNode = googlePlace.path("types");
+        List<InterestCategory> interestCategories = new ArrayList<>();
+        if (typesNode.isArray()) {
+            for (JsonNode type : typesNode) {
+                String category = type.asText();
+
+                boolean isExcluded = Arrays.asList(excludedCategories).contains(category);
+                if (isExcluded) continue;
+
+                InterestCategory interestCategory = icRepo.findByName(category);
+                if (interestCategory == null) {
+                    interestCategory = new InterestCategory();
+                    String description = StringUtils.capitalize(category.replaceAll("_", " "));
+                    interestCategory.setName(category);
+                    interestCategory.setDescription(description);
+                    icRepo.save(interestCategory);
+                }
+
+                interestCategories.add(interestCategory);
+            }
+        }
+        place.setInterestCategories(interestCategories);
     }
 }

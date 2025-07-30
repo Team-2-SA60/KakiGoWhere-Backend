@@ -16,7 +16,15 @@ public class GooglePlaceServiceImpl implements GooglePlaceService {
     public GooglePlaceServiceImpl(
             @Value("${google.places.api.key}") String apiKey, ImageServiceImpl iService) {
         this.iService = iService;
-        this.webClient = WebClient.builder().defaultHeader("X-Goog-Api-Key", apiKey).build();
+        this.webClient =
+                WebClient.builder()
+                        .defaultHeader("X-Goog-Api-Key", apiKey)
+                        .codecs(
+                                configurer ->
+                                        configurer
+                                                .defaultCodecs()
+                                                .maxInMemorySize(10 * 1024 * 1024))
+                        .build();
     }
 
     @Override
