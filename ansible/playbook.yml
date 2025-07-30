@@ -59,7 +59,6 @@
                 MYSQL_USER: {{ db_user }}
                 MYSQL_PASSWORD: {{ db_pass }}
                 MYSQL_ROOT_PASSWORD: {{ db_root_pass }}
-                GOOGLE_PLACES_API_KEY: {{ google_places_api_key }}
               volumes:
                 - db_data:/var/lib/mysql
               ports:

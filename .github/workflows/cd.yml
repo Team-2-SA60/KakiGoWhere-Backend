@@ -103,4 +103,5 @@ jobs:
             --extra-vars "db_user=${{ secrets.MYSQL_USER }} \
                           db_pass=${{ secrets.MYSQL_PASSWORD }} \
                           db_root_pass=${{ secrets.MYSQL_ROOT_PASSWORD }} \
-                          docker_image=${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}"
+                          docker_image=${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }} \
+                          google_places_api_key=${{ secrets.GOOGLE_PLACES_API_KEY }}"

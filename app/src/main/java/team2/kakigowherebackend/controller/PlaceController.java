@@ -48,7 +48,7 @@ public class PlaceController {
 
     @GetMapping("/retrieveplaces")
     public ResponseEntity<String> retrievePlaces(@RequestParam("run") String run) {
-        if (run == null || run.isEmpty()) {
+        if (run == null || !run.equals("team2")) {
             return ResponseEntity.ok("Not ran");
         }
 
