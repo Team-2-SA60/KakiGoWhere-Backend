@@ -6,7 +6,7 @@ import java.util.Map;
 import team2.kakigowherebackend.model.Place;
 
 public interface RetrievePlaceService {
-    boolean retrievePlaces();
+    void retrievePlaces();
 
     String fetchPlacesKml();
 

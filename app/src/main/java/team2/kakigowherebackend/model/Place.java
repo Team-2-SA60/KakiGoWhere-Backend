@@ -41,6 +41,9 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private List<ItineraryDetail> itineraryDetails;
 
+    @OneToMany(mappedBy = "place")
+    private List<Rating> ratings;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

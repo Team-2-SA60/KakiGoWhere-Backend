@@ -67,9 +67,11 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
     }
 
     @Override
-    public boolean retrievePlaces() {
+    public void retrievePlaces() {
+        log.info("Retrieving places...");
+
         String kmlContent = fetchPlacesKml();
-        if (kmlContent.isEmpty()) return false;
+        if (kmlContent.isEmpty()) return;
 
         List<Map<String, String>> placesList = parseKML(kmlContent);
 
@@ -108,9 +110,9 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
                 JsonNode photosNode = googlePlace.path("photos");
                 if (!photosNode.isMissingNode()) {
                     String photoName = photosNode.get(0).path("name").asText();
-                    String imagePath =
-                            gpService.downloadPhoto(
-                                    photoName, newPlace.getName().replaceAll(" ", ""));
+                    String imageName =
+                            newPlace.getKmlId() + "_" + newPlace.getName().replaceAll(" ", "");
+                    String imagePath = gpService.downloadPhoto(photoName, imageName);
                     newPlace.setImagePath(imagePath);
                 }
 
@@ -123,7 +125,7 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
             }
         }
 
-        return true;
+        return;
     }
 
     @Override

@@ -14,7 +14,7 @@ public class RetrievePlaceScheduler {
         this.rpService = rpService;
     }
 
-    @Scheduled(fixedRate = 200000)
+    @Scheduled(cron = "0 0 0 ? * 6#3")
     public void retrievePlaces() {
         rpService.retrievePlaces();
     }

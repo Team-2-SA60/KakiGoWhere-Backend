@@ -35,7 +35,7 @@ public class ImageServiceImpl implements ImageService {
             Path filePath = dirPath.resolve(fileName + ".jpg");
             Files.write(filePath, imageBytes);
 
-            return filePath.toString();
+            return filePath.toString().replace("./", "");
 
         } catch (IOException e) {
             throw new RuntimeException("Failed to write image", e);
