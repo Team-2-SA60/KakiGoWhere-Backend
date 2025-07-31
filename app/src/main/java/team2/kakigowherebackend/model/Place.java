@@ -65,6 +65,11 @@ public class Place {
                         : new ArrayList<>();
     }
 
+    public Double getAverageRating() {
+        if (ratings == null || ratings.isEmpty()) return null;
+        return ratings.stream().mapToDouble(Rating::getRating).average().orElse(Double.NaN);
+    }
+
     // To compare a Place to another Place, for scheduler to determine if need to save an updated
     // Place
     @Override
