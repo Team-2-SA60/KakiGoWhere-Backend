@@ -3,6 +3,7 @@ package team2.kakigowherebackend.model;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.*;
 
 @Entity
@@ -53,27 +54,14 @@ public class Place {
         this.googleId = otherPlace.getGoogleId();
         this.name = otherPlace.getName();
         this.description = otherPlace.getDescription();
-        this.imagePath = otherPlace.getImagePath();
         this.URL = otherPlace.getURL();
         this.openingDescription = otherPlace.getOpeningDescription();
         this.latitude = otherPlace.getLatitude();
         this.longitude = otherPlace.getLongitude();
         this.active = otherPlace.isActive();
-        this.ratings =
-                otherPlace.getRatings() != null
-                        ? new ArrayList<>(otherPlace.getRatings())
-                        : new ArrayList<>();
         this.interestCategories =
                 otherPlace.getInterestCategories() != null
                         ? new ArrayList<>(otherPlace.getInterestCategories())
-                        : new ArrayList<>();
-        this.placeEvents =
-                otherPlace.getPlaceEvents() != null
-                        ? new ArrayList<>(otherPlace.getPlaceEvents())
-                        : new ArrayList<>();
-        this.openingHours =
-                otherPlace.getOpeningHours() != null
-                        ? new ArrayList<>(otherPlace.getOpeningHours())
                         : new ArrayList<>();
     }
 
@@ -86,20 +74,18 @@ public class Place {
 
         Place place = (Place) o;
 
-        if (!name.equals(place.name)
-                || !URL.equals(place.URL)
+        if (!Objects.equals(name, place.name)
+                || !Objects.equals(URL, place.URL)
                 || latitude != place.latitude
                 || longitude != place.longitude
-                || !openingDescription.equals(place.openingDescription)
-                || interestCategories.isEmpty()
-                || interestCategories.size() != place.interestCategories.size()) {
+                || active != place.active
+                || !Objects.equals(openingDescription, place.openingDescription)) {
             return false;
         }
 
-        for (int i = 0; i < interestCategories.size(); i++) {
-            if (!interestCategories.get(i).equals(place.interestCategories.get(i))) {
-                return false;
-            }
+        if (interestCategories.size() != place.interestCategories.size()) return false;
+        for (InterestCategory cat : interestCategories) {
+            if (!place.interestCategories.contains(cat)) return false;
         }
 
         return true;
@@ -107,16 +93,7 @@ public class Place {
 
     @Override
     public int hashCode() {
-        int result = name.hashCode();
-        result = 31 * result + URL.hashCode();
-        result = 31 * result + Double.hashCode(latitude);
-        result = 31 * result + Double.hashCode(longitude);
-        result = 31 * result + openingDescription.hashCode();
-
-        for (InterestCategory ic : interestCategories) {
-            result = 31 * result + ic.hashCode();
-        }
-
-        return result;
+        return Objects.hash(
+                id, name, URL, latitude, longitude, openingDescription, interestCategories, active);
     }
 }

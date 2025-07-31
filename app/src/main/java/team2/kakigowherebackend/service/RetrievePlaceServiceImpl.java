@@ -38,7 +38,7 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
 
     // Retrieve all Places in our database and attempts to update each of them using Google Places
     // API
-    @Transactional
+    @Transactional(dontRollbackOn = Exception.class)
     @Override
     public void retrievePlaces() {
         log.info("Retrieving and updating places...");
@@ -46,37 +46,43 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
         List<Place> places = pRepo.findAll();
 
         for (int i = 0; i < places.size(); i++) {
-            Place p = places.get(i);
+            try {
+                Place p = places.get(i);
 
-            // Copying original place, so that we can compare if there's any changes at the end
-            // before downloading image and saving
-            Place updatedPlace = new Place(p);
+                // Copying original place, so that we can compare if there's any changes at the end
+                // before downloading image and saving
+                Place updatedPlace = new Place(p);
 
-            String name = p.getName();
-            String googleId = p.getGoogleId();
+                String name = p.getName();
+                String googleId = p.getGoogleId();
 
-            // Fetch Place Detail from Google Places API
-            JsonNode placeNode = gpService.searchPlace(googleId).block();
+                // Fetch Place Detail from Google Places API
+                JsonNode placeNode = gpService.searchPlace(googleId).block();
 
-            if (placeNode == null) {
-                log.info("Failed to retrieve from Google place for: {}", name);
-                continue;
-            }
+                if (placeNode == null) {
+                    log.info("Failed to retrieve from Google place for: {}", name);
+                    continue;
+                }
 
-            // Extracts information from Place Detail and maps it accordingly to updatedPlace
-            // attributes
-            mapGooglePlace(updatedPlace, placeNode);
-            addOpeningHours(updatedPlace, placeNode);
-            checkAndAddInterestCategories(updatedPlace, placeNode);
+                // Extracts information from Place Detail and maps it accordingly to updatedPlace
+                // attributes
+                mapGooglePlace(updatedPlace, placeNode);
+                addOpeningHours(updatedPlace, placeNode);
+                checkAndAddInterestCategories(updatedPlace, placeNode);
 
-            if (p.getRatings().isEmpty()) checkAndAddRatings(updatedPlace, placeNode);
+                if (p.getRatings().isEmpty()) checkAndAddRatings(updatedPlace, placeNode);
 
-            // If updatedPlace is different from original Place, commit to download image and save
-            // the updatedPlace
-            if (!updatedPlace.equals(p)) {
-                downloadImages(updatedPlace, placeNode);
-                pRepo.save(updatedPlace);
-                log.info("Updated place for: {}", name);
+                // If updatedPlace is different from original Place, commit to download image and
+                // save
+                // the updatedPlace
+                if (!updatedPlace.equals(p)) {
+                    downloadImages(updatedPlace, placeNode);
+                    pRepo.save(updatedPlace);
+                    log.info("Updated place for: {}", name);
+                }
+            } catch (Exception e) {
+                log.info("Failed to update place for: {}", places.get(i).getName());
+                log.error(Arrays.toString(e.getStackTrace()));
             }
         }
         log.info("Retrieved and updated places");
