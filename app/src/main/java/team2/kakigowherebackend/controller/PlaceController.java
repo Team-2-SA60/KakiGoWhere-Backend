@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import team2.kakigowherebackend.model.Place;
+import team2.kakigowherebackend.dto.PlaceDTO;
 import team2.kakigowherebackend.service.PlaceService;
 import team2.kakigowherebackend.service.RetrievePlaceService;
 import team2.kakigowherebackend.service.RetrievePlaceServiceImpl;
@@ -31,6 +32,12 @@ public class PlaceController {
     public ResponseEntity<List<Place>> getPlaces() {
         List<Place> places = placeService.getAllPlaces();
         return ResponseEntity.ok(places);
+    }
+
+    @GetMapping("/placedtos")
+    public ResponseEntity<List<PlaceDTO>> getPlaceDTOs() {
+        List<PlaceDTO> dtos = placeService.getAllPlaceDTOs();
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/places/image/{filename}")
