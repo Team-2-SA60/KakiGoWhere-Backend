@@ -1,0 +1,147 @@
+package team2.kakigowherebackend.config;
+
+import java.util.ArrayList;
+import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+import team2.kakigowherebackend.model.Place;
+import team2.kakigowherebackend.repository.PlaceRepository;
+
+@Slf4j
+@Component
+public class DataInitializer implements CommandLineRunner {
+
+    private final PlaceRepository pRepo;
+
+    public DataInitializer(PlaceRepository pRepo) {
+        this.pRepo = pRepo;
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        Place checkPlace = pRepo.findById(1L).orElse(null);
+        if (checkPlace != null) return;
+        log.info("Initializing places...");
+
+        List<Place> places = new ArrayList<>();
+        places.add(new Place("National Gallery Singapore", "ChIJFQzeR6cZ2jERgM6--iWeY-U"));
+        places.add(new Place("Sultan Mosque", "ChIJb6xq2bAZ2jERE1P6sVKtofw"));
+        places.add(new Place("Sri Mariamman Temple", "ChIJ0yjU0QwZ2jER6gg0ImuCTRU"));
+        places.add(
+                new Place(
+                        "Armenian Apostolic Church of St. Gregory the Illuminator",
+                        "ChIJqc0-Q6EZ2jERbzBEE3qq6p0"));
+        places.add(new Place("CHIJMES", "ChIJNfw8b6QZ2jEREbGYft7-Q4A"));
+        places.add(new Place("St Andrew's Cathedral", "ChIJ_xBP6qYZ2jERrO-IiImXiGw"));
+        places.add(new Place("Kreta Ayer Square", "ChIJycZu3HIZ2jER5Miq4PYPupY"));
+        places.add(new Place("Albert Mall Walking Street", "ChIJg766UwAZ2jERcygIqfA86eI"));
+        places.add(new Place("Chinatown Food Street", "ChIJY4OYJXMZ2jERq9aW_MKjwAc"));
+        places.add(new Place("Chinatown Heritage Centre", "ChIJ3eg6SXMZ2jERCxutt4adUyY"));
+        places.add(new Place("Thian Hock Keng Temple", "ChIJ9e68CQ0Z2jER4G80iFVcJgo"));
+        places.add(new Place("Eurasian Heritage Gallery", "ChIJCxTorhMY2jERNG9vFuhEdQE"));
+        places.add(new Place("Capitol Building", "ChIJc1XmpqYZ2jERPY-Bsk7YDQI"));
+        places.add(
+                new Place(
+                        "Esplanade - Theatres on the Bay, Singapore",
+                        "ChIJSeUa7KcZ2jERNVg2CvmlVbk"));
+        places.add(new Place("Gardens by the Bay", "ChIJMxZ-kwQZ2jERdsqftXeWCWI"));
+        places.add(new Place("The Interlace", "ChIJi-aa3Mgb2jERGN15MeHVxtQ"));
+        places.add(new Place("PARKROYAL COLLECTION Pickering", "ChIJo8cvPgsZ2jERzUp0v52SdI0"));
+        places.add(new Place("LASALLE College of the Arts", "ChIJRbtK5bsZ2jERnDd0Le_s0A4"));
+        places.add(new Place("Kranji War Memorial", "ChIJuwtSxDwS2jER8rdI5kRmbl0"));
+        places.add(
+                new Place("Indian National Army Historic Marker", "ChIJdV9ag6cZ2jER9a31HQ2jN5w"));
+        places.add(new Place("Reflections at Bukit Chandu", "ChIJ97ZlvLkb2jERzq5JKKSBQEE"));
+        places.add(new Place("Singapore Cenotaph", "ChIJdRyuoacZ2jERVtOObm6P2Cg"));
+        places.add(new Place("Civilian War Memorial", "ChIJw10lcqYZ2jERTvrSjFnHjts"));
+        places.add(new Place("Sri Veeramakaliamman Temple", "ChIJ8zLPY8cZ2jEROE-GeGiS7GQ"));
+        places.add(new Place("Maghain Aboth Synagogue", "ChIJc3Wuq6QZ2jERYH1Op8S-DL0"));
+        places.add(new Place("Former Supreme Court", "ChIJfSAMRacZ2jER_qPZbi1mx6w"));
+        places.add(new Place("Tiong Bahru View", "ChIJrc5itnkZ2jERHOx697G2ylI"));
+        places.add(new Place("Lau Pa Sat", "ChIJ5Y6l4Q0Z2jERYL0KDIjT6v0"));
+        places.add(new Place("Istana Kampong Glam", "ChIJ2TH1froZ2jERnsehsXN2VJc"));
+        places.add(new Place("Peranakan Museum", "ChIJWZX956MZ2jERIGdnbs_SgMw"));
+        places.add(new Place("Raffles Singapore", "ChIJwUTKu6UZ2jERwt5ctkU4f2Q"));
+        places.add(new Place("Gillman Barracks", "ChIJd-ET2cUb2jER9nfWEH4mCX0"));
+        places.add(new Place("ArtScience Museum", "ChIJnWdQKQQZ2jERScXuKeFHyIE"));
+        places.add(new Place("SAM at 8Q", "ChIJB0fevaQZ2jERCSQzB8iAY70"));
+        places.add(new Place("Masjid Jamae (Chulia)", "ChIJVQ7VtwwZ2jERJiI42tiD34w"));
+        places.add(
+                new Place(
+                        "Institute of Contemporary Arts Singapore", "ChIJp5zm5LsZ2jERHpGcpdFqjcI"));
+        places.add(new Place("Singapore Flyer", "ChIJzVHFNqkZ2jERboLN2YrltH8"));
+        places.add(new Place("Marina Bay Sands Singapore", "ChIJA5LATO4Z2jER111V-v6abAI"));
+        places.add(new Place("Marina Barrage", "ChIJ50uIMa0Z2jER0cTt5fLaZt0"));
+        places.add(new Place("Henderson Waves", "ChIJeXrAvBcb2jERhWAujA0K0LE"));
+        places.add(new Place("Pinnacle@Duxton", "ChIJVSyoe2wZ2jERcL3VxGbPvHs"));
+        places.add(new Place("Masjid Hajjah Fatimah", "ChIJI15m97MZ2jERI3pwY4tc-1o"));
+        places.add(new Place("Haw Par Villa", "ChIJ9ak4I6wb2jERO6x4oAUh_-g"));
+        places.add(new Place("NUS Baba House", "ChIJvwiR9W4Z2jER3TtTDTsmA7I"));
+        places.add(new Place("Hong San See Temple", "ChIJ1dGx2p4Z2jERX7D0mj1D0Hk"));
+        places.add(new Place("Chinese Heritage Centre", "ChIJwxpUtZ8P2jERPbeGV3upuaY"));
+        places.add(new Place("Kampong Glam", "ChIJ18kcLbEZ2jERHV-sR1RGyZc"));
+        places.add(
+                new Place(
+                        "NTU Centre for Contemporary Art Singapore",
+                        "ChIJmc-Y_sMb2jERz1q_-aHQgRk"));
+        places.add(new Place("Red Dot Design Museum", "ChIJq1KHxhIZ2jER7fOxY9pR-vo"));
+        places.add(
+                new Place(
+                        "Singapore Art Museum at Tanjong Pagar Distripark",
+                        "ChIJPS0vSwsZ2jERulqTcd4CFDA"));
+        places.add(new Place("National Design Centre", "ChIJX3kq1roZ2jERA1959fq81us"));
+        places.add(new Place("Victoria Concert Hall", "ChIJzf487wkZ2jERP3nJhCFBdrE"));
+        places.add(new Place("NUS Museum", "ChIJcwAAUPoa2jERiv_0ph5iKlg"));
+        places.add(new Place("Dr. Sun Yat-Sen Memorial House", "ChIJ6abUBm6pQjQRwfEJmDRkczE"));
+        places.add(new Place("Asian Civilisations Museum", "ChIJoZOhmQkZ2jERehLfvKlsoCA"));
+        places.add(new Place("National Museum of Singapore", "ChIJD1u-EaMZ2jERaLhNfFkR45I"));
+        places.add(new Place("Japanese Cemetery Park", "ChIJvb6oO1MW2jER05RT5zRS-o8"));
+        places.add(new Place("Dalhousie Obelisk", "ChIJRbqIowkZ2jERitZMRQRGCH0"));
+        places.add(new Place("Statue of Sir Stamford Raffles", "ChIJN21BlAkZ2jERGmrNMLOQQEI"));
+        places.add(new Place("Children's Museum Singapore", "ChIJixzGhuMZ2jERpijfVdsTdFw"));
+        places.add(new Place("Former Ford Factory", "ChIJTcyXK1oQ2jERMjEftNlLGk0"));
+        places.add(new Place("Singapore City Gallery", "ChIJRaIcWw0Z2jERts3whuuZPsM"));
+        places.add(new Place("Changi Chapel & Museum", "ChIJCQHB6vc82jERq6iFty4Fzo4"));
+        places.add(new Place("MINT Museum of Toys", "ChIJW7B7zRIZ2jERINTI_uV1O-A"));
+        places.add(new Place("Lim Bo Seng Memorial", "ChIJq6ru0QkZ2jERI5XgbHAqbnA"));
+        places.add(new Place("Universal Studios Singapore", "ChIJQ6MVplUZ2jERn1LmNH0DlDA"));
+        places.add(new Place("Science Centre Singapore", "ChIJY618FAQQ2jERzo1f5IAj4Bg"));
+        places.add(new Place("Fuk Tak Chi Museum", "ChIJSQv4eg0Z2jERc2v3-CNAdPs"));
+        places.add(new Place("Katong Antique House", "ChIJtThnSnMY2jER1o1poSw5EtE"));
+        places.add(new Place("Chinese Garden", "ChIJuZ4kdB0Q2jERdp1SrojDF_I"));
+        places.add(new Place("East Coast Park", "ChIJ0QX_Brki2jER-pZKNdqk_a8"));
+        places.add(new Place("Fort Canning Park", "ChIJVSYjJKIZ2jERpRFinATD52s"));
+        places.add(new Place("Kusu Island", "ChIJSbEk2-Ye2jERy8TeRShVgQo"));
+        places.add(new Place("Bird Paradise", "ChIJkyCpkWcT2jER1Nsl0ZvOI4Q"));
+        places.add(new Place("HortPark", "ChIJC_hOgcgb2jERfF9HNB10xfI"));
+        places.add(new Place("Adventure Cove Waterpark", "ChIJS0Dhxf0b2jERAuG9YaPrYjA"));
+        places.add(new Place("Singapore River", "ChIJb0N2WoIZ2jERUAQo0rer1jY"));
+        places.add(new Place("Peranakan Houses", "ChIJQ83MYhIY2jERwAOUsQ_RdLA"));
+        places.add(new Place("Sentosa", "ChIJRYMSeKwe2jERAR2QXVU39vg"));
+        places.add(new Place("Chinatown", "ChIJ42h1onIZ2jERBbs-VGqmwrs"));
+        places.add(new Place("Buddha Tooth Relic Temple", "ChIJ0bwmznIZ2jEREOCMNggtIBk"));
+        places.add(new Place("Labrador Nature Reserve", "ChIJoy3rj-sb2jERA_wMVazFAiI"));
+        places.add(new Place("Chek Jawa Wetlands", "ChIJUxOzlaQ-2jERRAkZtSCzcXI"));
+        places.add(new Place("Merlion Park", "ChIJBTYg1g4Z2jERp_MBbu5erWY"));
+        places.add(new Place("SkyPark Observation Deck", "ChIJOeEf9S2vewIRM0B9a06CKwg"));
+        places.add(new Place("Resorts World Sentosa", "ChIJLR75v_0b2jERJrR28stYwMU"));
+        places.add(new Place("Singapore Botanic Gardens", "ChIJvWDbfRwa2jERgNnTOpAU3-o"));
+        places.add(new Place("Sungei Buloh Wetland Reserve", "ChIJe0cEPoIS2jERs_rS2qvGOxw"));
+        places.add(new Place("Singapore Oceanarium", "ChIJj-3Cq_0b2jERJv2MBkSVsPQ"));
+        places.add(new Place("Singapore Zoo", "ChIJr9wqENkT2jERkRs7pMj6FLQ"));
+        places.add(new Place("River Wonders", "ChIJxZfX_9gT2jERknwK8es7IHU"));
+        places.add(new Place("Singapore Cable Car", "ChIJAQAAAK0e2jERMFQeIT5IR-E"));
+        places.add(new Place("Night Safari", "ChIJ9xUuiNcT2jER49FS2OpE8W8"));
+        places.add(new Place("Pulau Ubin", "ChIJYcYVP2I-2jERQTiBy40oT6w"));
+        places.add(new Place("Indian Heritage Centre", "ChIJlShO3LgZ2jER4Xlf4Yo-jbs"));
+        places.add(new Place("Orchard Road", "ChIJu_7mSJEZ2jER-vT-Nz_3mY4"));
+        places.add(new Place("MacRitchie Reservoir", "ChIJVVRNg0oX2jERxH0FUCJhoz4"));
+        places.add(new Place("Civic District", "ChIJw4huyqAZ2jERXIhnlRWOfhI"));
+        places.add(new Place("HarbourFront", "ChIJpV0-3uEb2jERl85WTf6I9n0"));
+        places.add(new Place("Bras Basah Complex", "ChIJtxaD8KQZ2jERgCmvEt9PdiU"));
+        pRepo.saveAll(places);
+
+        log.info("Initialized places");
+    }
+}

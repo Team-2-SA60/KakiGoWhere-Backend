@@ -14,7 +14,7 @@ public class Place {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String kmlId;
+    private String googleId;
     private String name;
     private String description;
     private String imagePath;
@@ -44,6 +44,11 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private List<Rating> ratings;
 
+    public Place(String name, String googleId) {
+        this.name = name;
+        this.googleId = googleId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -51,9 +56,7 @@ public class Place {
 
         Place place = (Place) o;
 
-        if (!kmlId.equals(place.kmlId)
-                || !name.equals(place.name)
-                || !description.equals(place.description)
+        if (!name.equals(place.name)
                 || !URL.equals(place.URL)
                 || latitude != place.latitude
                 || longitude != place.longitude
@@ -74,9 +77,7 @@ public class Place {
 
     @Override
     public int hashCode() {
-        int result = kmlId.hashCode();
-        result = 31 * result + name.hashCode();
-        result = 31 * result + description.hashCode();
+        int result = name.hashCode();
         result = 31 * result + URL.hashCode();
         result = 31 * result + Double.hashCode(latitude);
         result = 31 * result + Double.hashCode(longitude);

@@ -80,7 +80,7 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
         for (Map<String, String> fetchedPlace : placesList) {
             try {
                 Place newPlace = new Place();
-                newPlace.setKmlId(fetchedPlace.get(KMLID));
+                newPlace.setGoogleId(fetchedPlace.get(KMLID));
                 newPlace.setDescription(fetchedPlace.get(OVERVIEW));
 
                 String pageTitle = fetchedPlace.get(PAGETITLE);
@@ -101,7 +101,7 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
                 mapGooglePlace(newPlace, googlePlace);
                 checkAndAddInterestCategories(newPlace, googlePlace);
 
-                Place existingPlace = pRepo.findByKmlId(fetchedPlace.get(KMLID));
+                Place existingPlace = pRepo.findByGoogleId(fetchedPlace.get(KMLID));
                 if (existingPlace != null) {
                     if (newPlace.equals(existingPlace)) {
                         log.info("Not updated as it already exists for: {}", newPlace.getName());
@@ -114,7 +114,7 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
                 JsonNode photosNode = googlePlace.path("photos");
                 if (!photosNode.isMissingNode()) {
                     String photoName = photosNode.get(0).path("name").asText();
-                    String imageName = newPlace.getKmlId();
+                    String imageName = newPlace.getGoogleId();
                     String imagePath = gpService.downloadPhoto(photoName, imageName);
                     newPlace.setImagePath(imagePath);
                 }
