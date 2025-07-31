@@ -5,12 +5,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalDate;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class DailyStats {
 
     @Id
@@ -20,12 +24,4 @@ public class DailyStats {
     private LocalDate date;
     private int numberOfUniqueVisits;
     private int numberOfSignUps;
-
-    public DailyStats() {}
-
-    public DailyStats(LocalDate date, int numberOfUniqueVisits, int numberOfSignUps) {
-        this.date = date;
-        this.numberOfUniqueVisits = numberOfUniqueVisits;
-        this.numberOfSignUps = numberOfSignUps;
-    }
 }

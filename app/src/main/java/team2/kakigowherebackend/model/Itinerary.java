@@ -3,12 +3,16 @@ package team2.kakigowherebackend.model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Itinerary {
 
     @Id
@@ -23,11 +27,4 @@ public class Itinerary {
 
     @OneToMany(mappedBy = "itinerary")
     private List<ItineraryDetail> itineraryDetails;
-
-    public Itinerary() {}
-
-    public Itinerary(String title, LocalDate startDate) {
-        this.title = title;
-        this.startDate = startDate;
-    }
 }

@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class ImageServiceImpl implements ImageService {
 
+    // Where to download or upload image files to, indicated in "application.properties"
     @Value("${upload.dir}")
     private String uploadDir;
 
@@ -35,7 +36,7 @@ public class ImageServiceImpl implements ImageService {
             Path filePath = dirPath.resolve(fileName + ".jpg");
             Files.write(filePath, imageBytes);
 
-            return filePath.toString().replace("./", "");
+            return filePath.toString().replace("./", "/");
 
         } catch (IOException e) {
             throw new RuntimeException("Failed to write image", e);

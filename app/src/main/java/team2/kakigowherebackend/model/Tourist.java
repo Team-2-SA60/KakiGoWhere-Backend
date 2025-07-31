@@ -3,12 +3,16 @@ package team2.kakigowherebackend.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Tourist {
 
     @Id
@@ -36,8 +40,6 @@ public class Tourist {
     @OneToMany
     @JoinColumn(name = "tourist_id")
     private List<Rating> ratings;
-
-    public Tourist() {}
 
     public Tourist(String email, String password, String name) {
         this.email = email;

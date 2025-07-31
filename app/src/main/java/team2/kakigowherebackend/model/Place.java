@@ -1,6 +1,7 @@
 package team2.kakigowherebackend.model;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.*;
 
@@ -14,9 +15,9 @@ public class Place {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String kmlId;
+    private String googleId;
     private String name;
-    private String description;
+    @Lob private String description;
     private String imagePath;
     private String URL;
     @Lob private String openingDescription;
@@ -38,12 +39,46 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private List<PlaceEvent> placeEvents;
 
-    @OneToMany(mappedBy = "place")
-    private List<ItineraryDetail> itineraryDetails;
-
-    @OneToMany(mappedBy = "place")
+    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL)
     private List<Rating> ratings;
 
+    public Place(String name, String googleId) {
+        this.name = name;
+        this.googleId = googleId;
+    }
+
+    // For copying of Place obj
+    public Place(Place otherPlace) {
+        this.id = otherPlace.getId();
+        this.googleId = otherPlace.getGoogleId();
+        this.name = otherPlace.getName();
+        this.description = otherPlace.getDescription();
+        this.imagePath = otherPlace.getImagePath();
+        this.URL = otherPlace.getURL();
+        this.openingDescription = otherPlace.getOpeningDescription();
+        this.latitude = otherPlace.getLatitude();
+        this.longitude = otherPlace.getLongitude();
+        this.active = otherPlace.isActive();
+        this.ratings =
+                otherPlace.getRatings() != null
+                        ? new ArrayList<>(otherPlace.getRatings())
+                        : new ArrayList<>();
+        this.interestCategories =
+                otherPlace.getInterestCategories() != null
+                        ? new ArrayList<>(otherPlace.getInterestCategories())
+                        : new ArrayList<>();
+        this.placeEvents =
+                otherPlace.getPlaceEvents() != null
+                        ? new ArrayList<>(otherPlace.getPlaceEvents())
+                        : new ArrayList<>();
+        this.openingHours =
+                otherPlace.getOpeningHours() != null
+                        ? new ArrayList<>(otherPlace.getOpeningHours())
+                        : new ArrayList<>();
+    }
+
+    // To compare a Place to another Place, for scheduler to determine if need to save an updated
+    // Place
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -51,9 +86,7 @@ public class Place {
 
         Place place = (Place) o;
 
-        if (!kmlId.equals(place.kmlId)
-                || !name.equals(place.name)
-                || !description.equals(place.description)
+        if (!name.equals(place.name)
                 || !URL.equals(place.URL)
                 || latitude != place.latitude
                 || longitude != place.longitude
@@ -74,9 +107,7 @@ public class Place {
 
     @Override
     public int hashCode() {
-        int result = kmlId.hashCode();
-        result = 31 * result + name.hashCode();
-        result = 31 * result + description.hashCode();
+        int result = name.hashCode();
         result = 31 * result + URL.hashCode();
         result = 31 * result + Double.hashCode(latitude);
         result = 31 * result + Double.hashCode(longitude);

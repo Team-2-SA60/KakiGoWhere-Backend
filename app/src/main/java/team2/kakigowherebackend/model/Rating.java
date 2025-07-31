@@ -1,12 +1,16 @@
 package team2.kakigowherebackend.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Rating {
 
     @Id
@@ -14,14 +18,8 @@ public class Rating {
     private long id;
 
     private int rating;
-    private String comment;
+    @Lob private String comment;
 
     @ManyToOne private Place place;
-
-    public Rating() {}
-
-    public Rating(int rating, String comment) {
-        this.rating = rating;
-        this.comment = comment;
-    }
+    @ManyToOne private Tourist tourist;
 }

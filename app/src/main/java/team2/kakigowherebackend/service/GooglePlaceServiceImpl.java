@@ -3,7 +3,6 @@ package team2.kakigowherebackend.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -14,6 +13,8 @@ public class GooglePlaceServiceImpl implements GooglePlaceService {
     private final WebClient webClient;
     private final ImageService iService;
 
+    // Before using this service, make sure you put your Google Place API key in
+    // "application.properties"
     public GooglePlaceServiceImpl(
             @Value("${google.places.api.key}") String apiKey, ImageServiceImpl iService) {
         this.iService = iService;
@@ -28,38 +29,28 @@ public class GooglePlaceServiceImpl implements GooglePlaceService {
                         .build();
     }
 
+    // Fetch GET request to Google Places API (new) and retrieve a Place Detail by googleId
+    // https://developers.google.com/maps/documentation/places/web-service/place-details
     @Override
-    public Mono<JsonNode> searchPlace(String placeTitle, Double latitude, Double longitude) {
+    public Mono<JsonNode> searchPlace(String googleId) {
 
+        // Specify what fields to retrieve from request
         String fieldMask =
-                "places.displayName,places.websiteUri,places.types,places.photos,places.location,places.regularOpeningHours,places.businessStatus";
-
-        Map<String, Object> requestBody =
-                Map.of(
-                        "textQuery",
-                        placeTitle,
-                        "pageSize",
-                        "1",
-                        "locationBias",
-                        Map.of(
-                                "circle",
-                                Map.of(
-                                        "center",
-                                        Map.of(
-                                                "latitude", latitude,
-                                                "longitude", longitude),
-                                        "radius",
-                                        500.0)));
+                "id,displayName,websiteUri,types,photos,location,regularOpeningHours,businessStatus,editorialSummary,reviews";
 
         return webClient
-                .post()
-                .uri("https://places.googleapis.com/v1/places:searchText")
+                .get()
+                .uri("https://places.googleapis.com/v1/places/" + googleId)
                 .header("X-Goog-FieldMask", fieldMask)
-                .bodyValue(requestBody)
                 .retrieve()
                 .bodyToMono(JsonNode.class);
     }
 
+    // Fetch GET request to Google Places API (new) and retrieve imageURI for a Place Photo by
+    // photoName
+    // https://developers.google.com/maps/documentation/places/web-service/place-photos
+    // Then call ImageService to download the retrieved imageURI
+    // Get back and returns the downloaded image path
     @Override
     public String downloadPhoto(String photoName, String fileName) {
         URI imageUri =
@@ -85,6 +76,7 @@ public class GooglePlaceServiceImpl implements GooglePlaceService {
 
         if (imageUri == null) return null;
 
+        // Calls ImageService method to download image and returns downloaded image path
         return iService.download(imageUri, fileName);
     }
 }

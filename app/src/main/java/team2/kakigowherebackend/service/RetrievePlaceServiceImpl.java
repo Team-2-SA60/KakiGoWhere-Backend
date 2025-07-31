@@ -1,225 +1,118 @@
 package team2.kakigowherebackend.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.io.ByteArrayInputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
+import jakarta.transaction.Transactional;
 import java.util.*;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import reactor.netty.http.client.HttpClient;
-import team2.kakigowherebackend.model.InterestCategory;
-import team2.kakigowherebackend.model.OpeningHours;
-import team2.kakigowherebackend.model.Place;
+import team2.kakigowherebackend.model.*;
 import team2.kakigowherebackend.repository.InterestCategoryRepository;
 import team2.kakigowherebackend.repository.PlaceRepository;
-import team2.kakigowherebackend.utils.TextEncoding;
+import team2.kakigowherebackend.repository.TouristRepository;
 
+@Slf4j
 @Service
 public class RetrievePlaceServiceImpl implements RetrievePlaceService {
 
-    private static final Logger log = LoggerFactory.getLogger(RetrievePlaceServiceImpl.class);
+    // Excluded Interest categories from adding to our database
+    private final String[] EXCLUDED_CATEGORIES = {
+        "point_of_interest", "tourist_attraction", "establishment", "event_venue"
+    };
 
-    private static final String KMLID = "KMLID";
-    private static final String PAGETITLE = "PAGETITLE";
-    private static final String OVERVIEW = "OVERVIEW";
-    private static final String LATITUDE = "LATITUDE";
-    private static final String LONGITUDE = "LONGTITUDE";
-
-    private static final String DATASET = "d_15a8ecc14700107f2b5696335a697b9c";
-    private static final String URL =
-            "https://api-open.data.gov.sg/v1/public/api/datasets/" + DATASET + "/poll-download";
-
-    private final WebClient webClient;
     private final PlaceRepository pRepo;
+    private final TouristRepository tRepo;
     private final InterestCategoryRepository icRepo;
     private final GooglePlaceService gpService;
 
     public RetrievePlaceServiceImpl(
             PlaceRepository pRepo,
+            TouristRepository tRepo,
             InterestCategoryRepository icRepo,
             GooglePlaceService gpService) {
         this.pRepo = pRepo;
+        this.tRepo = tRepo;
         this.icRepo = icRepo;
         this.gpService = gpService;
-
-        HttpClient httpClient = HttpClient.create().followRedirect(true);
-        this.webClient =
-                WebClient.builder()
-                        .clientConnector(new ReactorClientHttpConnector(httpClient))
-                        .defaultHeader(HttpHeaders.ACCEPT, "application/json; charset=ISO-8859-1")
-                        .defaultHeader(HttpHeaders.USER_AGENT, "SpringBootClient/1.0")
-                        .codecs(
-                                configurer ->
-                                        configurer
-                                                .defaultCodecs()
-                                                .maxInMemorySize(10 * 1024 * 1024))
-                        .build();
     }
 
+    // Retrieve all Places in our database and attempts to update each of them using Google Places
+    // API
+    @Transactional
     @Override
     public void retrievePlaces() {
-        log.info("Retrieving places...");
+        log.info("Retrieving and updating places...");
 
-        String kmlContent = fetchPlacesKml();
-        if (kmlContent.isEmpty()) return;
+        List<Place> places = pRepo.findAll();
 
-        List<Map<String, String>> placesList = parseKML(kmlContent);
+        for (int i = 0; i < places.size(); i++) {
+            Place p = places.get(i);
 
-        for (Map<String, String> fetchedPlace : placesList) {
-            try {
-                Place newPlace = new Place();
-                newPlace.setKmlId(fetchedPlace.get(KMLID));
-                newPlace.setDescription(fetchedPlace.get(OVERVIEW));
+            // Copying original place, so that we can compare if there's any changes at the end
+            // before downloading image and saving
+            Place updatedPlace = new Place(p);
 
-                String pageTitle = fetchedPlace.get(PAGETITLE);
-                Double latitude = Double.parseDouble(fetchedPlace.get(LATITUDE));
-                Double longitude = Double.parseDouble(fetchedPlace.get(LONGITUDE));
+            String name = p.getName();
+            String googleId = p.getGoogleId();
 
-                JsonNode googlePlace =
-                        gpService
-                                .searchPlace(pageTitle, latitude, longitude)
-                                .map(response -> response.path("places").get(0))
-                                .block();
+            // Fetch Place Detail from Google Places API
+            JsonNode placeNode = gpService.searchPlace(googleId).block();
 
-                if (googlePlace == null) {
-                    log.info("Failed to retrieve from Google place for: {}", pageTitle);
-                    continue;
-                }
+            if (placeNode == null) {
+                log.info("Failed to retrieve from Google place for: {}", name);
+                continue;
+            }
 
-                mapGooglePlace(newPlace, googlePlace);
-                checkAndAddInterestCategories(newPlace, googlePlace);
+            // Extracts information from Place Detail and maps it accordingly to updatedPlace
+            // attributes
+            mapGooglePlace(updatedPlace, placeNode);
+            addOpeningHours(updatedPlace, placeNode);
+            checkAndAddInterestCategories(updatedPlace, placeNode);
 
-                Place existingPlace = pRepo.findByKmlId(fetchedPlace.get(KMLID));
-                if (existingPlace != null) {
-                    if (newPlace.equals(existingPlace)) {
-                        log.info("Not updated as it already exists for: {}", newPlace.getName());
-                        continue;
-                    } else {
-                        newPlace.setId(existingPlace.getId());
-                    }
-                }
+            if (p.getRatings().isEmpty()) checkAndAddRatings(updatedPlace, placeNode);
 
-                JsonNode photosNode = googlePlace.path("photos");
-                if (!photosNode.isMissingNode()) {
-                    String photoName = photosNode.get(0).path("name").asText();
-                    String imageName = newPlace.getKmlId();
-                    String imagePath = gpService.downloadPhoto(photoName, imageName);
-                    newPlace.setImagePath(imagePath);
-                }
-
-                pRepo.save(newPlace);
-                log.info("Updated place for: {}", newPlace.getName());
-            } catch (Exception e) {
-                log.info(
-                        "Failed to update place for: {}",
-                        fetchedPlace.get(PAGETITLE) + "\n" + Arrays.toString(e.getStackTrace()));
+            // If updatedPlace is different from original Place, commit to download image and save
+            // the updatedPlace
+            if (!updatedPlace.equals(p)) {
+                downloadImages(updatedPlace, placeNode);
+                pRepo.save(updatedPlace);
+                log.info("Updated place for: {}", name);
             }
         }
+        log.info("Retrieved and updated places");
     }
 
     @Override
-    public String fetchPlacesKml() {
-        URI kmlUri =
-                webClient
-                        .get()
-                        .uri(URL)
-                        .retrieve()
-                        .bodyToMono(JsonNode.class)
-                        .map(
-                                response -> {
-                                    URI uri = null;
-                                    try {
-                                        uri = new URI(response.path("data").path("url").asText());
-                                    } catch (URISyntaxException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                    return uri;
-                                })
-                        .block();
-
-        if (kmlUri == null) return null;
-
-        return webClient.get().uri(kmlUri).retrieve().bodyToMono(String.class).block();
-    }
-
-    @Override
-    public List<Map<String, String>> parseKML(String kmlContent) {
-        List<Map<String, String>> result = new ArrayList<>();
-
-        try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setNamespaceAware(true);
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc =
-                    builder.parse(
-                            new ByteArrayInputStream(kmlContent.getBytes(StandardCharsets.UTF_8)));
-
-            NodeList placemarks = doc.getElementsByTagNameNS("*", "Placemark");
-
-            for (int i = 0; i < placemarks.getLength(); i++) {
-                Map<String, String> map = new HashMap<>();
-
-                Element placemark = (Element) placemarks.item(i);
-                String placemarkId =
-                        placemark.getElementsByTagName("name").item(0).getTextContent();
-                map.put(KMLID, placemarkId);
-
-                NodeList simpleData = placemark.getElementsByTagNameNS("*", "SimpleData");
-
-                for (int j = 0; j < simpleData.getLength(); j++) {
-                    Element simpleDataElement = (Element) simpleData.item(j);
-
-                    if (simpleDataElement.getAttribute("name").equals(PAGETITLE)) {
-                        String placeTitle = simpleDataElement.getTextContent();
-                        placeTitle = TextEncoding.fixEncoding(placeTitle);
-                        map.put(PAGETITLE, placeTitle);
-                    }
-                    if (simpleDataElement.getAttribute("name").equals(OVERVIEW)) {
-                        String description = simpleDataElement.getTextContent();
-                        description = TextEncoding.fixEncoding(description);
-                        map.put(OVERVIEW, description);
-                    }
-                    if (simpleDataElement.getAttribute("name").equals(LATITUDE)) {
-                        String latitude = simpleDataElement.getTextContent();
-                        map.put(LATITUDE, latitude);
-                    }
-                    if (simpleDataElement.getAttribute("name").equals(LONGITUDE)) {
-                        String longitude = simpleDataElement.getTextContent();
-                        map.put(LONGITUDE, longitude);
-                    }
-                }
-                result.add(map);
-            }
-        } catch (Exception e) {
-            log.error("Failed to parse KML file", e);
-        }
-
-        return result;
-    }
-
-    @Override
-    public void mapGooglePlace(Place place, JsonNode googlePlace) {
-
-        JsonNode displayNameNode = googlePlace.path("displayName").path("text");
-        place.setName(displayNameNode.isMissingNode() ? "" : displayNameNode.asText());
-
-        JsonNode websiteUriNode = googlePlace.path("websiteUri");
-        place.setURL(websiteUriNode.isMissingNode() ? "" : websiteUriNode.asText());
-
+    public void mapGooglePlace(Place place, JsonNode placeNode) {
+        JsonNode displayNameNode = placeNode.path("displayName").path("text");
+        JsonNode websiteUriNode = placeNode.path("websiteUri");
+        JsonNode latNode = placeNode.path("location").path("latitude");
+        JsonNode lngNode = placeNode.path("location").path("longitude");
+        JsonNode businessStatusNode = placeNode.path("businessStatus");
+        JsonNode editorialSummaryNode = placeNode.path("editorialSummary").path("text");
         JsonNode openingDescNode =
-                googlePlace.path("regularOpeningHours").path("weekdayDescriptions");
+                placeNode.path("regularOpeningHours").path("weekdayDescriptions");
+
+        if (!displayNameNode.isMissingNode()) place.setName(displayNameNode.asText());
+        if (!websiteUriNode.isMissingNode()) place.setURL(websiteUriNode.asText());
+        if (!latNode.isMissingNode()) place.setLatitude(latNode.asDouble());
+        if (!lngNode.isMissingNode()) place.setLongitude(lngNode.asDouble());
+
+        // If businessStatus is NOT absent and NOT equals("OPERATIONAL"), set Place.active as False
+        place.setActive(
+                businessStatusNode.isMissingNode()
+                        || businessStatusNode.asText().equals("OPERATIONAL"));
+
+        // If editorialSummary is NOT absent and Place.description IS EMPTY, set new
+        // Place.description
+        // So that we don't overwrite descriptions we added ourselves
+        if (!editorialSummaryNode.isMissingNode()) {
+            String currentDesc = place.getDescription();
+            if (currentDesc == null || currentDesc.isEmpty()) {
+                place.setDescription(editorialSummaryNode.asText());
+            }
+        }
+
         StringBuilder openingDesc = new StringBuilder();
         if (openingDescNode.isArray()) {
             for (JsonNode desc : openingDescNode) {
@@ -227,16 +120,13 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
             }
         }
         place.setOpeningDescription(openingDesc.toString());
+    }
 
-        JsonNode latNode = googlePlace.path("location").path("latitude");
-        place.setLatitude(latNode.isMissingNode() ? 0.0 : latNode.asDouble());
-
-        JsonNode lngNode = googlePlace.path("location").path("longitude");
-        place.setLongitude(lngNode.isMissingNode() ? 0.0 : lngNode.asDouble());
-        place.setActive(true);
-
-        JsonNode periodsNode = googlePlace.path("regularOpeningHours").path("periods");
+    @Override
+    public void addOpeningHours(Place place, JsonNode placeNode) {
+        JsonNode periodsNode = placeNode.path("regularOpeningHours").path("periods");
         List<OpeningHours> openingHours = new ArrayList<>();
+
         if (periodsNode.isArray()) {
             for (JsonNode period : periodsNode) {
                 OpeningHours oh = new OpeningHours();
@@ -248,24 +138,13 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
                 JsonNode closeHour = period.path("close").path("hour");
                 JsonNode closeMinute = period.path("close").path("minute");
 
-                if (!openDay.isMissingNode()) {
-                    oh.setOpenDay(openDay.asInt());
-                }
-                if (!openHour.isMissingNode()) {
-                    oh.setOpenHour(openHour.asInt());
-                }
-                if (!openMinute.isMissingNode()) {
-                    oh.setOpenMinute(openMinute.asInt());
-                }
-                if (!closeDay.isMissingNode()) {
-                    oh.setCloseDay(closeDay.asInt());
-                }
-                if (!closeHour.isMissingNode()) {
-                    oh.setCloseHour(closeHour.asInt());
-                }
-                if (!closeMinute.isMissingNode()) {
-                    oh.setCloseMinute(closeMinute.asInt());
-                }
+                if (!openDay.isMissingNode()) oh.setOpenDay(openDay.asInt());
+                if (!openHour.isMissingNode()) oh.setOpenHour(openHour.asInt());
+                if (!openMinute.isMissingNode()) oh.setOpenMinute(openMinute.asInt());
+                if (!closeDay.isMissingNode()) oh.setCloseDay(closeDay.asInt());
+                if (!closeHour.isMissingNode()) oh.setCloseHour(closeHour.asInt());
+                if (!closeMinute.isMissingNode()) oh.setCloseMinute(closeMinute.asInt());
+
                 openingHours.add(oh);
             }
         }
@@ -273,18 +152,15 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
     }
 
     @Override
-    public void checkAndAddInterestCategories(Place place, JsonNode googlePlace) {
-        String[] excludedCategories = {
-            "point_of_interest", "tourist_attraction", "establishment", "event_venue"
-        };
-
-        JsonNode typesNode = googlePlace.path("types");
+    public void checkAndAddInterestCategories(Place place, JsonNode placeNode) {
+        JsonNode typesNode = placeNode.path("types");
         List<InterestCategory> interestCategories = new ArrayList<>();
+
         if (typesNode.isArray()) {
             for (JsonNode type : typesNode) {
                 String category = type.asText();
 
-                boolean isExcluded = Arrays.asList(excludedCategories).contains(category);
+                boolean isExcluded = Arrays.asList(EXCLUDED_CATEGORIES).contains(category);
                 if (isExcluded) continue;
 
                 InterestCategory interestCategory = icRepo.findByName(category);
@@ -300,5 +176,51 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
             }
         }
         place.setInterestCategories(interestCategories);
+    }
+
+    @Override
+    public void checkAndAddRatings(Place place, JsonNode placeNode) {
+        JsonNode reviewsNode = placeNode.path("reviews");
+
+        List<Tourist> tourists = tRepo.findAll();
+        List<Rating> ratings = new ArrayList<>();
+        int i = new Random().nextInt(6);
+
+        if (reviewsNode.isArray()) {
+            for (JsonNode reviewNode : reviewsNode) {
+                JsonNode ratingNode = reviewNode.path("rating");
+                JsonNode commentNode = reviewNode.path("text").path("text");
+
+                if (ratingNode.isMissingNode() || commentNode.isMissingNode()) continue;
+
+                Rating rating = new Rating();
+                rating.setComment(commentNode.asText());
+                rating.setRating(ratingNode.asInt());
+                rating.setPlace(place);
+
+                rating.setTourist(tourists.get(i));
+
+                i += 1;
+                if (i >= 6) {
+                    i = 0;
+                }
+
+                ratings.add(rating);
+            }
+        }
+        if (!ratings.isEmpty()) {
+            place.setRatings(ratings);
+        }
+    }
+
+    @Override
+    public void downloadImages(Place place, JsonNode placeNode) {
+        JsonNode photosNode = placeNode.path("photos");
+        if (!photosNode.isMissingNode()) {
+            String photoName = photosNode.get(0).path("name").asText();
+            String imageName = place.getGoogleId();
+            String imagePath = gpService.downloadPhoto(photoName, imageName);
+            place.setImagePath(imagePath);
+        }
     }
 }
