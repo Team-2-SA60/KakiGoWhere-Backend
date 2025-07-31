@@ -13,6 +13,8 @@ public class GooglePlaceServiceImpl implements GooglePlaceService {
     private final WebClient webClient;
     private final ImageService iService;
 
+    // Before using this service, make sure you put your Google Place API key in
+    // "application.properties"
     public GooglePlaceServiceImpl(
             @Value("${google.places.api.key}") String apiKey, ImageServiceImpl iService) {
         this.iService = iService;
@@ -27,9 +29,12 @@ public class GooglePlaceServiceImpl implements GooglePlaceService {
                         .build();
     }
 
+    // Fetch GET request to Google Places API (new) and retrieve a Place Detail by googleId
+    // https://developers.google.com/maps/documentation/places/web-service/place-details
     @Override
     public Mono<JsonNode> searchPlace(String googleId) {
 
+        // Specify what fields to retrieve from request
         String fieldMask =
                 "id,displayName,websiteUri,types,photos,location,regularOpeningHours,businessStatus,editorialSummary,reviews";
 
@@ -41,6 +46,11 @@ public class GooglePlaceServiceImpl implements GooglePlaceService {
                 .bodyToMono(JsonNode.class);
     }
 
+    // Fetch GET request to Google Places API (new) and retrieve imageURI for a Place Photo by
+    // photoName
+    // https://developers.google.com/maps/documentation/places/web-service/place-photos
+    // Then call ImageService to download the retrieved imageURI
+    // Get back and returns the downloaded image path
     @Override
     public String downloadPhoto(String photoName, String fileName) {
         URI imageUri =
@@ -66,6 +76,7 @@ public class GooglePlaceServiceImpl implements GooglePlaceService {
 
         if (imageUri == null) return null;
 
+        // Calls ImageService method to download image and returns downloaded image path
         return iService.download(imageUri, fileName);
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class ImageServiceImpl implements ImageService {
 
+    // Where to download or upload image files to, indicated in "application.properties"
     @Value("${upload.dir}")
     private String uploadDir;
 

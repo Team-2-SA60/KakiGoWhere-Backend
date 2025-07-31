@@ -1,6 +1,7 @@
 package team2.kakigowherebackend.model;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.*;
 
@@ -16,7 +17,7 @@ public class Place {
 
     private String googleId;
     private String name;
-    private String description;
+    @Lob private String description;
     private String imagePath;
     private String URL;
     @Lob private String openingDescription;
@@ -24,11 +25,11 @@ public class Place {
     private double longitude;
     private boolean active;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "place_id")
     private List<OpeningHours> openingHours;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "place_interests",
             joinColumns = @JoinColumn(name = "place_id"),
@@ -38,7 +39,7 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private List<PlaceEvent> placeEvents;
 
-    @OneToMany(mappedBy = "place", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL)
     private List<Rating> ratings;
 
     public Place(String name, String googleId) {
@@ -46,6 +47,38 @@ public class Place {
         this.googleId = googleId;
     }
 
+    // For copying of Place obj
+    public Place(Place otherPlace) {
+        this.id = otherPlace.getId();
+        this.googleId = otherPlace.getGoogleId();
+        this.name = otherPlace.getName();
+        this.description = otherPlace.getDescription();
+        this.imagePath = otherPlace.getImagePath();
+        this.URL = otherPlace.getURL();
+        this.openingDescription = otherPlace.getOpeningDescription();
+        this.latitude = otherPlace.getLatitude();
+        this.longitude = otherPlace.getLongitude();
+        this.active = otherPlace.isActive();
+        this.ratings =
+                otherPlace.getRatings() != null
+                        ? new ArrayList<>(otherPlace.getRatings())
+                        : new ArrayList<>();
+        this.interestCategories =
+                otherPlace.getInterestCategories() != null
+                        ? new ArrayList<>(otherPlace.getInterestCategories())
+                        : new ArrayList<>();
+        this.placeEvents =
+                otherPlace.getPlaceEvents() != null
+                        ? new ArrayList<>(otherPlace.getPlaceEvents())
+                        : new ArrayList<>();
+        this.openingHours =
+                otherPlace.getOpeningHours() != null
+                        ? new ArrayList<>(otherPlace.getOpeningHours())
+                        : new ArrayList<>();
+    }
+
+    // To compare a Place to another Place, for scheduler to determine if need to save an updated
+    // Place
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

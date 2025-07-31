@@ -2,8 +2,9 @@ package team2.kakigowherebackend.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import team2.kakigowherebackend.model.*;
@@ -11,11 +12,11 @@ import team2.kakigowherebackend.repository.InterestCategoryRepository;
 import team2.kakigowherebackend.repository.PlaceRepository;
 import team2.kakigowherebackend.repository.TouristRepository;
 
+@Slf4j
 @Service
 public class RetrievePlaceServiceImpl implements RetrievePlaceService {
 
-    private static final Logger log = LoggerFactory.getLogger(RetrievePlaceServiceImpl.class);
-
+    // Excluded Interest categories from adding to our database
     private final String[] EXCLUDED_CATEGORIES = {
         "point_of_interest", "tourist_attraction", "establishment", "event_venue"
     };
@@ -36,25 +37,26 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
         this.gpService = gpService;
     }
 
+    // Retrieve all Places in our database and attempts to update each of them using Google Places
+    // API
+    @Transactional
     @Override
     public void retrievePlaces() {
-        log.info("Retrieving places...");
+        log.info("Retrieving and updating places...");
 
         List<Place> places = pRepo.findAll();
 
         for (int i = 0; i < places.size(); i++) {
             Place p = places.get(i);
-            Place updatedPlace = new Place();
 
-            long id = p.getId();
+            // Copying original place, so that we can compare if there's any changes at the end
+            // before downloading image and saving
+            Place updatedPlace = new Place(p);
+
             String name = p.getName();
             String googleId = p.getGoogleId();
 
-            updatedPlace.setId(id);
-            updatedPlace.setName(name);
-            updatedPlace.setGoogleId(googleId);
-            updatedPlace.setDescription(p.getDescription());
-
+            // Fetch Place Detail from Google Places API
             JsonNode placeNode = gpService.searchPlace(googleId).block();
 
             if (placeNode == null) {
@@ -62,33 +64,27 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
                 continue;
             }
 
+            // Extracts information from Place Detail and maps it accordingly to updatedPlace
+            // attributes
             mapGooglePlace(updatedPlace, placeNode);
+            addOpeningHours(updatedPlace, placeNode);
             checkAndAddInterestCategories(updatedPlace, placeNode);
-            if (p.getRatings().isEmpty()) {
-                checkAndAddRatings(updatedPlace, placeNode);
-            }
 
-            if (updatedPlace.equals(p)) {
-                log.info("Not updated as it already exists for: {}", name);
-                continue;
-            }
+            if (p.getRatings().isEmpty()) checkAndAddRatings(updatedPlace, placeNode);
 
-            JsonNode photosNode = placeNode.path("photos");
-            if (!photosNode.isMissingNode()) {
-                String photoName = photosNode.get(0).path("name").asText();
-                String imageName = updatedPlace.getGoogleId();
-                String imagePath = gpService.downloadPhoto(photoName, imageName);
-                updatedPlace.setImagePath(imagePath);
+            // If updatedPlace is different from original Place, commit to download image and save
+            // the updatedPlace
+            if (!updatedPlace.equals(p)) {
+                downloadImages(updatedPlace, placeNode);
+                pRepo.save(updatedPlace);
+                log.info("Updated place for: {}", name);
             }
-
-            pRepo.save(updatedPlace);
-            log.info("Updated place for: {}", name);
         }
+        log.info("Retrieved and updated places");
     }
 
     @Override
     public void mapGooglePlace(Place place, JsonNode placeNode) {
-
         JsonNode displayNameNode = placeNode.path("displayName").path("text");
         JsonNode websiteUriNode = placeNode.path("websiteUri");
         JsonNode latNode = placeNode.path("location").path("latitude");
@@ -98,17 +94,24 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
         JsonNode openingDescNode =
                 placeNode.path("regularOpeningHours").path("weekdayDescriptions");
 
-        place.setName(displayNameNode.isMissingNode() ? "" : displayNameNode.asText());
-        place.setURL(websiteUriNode.isMissingNode() ? "" : websiteUriNode.asText());
-        place.setLatitude(latNode.isMissingNode() ? 0.0 : latNode.asDouble());
-        place.setLongitude(lngNode.isMissingNode() ? 0.0 : lngNode.asDouble());
+        if (!displayNameNode.isMissingNode()) place.setName(displayNameNode.asText());
+        if (!websiteUriNode.isMissingNode()) place.setURL(websiteUriNode.asText());
+        if (!latNode.isMissingNode()) place.setLatitude(latNode.asDouble());
+        if (!lngNode.isMissingNode()) place.setLongitude(lngNode.asDouble());
+
+        // If businessStatus is NOT absent and NOT equals("OPERATIONAL"), set Place.active as False
         place.setActive(
                 businessStatusNode.isMissingNode()
                         || businessStatusNode.asText().equals("OPERATIONAL"));
 
-        if (place.getDescription() == null) {
-            place.setDescription(
-                    editorialSummaryNode.isMissingNode() ? "" : editorialSummaryNode.asText());
+        // If editorialSummary is NOT absent and Place.description IS EMPTY, set new
+        // Place.description
+        // So that we don't overwrite descriptions we added ourselves
+        if (!editorialSummaryNode.isMissingNode()) {
+            String currentDesc = place.getDescription();
+            if (currentDesc == null || currentDesc.isEmpty()) {
+                place.setDescription(editorialSummaryNode.asText());
+            }
         }
 
         StringBuilder openingDesc = new StringBuilder();
@@ -118,9 +121,13 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
             }
         }
         place.setOpeningDescription(openingDesc.toString());
+    }
 
+    @Override
+    public void addOpeningHours(Place place, JsonNode placeNode) {
         JsonNode periodsNode = placeNode.path("regularOpeningHours").path("periods");
         List<OpeningHours> openingHours = new ArrayList<>();
+
         if (periodsNode.isArray()) {
             for (JsonNode period : periodsNode) {
                 OpeningHours oh = new OpeningHours();
@@ -132,24 +139,13 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
                 JsonNode closeHour = period.path("close").path("hour");
                 JsonNode closeMinute = period.path("close").path("minute");
 
-                if (!openDay.isMissingNode()) {
-                    oh.setOpenDay(openDay.asInt());
-                }
-                if (!openHour.isMissingNode()) {
-                    oh.setOpenHour(openHour.asInt());
-                }
-                if (!openMinute.isMissingNode()) {
-                    oh.setOpenMinute(openMinute.asInt());
-                }
-                if (!closeDay.isMissingNode()) {
-                    oh.setCloseDay(closeDay.asInt());
-                }
-                if (!closeHour.isMissingNode()) {
-                    oh.setCloseHour(closeHour.asInt());
-                }
-                if (!closeMinute.isMissingNode()) {
-                    oh.setCloseMinute(closeMinute.asInt());
-                }
+                if (!openDay.isMissingNode()) oh.setOpenDay(openDay.asInt());
+                if (!openHour.isMissingNode()) oh.setOpenHour(openHour.asInt());
+                if (!openMinute.isMissingNode()) oh.setOpenMinute(openMinute.asInt());
+                if (!closeDay.isMissingNode()) oh.setCloseDay(closeDay.asInt());
+                if (!closeHour.isMissingNode()) oh.setCloseHour(closeHour.asInt());
+                if (!closeMinute.isMissingNode()) oh.setCloseMinute(closeMinute.asInt());
+
                 openingHours.add(oh);
             }
         }
@@ -160,6 +156,7 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
     public void checkAndAddInterestCategories(Place place, JsonNode placeNode) {
         JsonNode typesNode = placeNode.path("types");
         List<InterestCategory> interestCategories = new ArrayList<>();
+
         if (typesNode.isArray()) {
             for (JsonNode type : typesNode) {
                 String category = type.asText();
@@ -188,6 +185,7 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
 
         List<Tourist> tourists = tRepo.findAll();
         List<Rating> ratings = new ArrayList<>();
+        int i = new Random().nextInt(6);
 
         if (reviewsNode.isArray()) {
             for (JsonNode reviewNode : reviewsNode) {
@@ -201,14 +199,29 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
                 rating.setRating(ratingNode.asInt());
                 rating.setPlace(place);
 
-                Random random = new Random();
-                rating.setTourist(tourists.get(random.nextInt(tourists.size())));
+                rating.setTourist(tourists.get(i));
+
+                i += 1;
+                if (i >= 6) {
+                    i = 0;
+                }
 
                 ratings.add(rating);
             }
         }
         if (!ratings.isEmpty()) {
             place.setRatings(ratings);
+        }
+    }
+
+    @Override
+    public void downloadImages(Place place, JsonNode placeNode) {
+        JsonNode photosNode = placeNode.path("photos");
+        if (!photosNode.isMissingNode()) {
+            String photoName = photosNode.get(0).path("name").asText();
+            String imageName = place.getGoogleId();
+            String imagePath = gpService.downloadPhoto(photoName, imageName);
+            place.setImagePath(imagePath);
         }
     }
 }
