@@ -1,9 +1,8 @@
 package team2.kakigowherebackend.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.util.*;
-
 import jakarta.transaction.Transactional;
+import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
