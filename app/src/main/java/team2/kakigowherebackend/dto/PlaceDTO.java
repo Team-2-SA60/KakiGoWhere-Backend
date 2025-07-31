@@ -15,11 +15,12 @@ public class PlaceDTO {
     private String openingDescription;
     private double latitude;
     private double longitude;
-    private boolean active;
+    private boolean isActive;
     private List<InterestCategory> interestCategories;
     private List<OpeningHours> openingHours;
     private List<PlaceEvent> placeEvents;
     private Double averageRating;
+    private boolean isOpen;
 
     public PlaceDTO(Place place) {
         this.id = place.getId();
@@ -31,7 +32,8 @@ public class PlaceDTO {
         this.openingDescription = place.getOpeningDescription();
         this.latitude = place.getLatitude();
         this.longitude = place.getLongitude();
-        this.active = place.isActive();
+        this.isActive = place.isActive();
+        this.isOpen = place.isOpen();
         this.interestCategories = place.getInterestCategories();
         this.openingHours = place.getOpeningHours();
         this.placeEvents = place.getPlaceEvents();
