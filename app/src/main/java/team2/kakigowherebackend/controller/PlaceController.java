@@ -48,6 +48,9 @@ public class PlaceController {
 
     @GetMapping("/retrieveplaces")
     public ResponseEntity<String> retrievePlaces(@RequestParam("run") String run) {
+        // PLEASE DON'T RUN THIS RANDOMLY
+        // It will call google places API to update every places we have
+
         if (run == null || !run.equals("team2")) {
             return ResponseEntity.ok("Not ran");
         }

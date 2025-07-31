@@ -18,7 +18,8 @@ public class Rating {
     private long id;
 
     private int rating;
-    private String comment;
+    @Lob private String comment;
 
     @ManyToOne private Place place;
+    @ManyToOne private Tourist tourist;
 }

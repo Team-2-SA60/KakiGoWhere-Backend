@@ -40,4 +40,10 @@ public class Tourist {
     @OneToMany
     @JoinColumn(name = "tourist_id")
     private List<Rating> ratings;
+
+    public Tourist(String email, String password, String name) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
+    }
 }

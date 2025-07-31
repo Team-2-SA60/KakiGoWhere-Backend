@@ -6,22 +6,32 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import team2.kakigowherebackend.model.Place;
+import team2.kakigowherebackend.model.Tourist;
 import team2.kakigowherebackend.repository.PlaceRepository;
+import team2.kakigowherebackend.repository.TouristRepository;
 
 @Slf4j
 @Component
 public class DataInitializer implements CommandLineRunner {
 
     private final PlaceRepository pRepo;
+    private final TouristRepository tRepo;
 
-    public DataInitializer(PlaceRepository pRepo) {
+    public DataInitializer(PlaceRepository pRepo, TouristRepository tRepo) {
+
         this.pRepo = pRepo;
+        this.tRepo = tRepo;
     }
 
     @Override
     public void run(String... args) throws Exception {
         Place checkPlace = pRepo.findById(1L).orElse(null);
         if (checkPlace != null) return;
+        addPlaces();
+        addTourist();
+    }
+
+    private void addPlaces() {
         log.info("Initializing places...");
 
         List<Place> places = new ArrayList<>();
@@ -143,5 +153,18 @@ public class DataInitializer implements CommandLineRunner {
         pRepo.saveAll(places);
 
         log.info("Initialized places");
+    }
+
+    private void addTourist() {
+        log.info("Initializing tourists...");
+        List<Tourist> tourists = new ArrayList<>();
+        tourists.add(new Tourist("a@kaki.com", "a", "Adrian"));
+        tourists.add(new Tourist("cy@kaki.com", "cy", "Cai Yun"));
+        tourists.add(new Tourist("gy@kaki.com", "gy", "Gong Yuan"));
+        tourists.add(new Tourist("ks@kaki.com", "ks", "Kin Seng"));
+        tourists.add(new Tourist("bf@kaki.com", "bf", "Bo Fei"));
+        tourists.add(new Tourist("rx@kaki.com", "rx", "Runxin"));
+        tRepo.saveAll(tourists);
+        log.info("Initialized tourists");
     }
 }

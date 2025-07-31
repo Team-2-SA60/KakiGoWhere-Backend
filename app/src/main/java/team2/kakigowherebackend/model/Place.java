@@ -24,11 +24,11 @@ public class Place {
     private double longitude;
     private boolean active;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "place_id")
     private List<OpeningHours> openingHours;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "place_interests",
             joinColumns = @JoinColumn(name = "place_id"),
@@ -38,10 +38,7 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private List<PlaceEvent> placeEvents;
 
-    @OneToMany(mappedBy = "place")
-    private List<ItineraryDetail> itineraryDetails;
-
-    @OneToMany(mappedBy = "place")
+    @OneToMany(mappedBy = "place", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Rating> ratings;
 
     public Place(String name, String googleId) {
