@@ -9,6 +9,7 @@ public class PlaceDetailDTO {
     private long id;
     private String googleId;
     private String name;
+    private String address;
     private String description;
     private String imagePath;
     private String URL;
@@ -26,6 +27,7 @@ public class PlaceDetailDTO {
         this.id = place.getId();
         this.googleId = place.getGoogleId();
         this.name = place.getName();
+        this.address = place.getAddress();
         this.description = place.getDescription();
         this.imagePath = place.getImagePath();
         this.URL = place.getURL();

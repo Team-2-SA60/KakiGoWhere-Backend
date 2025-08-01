@@ -36,7 +36,7 @@ public class GooglePlaceServiceImpl implements GooglePlaceService {
 
         // Specify what fields to retrieve from request
         String fieldMask =
-                "id,displayName,websiteUri,types,photos,location,regularOpeningHours,businessStatus,editorialSummary,reviews";
+                "id,displayName,websiteUri,types,photos,location,regularOpeningHours,businessStatus,editorialSummary,reviews,shortFormattedAddress";
 
         return webClient
                 .get()
