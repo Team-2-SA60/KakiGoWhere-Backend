@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import team2.kakigowherebackend.dto.ExportPlaceDTO;
 import team2.kakigowherebackend.dto.PlaceDTO;
 import team2.kakigowherebackend.dto.PlaceDetailDTO;
+import team2.kakigowherebackend.service.ExportPlaceService;
 import team2.kakigowherebackend.service.PlaceService;
 import team2.kakigowherebackend.service.RetrievePlaceService;
 import team2.kakigowherebackend.service.RetrievePlaceServiceImpl;
@@ -19,11 +20,15 @@ public class PlaceController {
 
     private final PlaceService placeService;
     private final RetrievePlaceService retrievePlaceService;
+    private final ExportPlaceService exportPlaceService;
 
     public PlaceController(
-            PlaceService placeService, RetrievePlaceServiceImpl retrievePlaceService) {
+            PlaceService placeService,
+            RetrievePlaceServiceImpl retrievePlaceService,
+            ExportPlaceService exportPlaceService) {
         this.placeService = placeService;
         this.retrievePlaceService = retrievePlaceService;
+        this.exportPlaceService = exportPlaceService;
     }
 
     @GetMapping
@@ -44,6 +49,10 @@ public class PlaceController {
     @GetMapping("/ml/export")
     public ResponseEntity<List<ExportPlaceDTO>> exportPlaces() {
         List<ExportPlaceDTO> places = placeService.getPlacesForMl();
+
+        // Runs service to export all places into CSV for ML
+        exportPlaceService.buildCsv(places);
+
         return ResponseEntity.ok(places);
     }
 

@@ -77,13 +77,16 @@
                 SPRING_DATASOURCE_PASSWORD: {{ db_pass }}
                 SPRING_JPA_HIBERNATE_DDL_AUTO: update
                 UPLOAD_DIR: /data/images
+                CSV_DIR: /data/csv/
                 GOOGLE_PLACES_API_KEY: {{ google_places_api_key }}
               volumes:
                 - app_images:/data/images
+                - app_csv:/data/csv
 
           volumes:
             db_data:
             app_images:
+            app_csv
 
     - name: Pull latest images
       command: docker compose pull

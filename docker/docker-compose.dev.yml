@@ -25,9 +25,13 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/kakigowhere
       SPRING_DATASOURCE_USERNAME: test
       SPRING_DATASOURCE_PASSWORD: pw
+      UPLOAD_DIR: /data/images
+      CSV_DIR: /data/csv/
     volumes:
       - app_images:/data/images
+      - app_csv:/data/csv
 
 volumes:
   db_data:
   app_images:
+  app_csv:
