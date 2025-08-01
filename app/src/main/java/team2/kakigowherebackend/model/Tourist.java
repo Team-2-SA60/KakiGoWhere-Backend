@@ -23,7 +23,8 @@ public class Tourist {
     private String password;
     private String name;
 
-    @OneToOne private Itinerary itinerary;
+    @OneToOne(mappedBy = "tourist")
+    private Itinerary itinerary;
 
     @ManyToMany
     @Size(max = 3)
