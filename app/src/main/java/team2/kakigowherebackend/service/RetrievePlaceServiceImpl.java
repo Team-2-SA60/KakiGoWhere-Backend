@@ -73,7 +73,9 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
                 // If updatedPlace is different from original Place, commit to download image and
                 // save the updatedPlace
                 if (!updatedPlace.equals(p)) {
-                    downloadImages(updatedPlace, placeNode);
+                    // Disabled download image so that we don't replace existing images during
+                    // scheduled update
+                    // downloadImages(updatedPlace, placeNode);
                     pRepo.save(updatedPlace);
                     log.info("Updated place for: {}", name);
                 }

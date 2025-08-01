@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -64,12 +65,12 @@ public class PlaceServiceImpl implements PlaceService {
 
         Path imageDir = Paths.get(uploadDir);
         Path imagePath = imageDir.resolve(place.getGoogleId() + ".jpg").normalize();
-
         Resource resource = new UrlResource(imagePath.toUri());
-        if (resource.exists() && resource.isReadable()) {
-            return resource;
-        } else {
-            return null;
+
+        if (!resource.exists() || !resource.isReadable()) {
+            return new ClassPathResource("static/default_image.jpg");
         }
+
+        return resource;
     }
 }

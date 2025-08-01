@@ -6,10 +6,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import team2.kakigowherebackend.dto.ExportPlaceDTO;
 
+@Slf4j
 @Service
 public class ExportPlaceServiceImpl implements ExportPlaceService {
 
@@ -66,7 +68,7 @@ public class ExportPlaceServiceImpl implements ExportPlaceService {
             Path exportPath = Paths.get(csvDir + "places.csv");
             Files.createDirectories(exportPath.getParent());
             Files.writeString(exportPath, csvContent);
-            System.out.println("Exported CSV to: " + exportPath);
+            log.info("Exported CSV to: {}", exportPath);
         } catch (IOException e) {
             throw new UncheckedIOException("Failed to write CSV", e);
         }
