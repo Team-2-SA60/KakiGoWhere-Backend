@@ -18,20 +18,20 @@ public class DataInitializer implements CommandLineRunner {
     private final TouristRepository tRepo;
 
     public DataInitializer(PlaceRepository pRepo, TouristRepository tRepo) {
-
         this.pRepo = pRepo;
         this.tRepo = tRepo;
     }
 
     @Override
     public void run(String... args) throws Exception {
-        Place checkPlace = pRepo.findById(1L).orElse(null);
-        if (checkPlace != null) return;
         addPlaces();
         addTourist();
     }
 
     private void addPlaces() {
+        Place checkPlace = pRepo.findById(1L).orElse(null);
+        if (checkPlace != null) return;
+
         log.info("Initializing places...");
 
         List<Place> places = new ArrayList<>();
@@ -156,15 +156,44 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void addTourist() {
+        Tourist checkTourist = tRepo.findById(1L).orElse(null);
+        if (checkTourist != null) return;
+
         log.info("Initializing tourists...");
+
         List<Tourist> tourists = new ArrayList<>();
-        tourists.add(new Tourist("a@kaki.com", "a", "Adrian"));
-        tourists.add(new Tourist("cy@kaki.com", "cy", "Cai Yun"));
-        tourists.add(new Tourist("gy@kaki.com", "gy", "Gong Yuan"));
-        tourists.add(new Tourist("ks@kaki.com", "ks", "Kin Seng"));
-        tourists.add(new Tourist("bf@kaki.com", "bf", "Bo Fei"));
-        tourists.add(new Tourist("rx@kaki.com", "rx", "Runxin"));
+        tourists.add(
+                new Tourist(
+                        "a@kaki.com",
+                        "$2a$10$W1CH5b8ZXbj7bv3xr/DOhul3yzq8Xo7YKuNnvkx.FnSCFfICsDCZq",
+                        "Adrian"));
+        tourists.add(
+                new Tourist(
+                        "cy@kaki.com",
+                        "$2a$10$hw5BfF4LiBRslUBUHOJrzePw3umSdJmC4UWuZPhhYzBrxLir5VSiG",
+                        "Cai Yun"));
+        tourists.add(
+                new Tourist(
+                        "gy@kaki.com",
+                        "$2a$10$hgVY1PEMpNwdLBnZN7QJh.uaBqjxg5PxqYIgKVz1M2MQZkJXp.DtC",
+                        "Gong Yuan"));
+        tourists.add(
+                new Tourist(
+                        "ks@kaki.com",
+                        "$2a$10$/Hur9v2dwu3aj.vxe.b4tumzSnwX4GiRFXf/p95JLIBMdF7HSzyDG",
+                        "Kin Seng"));
+        tourists.add(
+                new Tourist(
+                        "bf@kaki.com",
+                        "$2a$10$NjngW1K/0brSfHiAhQVfv.ijVZ8jShMgcnPlM16Erg4SDXFVGEfKW",
+                        "Bo Fei"));
+        tourists.add(
+                new Tourist(
+                        "rx@kaki.com",
+                        "$2a$10$JL1W16uSXhYMZ5F17WxTzeSCgp6tUExPukQ7v6zJGN5Mr5KQCcOse",
+                        "Runxin"));
         tRepo.saveAll(tourists);
+
         log.info("Initialized tourists");
     }
 }

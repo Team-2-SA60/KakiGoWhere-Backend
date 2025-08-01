@@ -74,8 +74,8 @@ public class PlaceController {
         }
     }
 
-    @GetMapping("/retrieveplaces")
-    public ResponseEntity<String> retrievePlaces(@RequestParam("run") String run) {
+    @PostMapping("/retrieve")
+    public ResponseEntity<String> retrievePlaces(@RequestBody String run) {
         // PLEASE DON'T RUN THIS RANDOMLY
         // It will call google places API to update every places we have
 

@@ -24,4 +24,12 @@ public class DailyStats {
     private LocalDate date;
     private int numberOfUniqueVisits;
     private int numberOfSignUps;
+
+    public void addUniqueVisits() {
+        numberOfUniqueVisits++;
+    }
+
+    public void addSignUps() {
+        numberOfSignUps++;
+    }
 }

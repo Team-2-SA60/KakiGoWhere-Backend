@@ -1,6 +1,6 @@
 package team2.kakigowherebackend.utils;
 
-public class TextEncoding {
+public class TextEncoderUtil {
     public static String fixEncoding(String badString) {
         return badString
                 .replace("â€™", "’")
