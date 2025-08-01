@@ -6,13 +6,15 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import team2.kakigowherebackend.dto.ExportPlaceDTO;
 import team2.kakigowherebackend.dto.PlaceDTO;
+import team2.kakigowherebackend.dto.PlaceDetailDTO;
 import team2.kakigowherebackend.service.PlaceService;
 import team2.kakigowherebackend.service.RetrievePlaceService;
 import team2.kakigowherebackend.service.RetrievePlaceServiceImpl;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/places")
 public class PlaceController {
 
     private final PlaceService placeService;
@@ -24,15 +26,29 @@ public class PlaceController {
         this.retrievePlaceService = retrievePlaceService;
     }
 
-    @GetMapping("/places")
+    @GetMapping
     public ResponseEntity<List<PlaceDTO>> getPlaces() {
-        List<PlaceDTO> places = placeService.getAllPlaces();
+        List<PlaceDTO> places = placeService.getPlaces();
         return ResponseEntity.ok(places);
     }
 
-    @GetMapping("/places/image/{placeId}")
-    public ResponseEntity<Resource> getPlaceImage(@PathVariable long placeId) {
+    @GetMapping("/id/{placeId}")
+    public ResponseEntity<PlaceDetailDTO> getPlaceById(@PathVariable long placeId) {
+        PlaceDetailDTO place = placeService.getPlaceDetail(placeId);
 
+        if (place == null) return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(place);
+    }
+
+    @GetMapping("/ml/export")
+    public ResponseEntity<List<ExportPlaceDTO>> exportPlaces() {
+        List<ExportPlaceDTO> places = placeService.getPlacesForMl();
+        return ResponseEntity.ok(places);
+    }
+
+    @GetMapping("/image/{placeId}")
+    public ResponseEntity<Resource> getPlaceImage(@PathVariable long placeId) {
         try {
             Resource image = placeService.getImageByPlaceId(placeId);
 
