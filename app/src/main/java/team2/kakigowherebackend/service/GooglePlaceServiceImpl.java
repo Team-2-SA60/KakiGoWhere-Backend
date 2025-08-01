@@ -16,7 +16,7 @@ public class GooglePlaceServiceImpl implements GooglePlaceService {
     // Before using this service, make sure you put your Google Place API key in
     // "application.properties"
     public GooglePlaceServiceImpl(
-            @Value("${google.places.api.key}") String apiKey, ImageServiceImpl iService) {
+            @Value("${google.places.api.key}") String apiKey, ImageService iService) {
         this.iService = iService;
         this.webClient =
                 WebClient.builder()

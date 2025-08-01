@@ -18,7 +18,7 @@ public class ExportPlaceServiceImpl implements ExportPlaceService {
 
     private final PlaceService placeService;
 
-    public ExportPlaceServiceImpl(PlaceServiceImpl placeService) {
+    public ExportPlaceServiceImpl(PlaceService placeService) {
         this.placeService = placeService;
     }
 

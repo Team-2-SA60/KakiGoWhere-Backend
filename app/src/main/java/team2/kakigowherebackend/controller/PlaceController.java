@@ -12,7 +12,6 @@ import team2.kakigowherebackend.dto.PlaceDetailDTO;
 import team2.kakigowherebackend.service.ExportPlaceService;
 import team2.kakigowherebackend.service.PlaceService;
 import team2.kakigowherebackend.service.RetrievePlaceService;
-import team2.kakigowherebackend.service.RetrievePlaceServiceImpl;
 
 @RestController
 @RequestMapping("/api/places")
@@ -24,7 +23,7 @@ public class PlaceController {
 
     public PlaceController(
             PlaceService placeService,
-            RetrievePlaceServiceImpl retrievePlaceService,
+            RetrievePlaceService retrievePlaceService,
             ExportPlaceService exportPlaceService) {
         this.placeService = placeService;
         this.retrievePlaceService = retrievePlaceService;
