@@ -3,6 +3,7 @@ package team2.kakigowherebackend.controller;
 import java.net.MalformedURLException;
 import java.util.List;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,9 +41,9 @@ public class PlaceController {
     public ResponseEntity<PlaceDetailDTO> getPlaceById(@PathVariable long placeId) {
         PlaceDetailDTO place = placeService.getPlaceDetail(placeId);
 
-        if (place == null) return ResponseEntity.notFound().build();
+        if (place == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
-        return ResponseEntity.ok(place);
+        return ResponseEntity.status(HttpStatus.OK).body(place);
     }
 
     @GetMapping("/ml/export")
@@ -52,7 +53,7 @@ public class PlaceController {
         // Runs service to export all places into CSV for ML
         exportPlaceService.buildCsv(places);
 
-        return ResponseEntity.ok(places);
+        return ResponseEntity.status(HttpStatus.OK).body(places);
     }
 
     @GetMapping("/image/{placeId}")
@@ -61,13 +62,15 @@ public class PlaceController {
             Resource image = placeService.getImageByPlaceId(placeId);
 
             if (image == null || !image.exists()) {
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
 
-            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(image);
 
         } catch (MalformedURLException e) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -77,10 +80,10 @@ public class PlaceController {
         // It will call google places API to update every places we have
 
         if (run == null || !run.equals("team2")) {
-            return ResponseEntity.ok("Not ran");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not ran");
         }
 
         retrievePlaceService.retrievePlaces();
-        return ResponseEntity.ok("Ran retrieved places");
+        return ResponseEntity.status(HttpStatus.OK).body("Ran retrieved places");
     }
 }
