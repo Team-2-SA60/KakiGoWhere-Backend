@@ -22,8 +22,7 @@ public class Itinerary {
     private String title;
     private LocalDate startDate;
 
-    @OneToOne
-    private Tourist tourist;
+    @OneToOne private Tourist tourist;
 
     @OneToMany(mappedBy = "itinerary")
     private List<ItineraryDetail> itineraryDetails;
