@@ -86,7 +86,7 @@
           volumes:
             db_data:
             app_images:
-            app_csv
+            app_csv:
 
     - name: Pull latest images
       command: docker compose pull
