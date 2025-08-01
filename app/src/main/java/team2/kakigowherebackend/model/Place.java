@@ -21,6 +21,7 @@ public class Place {
     private String googleId;
     private String name;
     @Lob private String description;
+    private String address;
     private String imagePath;
     private String URL;
     @Lob private String openingDescription;
@@ -56,7 +57,9 @@ public class Place {
         this.googleId = otherPlace.getGoogleId();
         this.name = otherPlace.getName();
         this.description = otherPlace.getDescription();
+        this.address = otherPlace.getAddress();
         this.URL = otherPlace.getURL();
+        this.imagePath = otherPlace.getImagePath();
         this.openingDescription = otherPlace.getOpeningDescription();
         this.latitude = otherPlace.getLatitude();
         this.longitude = otherPlace.getLongitude();
@@ -134,6 +137,7 @@ public class Place {
 
         if (!Objects.equals(name, place.name)
                 || !Objects.equals(URL, place.URL)
+                || !Objects.equals(address, place.address)
                 || latitude != place.latitude
                 || longitude != place.longitude
                 || active != place.active
@@ -152,6 +156,14 @@ public class Place {
     @Override
     public int hashCode() {
         return Objects.hash(
-                id, name, URL, latitude, longitude, openingDescription, interestCategories, active);
+                id,
+                name,
+                URL,
+                address,
+                latitude,
+                longitude,
+                openingDescription,
+                interestCategories,
+                active);
     }
 }

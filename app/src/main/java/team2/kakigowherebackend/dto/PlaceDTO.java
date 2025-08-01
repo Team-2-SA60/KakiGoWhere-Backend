@@ -10,6 +10,7 @@ public class PlaceDTO {
     private long id;
     private String googleId;
     private String name;
+    private String address;
     private Double latitude;
     private Double longitude;
     private boolean isActive;
@@ -21,6 +22,7 @@ public class PlaceDTO {
         this.id = place.getId();
         this.googleId = place.getGoogleId();
         this.name = place.getName();
+        this.address = place.getAddress();
         this.latitude = place.getLatitude();
         this.longitude = place.getLongitude();
         this.isActive = place.isActive();

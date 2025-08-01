@@ -1,7 +1,6 @@
 package team2.kakigowherebackend.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import jakarta.transaction.Transactional;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,7 +37,6 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
 
     // Retrieve all Places in our database and attempts to update each of them using Google Places
     // API
-    @Transactional(dontRollbackOn = Exception.class)
     @Override
     public void retrievePlaces() {
         log.info("Retrieving and updating places...");
@@ -73,8 +71,7 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
                 if (p.getRatings().isEmpty()) checkAndAddRatings(updatedPlace, placeNode);
 
                 // If updatedPlace is different from original Place, commit to download image and
-                // save
-                // the updatedPlace
+                // save the updatedPlace
                 if (!updatedPlace.equals(p)) {
                     downloadImages(updatedPlace, placeNode);
                     pRepo.save(updatedPlace);
@@ -92,6 +89,7 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
     public void mapGooglePlace(Place place, JsonNode placeNode) {
         JsonNode displayNameNode = placeNode.path("displayName").path("text");
         JsonNode websiteUriNode = placeNode.path("websiteUri");
+        JsonNode addressNode = placeNode.path("shortFormattedAddress");
         JsonNode latNode = placeNode.path("location").path("latitude");
         JsonNode lngNode = placeNode.path("location").path("longitude");
         JsonNode businessStatusNode = placeNode.path("businessStatus");
@@ -101,6 +99,7 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
 
         if (!displayNameNode.isMissingNode()) place.setName(displayNameNode.asText());
         if (!websiteUriNode.isMissingNode()) place.setURL(websiteUriNode.asText());
+        if (!addressNode.isMissingNode()) place.setAddress(addressNode.asText());
         if (!latNode.isMissingNode()) place.setLatitude(latNode.asDouble());
         if (!lngNode.isMissingNode()) place.setLongitude(lngNode.asDouble());
 
