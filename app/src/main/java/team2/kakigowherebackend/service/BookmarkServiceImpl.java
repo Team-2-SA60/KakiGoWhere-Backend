@@ -29,9 +29,7 @@ public class BookmarkServiceImpl implements BookmarkService {
 
     @Override
     public List<Bookmark> findAllByTouristId(long touristId) {
-        List<Bookmark> bookmarks = bookmarkRepo.findAllByTouristId(touristId);
-        if (bookmarks.isEmpty()) return null;
-        return bookmarks;
+        return bookmarkRepo.findAllByTouristId(touristId);
     }
 
     // Toggle bookmark: true = create, false = delete
