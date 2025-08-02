@@ -1,6 +1,7 @@
 package team2.kakigowherebackend.repository;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,5 +12,5 @@ import team2.kakigowherebackend.model.DailyStats;
 public interface DailyStatsRepository extends JpaRepository<DailyStats, Long> {
 
     @Query("SELECT d FROM DailyStats d WHERE d.date = :date")
-    DailyStats findByDate(@Param("date") LocalDate date);
+    Optional<DailyStats> findByDate(@Param("date") LocalDate date);
 }

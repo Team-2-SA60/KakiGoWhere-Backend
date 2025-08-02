@@ -21,4 +21,5 @@ public class Bookmark {
     private LocalDate bookmarkedDate;
 
     @ManyToOne private Place place;
+    @ManyToOne private Tourist tourist;
 }

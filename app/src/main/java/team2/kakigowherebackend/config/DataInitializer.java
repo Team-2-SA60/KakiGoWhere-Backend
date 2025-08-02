@@ -35,7 +35,7 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void addPlaces() {
-        Place checkPlace = placeRepo.findByGoogleId("ChIJFQzeR6cZ2jERgM6--iWeY-U");
+        Place checkPlace = placeRepo.findByGoogleId("ChIJFQzeR6cZ2jERgM6--iWeY-U").orElse(null);
         if (checkPlace != null) return;
 
         log.info("Initializing places...");
@@ -791,7 +791,7 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void addTourist() {
-        Tourist checkTourist = touristRepo.findByEmail("a@kaki.com");
+        Tourist checkTourist = touristRepo.findByEmail("a@kaki.com").orElse(null);
         if (checkTourist != null) return;
 
         log.info("Initializing tourists...");
@@ -834,7 +834,7 @@ public class DataInitializer implements CommandLineRunner {
 
     private void addAdmin() {
         String email = "admin@kaki.com";
-        Admin checkAdmin = adminRepo.findByEmail(email);
+        Admin checkAdmin = adminRepo.findByEmail(email).orElse(null);
         if (checkAdmin != null) return;
 
         log.info("Initializing admins...");

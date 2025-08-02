@@ -3,18 +3,13 @@ package team2.kakigowherebackend.service;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import team2.kakigowherebackend.dto.ExportPlaceDTO;
-import team2.kakigowherebackend.dto.PlaceDTO;
-import team2.kakigowherebackend.dto.PlaceDetailDTO;
 import team2.kakigowherebackend.model.Place;
 import team2.kakigowherebackend.repository.PlaceRepository;
 
@@ -33,28 +28,13 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     @Override
-    public List<PlaceDTO> getPlaces() {
-        List<PlaceDTO> placesDTO = new ArrayList<>();
-        placeRepo.findAll().forEach(place -> placesDTO.add(new PlaceDTO(place)));
-        return placesDTO;
+    public List<Place> getPlaces() {
+        return placeRepo.findAll();
     }
 
     @Override
-    public List<ExportPlaceDTO> getPlacesForMl() {
-        List<ExportPlaceDTO> places = new ArrayList<>();
-        placeRepo
-                .findAll()
-                .forEach(
-                        p -> {
-                            places.add(new ExportPlaceDTO(p));
-                        });
-        return places;
-    }
-
-    @Override
-    public PlaceDetailDTO getPlaceDetail(long placeId) {
-        Optional<Place> place = placeRepo.findById(placeId);
-        return place.map(PlaceDetailDTO::new).orElse(null);
+    public Place getPlaceDetail(long placeId) {
+        return placeRepo.findById(placeId).orElse(null);
     }
 
     @Override
