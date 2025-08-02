@@ -5,4 +5,6 @@ import org.springframework.stereotype.Repository;
 import team2.kakigowherebackend.model.Tourist;
 
 @Repository
-public interface TouristRepository extends JpaRepository<Tourist, Long> {}
+public interface TouristRepository extends JpaRepository<Tourist, Long> {
+    Tourist findByEmail(String email);
+}

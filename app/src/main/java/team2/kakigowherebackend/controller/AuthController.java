@@ -23,7 +23,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> touristLogin(@Valid @RequestBody LoginDTO loginDTO, HttpSession session) {
+    public ResponseEntity<?> touristLogin(
+            @Valid @RequestBody LoginDTO loginDTO, HttpSession session) {
 
         String email = loginDTO.getEmail();
         User user = authService.findUserByEmail(email);

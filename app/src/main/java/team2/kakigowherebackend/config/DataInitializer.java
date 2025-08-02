@@ -35,7 +35,7 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void addPlaces() {
-        Place checkPlace = placeRepo.findById(1L).orElse(null);
+        Place checkPlace = placeRepo.findByGoogleId("ChIJFQzeR6cZ2jERgM6--iWeY-U");
         if (checkPlace != null) return;
 
         log.info("Initializing places...");
@@ -162,7 +162,7 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void addTourist() {
-        Tourist checkTourist = touristRepo.findById(1L).orElse(null);
+        Tourist checkTourist = touristRepo.findByEmail("a@kaki.com");
         if (checkTourist != null) return;
 
         log.info("Initializing tourists...");
@@ -204,7 +204,8 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void addAdmin() {
-        Admin checkAdmin = adminRepo.findById(1L).orElse(null);
+        String email = "admin@kaki.com";
+        Admin checkAdmin = adminRepo.findByEmail(email);
         if (checkAdmin != null) return;
 
         log.info("Initializing admins...");
@@ -212,7 +213,7 @@ public class DataInitializer implements CommandLineRunner {
         List<Admin> admins = new ArrayList<>();
         admins.add(
                 new Admin(
-                        "admin@kaki.com",
+                        email,
                         "$2a$12$8LH6o8kdF8MpW476frv4B.5wOJW08bIqIwxjUFfUEOsp6EQyBNYtO",
                         "Admin"));
         adminRepo.saveAll(admins);
