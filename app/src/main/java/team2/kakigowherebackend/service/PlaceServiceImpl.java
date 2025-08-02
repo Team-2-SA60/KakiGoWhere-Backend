@@ -1,11 +1,5 @@
 package team2.kakigowherebackend.service;
 
-import java.net.MalformedURLException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -17,6 +11,13 @@ import team2.kakigowherebackend.dto.PlaceDTO;
 import team2.kakigowherebackend.dto.PlaceDetailDTO;
 import team2.kakigowherebackend.model.Place;
 import team2.kakigowherebackend.repository.PlaceRepository;
+
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional

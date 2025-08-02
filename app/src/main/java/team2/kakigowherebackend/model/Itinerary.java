@@ -1,12 +1,14 @@
 package team2.kakigowherebackend.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Entity
 @Getter
@@ -22,8 +24,26 @@ public class Itinerary {
     private String title;
     private LocalDate startDate;
 
-    @OneToOne private Tourist tourist;
+    @ManyToOne private Tourist tourist;
 
-    @OneToMany(mappedBy = "itinerary")
+    @OneToMany(mappedBy = "itinerary", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItineraryDetail> itineraryDetails;
+
+    public Itinerary(String title, LocalDate startDate) {
+        this.title = title;
+        this.startDate = startDate;
+    }
+
+    // methods
+
+    public Long getDisplayImageId() {
+        if (itineraryDetails == null || itineraryDetails.isEmpty()) return null;
+        return itineraryDetails.getFirst().getPlace().getId();
+    }
+
+    public Long getDays() {
+        if (itineraryDetails == null || itineraryDetails.isEmpty()) return null;
+        LocalDate lastDate = itineraryDetails.getLast().getDate();
+        return ChronoUnit.DAYS.between(startDate, lastDate);
+    }
 }
