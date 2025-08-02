@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import team2.kakigowherebackend.dto.ExportPlaceDTO;
+import team2.kakigowherebackend.model.Place;
 
 @Slf4j
 @Service
@@ -26,8 +27,9 @@ public class ExportPlaceServiceImpl implements ExportPlaceService {
 
     @Override
     public void exportPlaces() {
-        List<ExportPlaceDTO> places = placeService.getPlacesForMl();
-        buildCsv(places);
+        List<Place> places = placeService.getPlaces();
+        List<ExportPlaceDTO> exportPlaceDTOS = places.stream().map(ExportPlaceDTO::new).toList();
+        buildCsv(exportPlaceDTOS);
     }
 
     @Override
