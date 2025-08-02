@@ -5,8 +5,10 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import team2.kakigowherebackend.model.Admin;
 import team2.kakigowherebackend.model.Place;
 import team2.kakigowherebackend.model.Tourist;
+import team2.kakigowherebackend.repository.AdminRepository;
 import team2.kakigowherebackend.repository.PlaceRepository;
 import team2.kakigowherebackend.repository.TouristRepository;
 
@@ -14,22 +16,26 @@ import team2.kakigowherebackend.repository.TouristRepository;
 @Component
 public class DataInitializer implements CommandLineRunner {
 
-    private final PlaceRepository pRepo;
-    private final TouristRepository tRepo;
+    private final PlaceRepository placeRepo;
+    private final TouristRepository touristRepo;
+    private final AdminRepository adminRepo;
 
-    public DataInitializer(PlaceRepository pRepo, TouristRepository tRepo) {
-        this.pRepo = pRepo;
-        this.tRepo = tRepo;
+    public DataInitializer(
+            PlaceRepository placeRepo, TouristRepository touristRepo, AdminRepository adminRepo) {
+        this.placeRepo = placeRepo;
+        this.touristRepo = touristRepo;
+        this.adminRepo = adminRepo;
     }
 
     @Override
     public void run(String... args) throws Exception {
         addPlaces();
         addTourist();
+        addAdmin();
     }
 
     private void addPlaces() {
-        Place checkPlace = pRepo.findById(1L).orElse(null);
+        Place checkPlace = placeRepo.findById(1L).orElse(null);
         if (checkPlace != null) return;
 
         log.info("Initializing places...");
@@ -150,13 +156,13 @@ public class DataInitializer implements CommandLineRunner {
         places.add(new Place("Civic District", "ChIJw4huyqAZ2jERXIhnlRWOfhI"));
         places.add(new Place("HarbourFront", "ChIJpV0-3uEb2jERl85WTf6I9n0"));
         places.add(new Place("Bras Basah Complex", "ChIJtxaD8KQZ2jERgCmvEt9PdiU"));
-        pRepo.saveAll(places);
+        placeRepo.saveAll(places);
 
         log.info("Initialized places");
     }
 
     private void addTourist() {
-        Tourist checkTourist = tRepo.findById(1L).orElse(null);
+        Tourist checkTourist = touristRepo.findById(1L).orElse(null);
         if (checkTourist != null) return;
 
         log.info("Initializing tourists...");
@@ -192,8 +198,25 @@ public class DataInitializer implements CommandLineRunner {
                         "rx@kaki.com",
                         "$2a$10$JL1W16uSXhYMZ5F17WxTzeSCgp6tUExPukQ7v6zJGN5Mr5KQCcOse",
                         "Runxin"));
-        tRepo.saveAll(tourists);
+        touristRepo.saveAll(tourists);
 
         log.info("Initialized tourists");
+    }
+
+    private void addAdmin() {
+        Admin checkAdmin = adminRepo.findById(1L).orElse(null);
+        if (checkAdmin != null) return;
+
+        log.info("Initializing admins...");
+
+        List<Admin> admins = new ArrayList<>();
+        admins.add(
+                new Admin(
+                        "admin@kaki.com",
+                        "$2a$12$8LH6o8kdF8MpW476frv4B.5wOJW08bIqIwxjUFfUEOsp6EQyBNYtO",
+                        "Admin"));
+        adminRepo.saveAll(admins);
+
+        log.info("Initialized admins");
     }
 }
