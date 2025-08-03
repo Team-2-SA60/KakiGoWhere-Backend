@@ -104,4 +104,5 @@ jobs:
                           db_pass=${{ secrets.MYSQL_PASSWORD }} \
                           db_root_pass=${{ secrets.MYSQL_ROOT_PASSWORD }} \
                           docker_image=${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }} \
-                          google_places_api_key=${{ secrets.GOOGLE_PLACES_API_KEY }}"
+                          google_places_api_key=${{ secrets.GOOGLE_PLACES_API_KEY }} \
+                          cors_allowed_origin=${{ secrets.CORS_ALLOWED_ORIGIN }}"
