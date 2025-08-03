@@ -29,9 +29,7 @@ public class BookmarkServiceImpl implements BookmarkService {
 
     @Override
     public List<Bookmark> findAllByTouristId(long touristId) {
-        List<Bookmark> bookmarks = bookmarkRepo.findAllByTouristId(touristId);
-        if (bookmarks.isEmpty()) return null;
-        return bookmarks;
+        return bookmarkRepo.findAllByTouristId(touristId);
     }
 
     // Toggle bookmark: true = create, false = delete
@@ -70,8 +68,10 @@ public class BookmarkServiceImpl implements BookmarkService {
 
     @Override
     public void deleteBookmark(long bookmarkId) {
-        Bookmark bookmark = bookmarkRepo.findById(bookmarkId).orElse(null);
-        if (bookmark == null) throw new NoSuchElementException("Bookmark not found");
+        Bookmark bookmark =
+                bookmarkRepo
+                        .findById(bookmarkId)
+                        .orElseThrow(() -> new NoSuchElementException("Bookmark not found"));
         bookmarkRepo.delete(bookmark);
     }
 }

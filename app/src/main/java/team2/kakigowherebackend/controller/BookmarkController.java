@@ -20,7 +20,7 @@ public class BookmarkController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<?> getAllBookmarksByTourist(HttpSession session) {
+    public ResponseEntity<List<PlaceDTO>> getAllBookmarksByTourist(HttpSession session) {
         long touristId = (long) session.getAttribute("tourist");
 
         List<Bookmark> bookmarks = bookmarkService.findAllByTouristId(touristId);
@@ -31,7 +31,7 @@ public class BookmarkController {
     }
 
     @PostMapping("/toggle")
-    public ResponseEntity<?> toggleBookmark(@RequestParam long placeId, HttpSession session) {
+    public ResponseEntity<String> toggleBookmark(@RequestParam long placeId, HttpSession session) {
         long touristId = (long) session.getAttribute("tourist");
 
         try {

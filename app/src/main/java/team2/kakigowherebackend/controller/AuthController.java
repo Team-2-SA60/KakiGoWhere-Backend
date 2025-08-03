@@ -11,6 +11,7 @@ import team2.kakigowherebackend.model.Admin;
 import team2.kakigowherebackend.model.Tourist;
 import team2.kakigowherebackend.model.User;
 import team2.kakigowherebackend.service.AuthService;
+import team2.kakigowherebackend.utils.UserConstants;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -33,7 +34,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid email");
 
         String password = loginDTO.getPassword();
-        return handleLogin(user, password, "tourist", session);
+        return handleLogin(user, password, UserConstants.TOURIST, session);
     }
 
     @PostMapping("/admin/login")
@@ -47,13 +48,25 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid email");
 
         String password = loginDTO.getPassword();
-        return handleLogin(user, password, "admin", session);
+        return handleLogin(user, password, UserConstants.ADMIN, session);
     }
 
     @GetMapping("/logout")
     public ResponseEntity<String> logout(HttpSession session) {
         session.invalidate();
         return ResponseEntity.status(HttpStatus.OK).body("Logout successful");
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserDTO> getMe(@RequestParam String role, HttpSession session) {
+        Object userId = session.getAttribute(role);
+
+        if (!(userId instanceof Long))
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        User user = authService.findUserByRoleAndId(role, (long) userId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new UserDTO(user, role));
     }
 
     private ResponseEntity<?> handleLogin(
