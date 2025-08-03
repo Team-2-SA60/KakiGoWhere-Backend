@@ -44,6 +44,6 @@ public class Itinerary {
     public Long getDays() {
         if (itineraryDetails == null || itineraryDetails.isEmpty()) return null;
         LocalDate lastDate = itineraryDetails.getLast().getDate();
-        return ChronoUnit.DAYS.between(startDate, lastDate);
+        return ChronoUnit.DAYS.between(startDate, lastDate) + 1;
     }
 }
