@@ -68,8 +68,10 @@ public class BookmarkServiceImpl implements BookmarkService {
 
     @Override
     public void deleteBookmark(long bookmarkId) {
-        Bookmark bookmark = bookmarkRepo.findById(bookmarkId).orElse(null);
-        if (bookmark == null) throw new NoSuchElementException("Bookmark not found");
+        Bookmark bookmark =
+                bookmarkRepo
+                        .findById(bookmarkId)
+                        .orElseThrow(() -> new NoSuchElementException("Bookmark not found"));
         bookmarkRepo.delete(bookmark);
     }
 }
