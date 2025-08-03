@@ -15,10 +15,11 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
 
     Optional<Place> findById(long placeId);
 
-    @Query("SELECT DISTINCT p FROM Place p " +
-            "JOIN p.interestCategories ic " +
-            "WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
-            "OR LOWER(ic.description) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
-            "ORDER BY p.name ASC")
+    @Query(
+            "SELECT DISTINCT p FROM Place p "
+                    + "JOIN p.interestCategories ic "
+                    + "WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) "
+                    + "OR LOWER(ic.description) LIKE LOWER(CONCAT('%', :keyword, '%')) "
+                    + "ORDER BY p.name ASC")
     List<Place> getPlacesBySearch(@Param("keyword") String keyword, Pageable pageable);
 }

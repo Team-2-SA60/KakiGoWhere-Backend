@@ -57,6 +57,18 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body("Logout successful");
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<UserDTO> getMe(@RequestParam String role, HttpSession session) {
+        Object userId = session.getAttribute(role);
+
+        if (!(userId instanceof Long))
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        User user = authService.findUserByRoleAndId(role, (long) userId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new UserDTO(user, role));
+    }
+
     private ResponseEntity<?> handleLogin(
             User user, String rawPassword, String sessionKey, HttpSession session) {
         if (!authService.authenticate(rawPassword, user.getPassword()))
