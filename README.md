@@ -38,10 +38,24 @@ docker build -f ../docker/Dockerfile -t kakigowhere-springboot .
 
 2. Run container
 ```
-docker run -d --name backend -p 8080:8080 kakigowhere-springboot
+docker run -d \
+  --name backend \
+  -p 8080:8080 \
+  -e CSV_DIR=/uploads/csv/ \
+  -v docker_app_csv:/uploads/csv \
+  kakigowhere-springboot
+
 ```
 
-3. Stop and remove container
+3. Persist places.csv data in docker volume by calling http://localhost:8080/api/places/ml/export
+
+
+4. (Optional) Check contents (first 20 rows)
+```
+docker run --rm -v docker_app_csv:/from alpine sh -c "head -n 20 /from/places.csv"
+```
+
+5. Stop and remove container
 ```
 docker rm -f backend
 ```
