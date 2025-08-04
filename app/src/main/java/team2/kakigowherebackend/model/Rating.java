@@ -20,6 +20,8 @@ public class Rating {
     private int rating;
     @Lob private String comment;
 
-    @ManyToOne private Place place;
-    @ManyToOne private Tourist tourist;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Place place;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Tourist tourist;
 }
