@@ -2,18 +2,19 @@ package team2.kakigowherebackend.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
-import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 public class Tourist extends User {
-    @OneToOne(mappedBy = "tourist")
-    private Itinerary itinerary;
+    @OneToMany(mappedBy = "tourist")
+    private List<Itinerary> itineraryList;
 
     @ManyToMany
     @Size(max = 3)

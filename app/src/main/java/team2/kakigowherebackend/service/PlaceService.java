@@ -1,9 +1,10 @@
 package team2.kakigowherebackend.service;
 
-import java.net.MalformedURLException;
-import java.util.List;
 import org.springframework.core.io.Resource;
 import team2.kakigowherebackend.model.Place;
+
+import java.net.MalformedURLException;
+import java.util.List;
 
 public interface PlaceService {
 

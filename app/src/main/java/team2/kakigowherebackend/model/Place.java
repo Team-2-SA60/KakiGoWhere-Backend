@@ -1,12 +1,19 @@
 package team2.kakigowherebackend.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
-import lombok.*;
 
 @Entity
 @Data
@@ -127,6 +134,38 @@ public class Place {
         }
         return false;
     }
+
+    public String getTodayOpeningHours() {
+        if (!isOpen()) return " - ";
+        if (openingHours.size() == 1) return " Open 24 hours ";
+
+        StringBuilder hours = new StringBuilder();
+
+        DayOfWeek day = LocalDate.now().getDayOfWeek(); // return is 1 = Mon
+        int todayInt = day.getValue() - 1; // format value to same as in db: 0 = Mon
+        String todayString = day.getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+
+        openingHours.forEach(data -> {
+            if (data.getOpenDay() == todayInt) {
+                if (!hours.toString().contains(todayString)) {
+                    hours.append(todayString)
+                            .append(": ");
+                }
+                hours.append(data.getOpenHour())
+                        .append(":")
+                        .append(data.getOpenMinute())
+                        .append(" - ")
+                        .append(data.getCloseHour())
+                        .append(":")
+                        .append(data.getCloseMinute())
+                        .append(", ");
+            }
+        });
+
+        hours.setLength(hours.length() - 2);
+        return hours.toString();
+    }
+
 
     // To compare a Place to another Place, for scheduler to determine if need to save an updated
     // Place

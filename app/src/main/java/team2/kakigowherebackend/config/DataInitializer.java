@@ -1,16 +1,18 @@
 package team2.kakigowherebackend.config;
 
-import java.util.ArrayList;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import team2.kakigowherebackend.model.Admin;
-import team2.kakigowherebackend.model.Place;
-import team2.kakigowherebackend.model.Tourist;
+import team2.kakigowherebackend.model.*;
 import team2.kakigowherebackend.repository.AdminRepository;
+import team2.kakigowherebackend.repository.ItineraryRepository;
 import team2.kakigowherebackend.repository.PlaceRepository;
 import team2.kakigowherebackend.repository.TouristRepository;
+import team2.kakigowherebackend.service.ItineraryService;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -19,12 +21,19 @@ public class DataInitializer implements CommandLineRunner {
     private final PlaceRepository placeRepo;
     private final TouristRepository touristRepo;
     private final AdminRepository adminRepo;
+    private final ItineraryRepository itineraryRepo;
+    private final ItineraryService itineraryService;
 
     public DataInitializer(
-            PlaceRepository placeRepo, TouristRepository touristRepo, AdminRepository adminRepo) {
+            PlaceRepository placeRepo,
+            TouristRepository touristRepo,
+            AdminRepository adminRepo,
+            ItineraryRepository itineraryRepo, ItineraryService itineraryService) {
         this.placeRepo = placeRepo;
         this.touristRepo = touristRepo;
         this.adminRepo = adminRepo;
+        this.itineraryRepo = itineraryRepo;
+        this.itineraryService = itineraryService;
     }
 
     @Override
@@ -32,6 +41,7 @@ public class DataInitializer implements CommandLineRunner {
         addPlaces();
         addTourist();
         addAdmin();
+        addItineraries();
     }
 
     private void addPlaces() {
@@ -849,4 +859,56 @@ public class DataInitializer implements CommandLineRunner {
 
         log.info("Initialized admins");
     }
+
+    private void addItineraries() {
+        String email = "cy@kaki.com";
+        List<Itinerary> itinerariesCheck = itineraryRepo.findByTouristEmail(email);
+        if (!itinerariesCheck.isEmpty()) return;
+
+        log.info("Initializing itineraries...");
+
+        Tourist tourist = touristRepo.findByEmail(email);
+
+        Itinerary i1 = new Itinerary("My awesome itinerary", LocalDate.of(2025, 8, 1));
+        i1.setItineraryDetails(List.of(
+                new ItineraryDetail(
+                        LocalDate.of(2025, 8, 1),
+                        "Day 1 enjoy",
+                        1,
+                        placeRepo.findById(1L).get()),
+                new ItineraryDetail(
+                        LocalDate.of(2025, 8, 2),
+                        "Day 2 woohoo",
+                        2,
+                        placeRepo.findById(2L).get()),
+                new ItineraryDetail(
+                        LocalDate.of(2025, 8, 3),
+                        "Day 3 almost time to go :(",
+                        3,
+                        placeRepo.findById(3L).get())
+        ));
+
+        i1.setTourist(tourist);
+        i1.getItineraryDetails().forEach(itineraryDetail -> { itineraryDetail.setItinerary(i1); });
+        itineraryRepo.save(i1);
+
+        Itinerary i2 = new Itinerary("My fun itinerary", LocalDate.of(2025, 8, 5));
+        i2.setItineraryDetails(List.of(
+                new ItineraryDetail(
+                        LocalDate.of(2025, 8, 5),
+                        "Day 1 of fun",
+                        1,
+                        placeRepo.findById(4L).get()),
+                new ItineraryDetail(
+                        LocalDate.of(2025, 8, 6),
+                        "Day 2 of awesome-ness",
+                        2,
+                        placeRepo.findById(5L).get())
+        ));
+
+        i2.setTourist(tourist);
+        i2.getItineraryDetails().forEach(itineraryDetail -> { itineraryDetail.setItinerary(i2); });
+        itineraryRepo.save(i2);
+    }
+
 }

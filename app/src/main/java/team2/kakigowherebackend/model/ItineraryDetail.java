@@ -1,11 +1,12 @@
 package team2.kakigowherebackend.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -25,4 +26,11 @@ public class ItineraryDetail {
     @ManyToOne private Itinerary itinerary;
 
     @ManyToOne private Place place;
+
+    public ItineraryDetail(LocalDate date, String notes, int sequentialOrder, Place place) {
+        this.date = date;
+        this.notes = notes;
+        this.sequentialOrder = sequentialOrder;
+        this.place = place;
+    }
 }
