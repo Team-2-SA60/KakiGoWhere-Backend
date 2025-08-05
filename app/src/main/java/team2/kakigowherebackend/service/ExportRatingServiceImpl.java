@@ -40,8 +40,15 @@ public class ExportRatingServiceImpl implements ExportRatingService {
         StringBuilder csv = new StringBuilder(header);
         for (ExportRatingDTO r : ratings) {
             csv.append(r.getId()).append(",");
-            // Escape any quotes or commas in the comment, wrap in quotes
-            csv.append("\"").append(escapeCsv(r.getComment())).append("\",");
+
+            String raw = r.getComment();
+            String normalized = raw == null
+                    ? ""
+                    : raw.replace("\r\n", " ").replace("\n", " ");
+
+            // escape (quotes, commas) if needed
+            csv.append(escapeCsv(normalized)).append(",");
+
             csv.append(r.getRating()).append(",");
             csv.append(r.getPlaceId()).append(",");
             csv.append(r.getTouristId()).append("\n");
@@ -49,6 +56,7 @@ public class ExportRatingServiceImpl implements ExportRatingService {
 
         writeToCsv(csv.toString());
     }
+
 
     @Override
     public String escapeCsv(String input) {

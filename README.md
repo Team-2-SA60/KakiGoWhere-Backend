@@ -46,7 +46,6 @@ docker run -d \
   -v docker_app_csv:/uploads/csv \
   -v docker_app_images:/uploads/images \
   kakigowhere-springboot
-
 ```
 
 3. Persist images from local folder
