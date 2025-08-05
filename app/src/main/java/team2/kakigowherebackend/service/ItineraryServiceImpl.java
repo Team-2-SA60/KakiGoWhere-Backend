@@ -10,6 +10,7 @@ import team2.kakigowherebackend.repository.ItineraryRepository;
 import team2.kakigowherebackend.repository.TouristRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -40,8 +41,8 @@ public class ItineraryServiceImpl implements ItineraryService {
 
     @Override
     public void createTouristItinerary(String touristEmail, Itinerary itinerary) {
-        Tourist tourist = touristRepo.findByEmail(touristEmail);
-        itinerary.setTourist(tourist);
+        Optional<Tourist> tourist = touristRepo.findByEmail(touristEmail);
+        itinerary.setTourist(tourist.get());
         itineraryRepo.save(itinerary);
     }
 
