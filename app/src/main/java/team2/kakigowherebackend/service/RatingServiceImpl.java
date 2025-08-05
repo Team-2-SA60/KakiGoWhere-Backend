@@ -93,4 +93,9 @@ public class RatingServiceImpl implements RatingService {
                 saved.getComment()
         );
     }
+
+    @Override
+    public List<Rating> getAllRatings() {
+        return ratingRepo.findAll();
+    }
 }

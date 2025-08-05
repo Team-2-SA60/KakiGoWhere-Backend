@@ -9,7 +9,7 @@ cd app
 ./mvnw org.sonatype.ossindex.maven:ossindex-maven-plugin:audit   
 ```
 
-2. Lint (Spotless)
+3. Lint (Spotless)
 
 - Check linting issues
 ```
@@ -20,7 +20,7 @@ cd app
 ./mvnw spotless:apply
 ```
 
-3. JaCoCo and Unit Test
+4. JaCoCo and Unit Test
 
 JaCoCo report in **target/site/jacoco**
 ```
@@ -36,7 +36,7 @@ The following will run on our **Centralised Test Database** hosted on DigitalOce
 docker build -f ../docker/Dockerfile -t kakigowhere-springboot .
 ```
 
-2. Run container with volumnes for CSV and images
+2. Run container with volumes for CSV and images
 ```
 docker run -d \
   --name backend \
@@ -59,10 +59,15 @@ docker run -d \
 
 4. Persist places.csv data in docker volume by calling http://localhost:8080/api/places/ml/export
 
+Persist ratings.csv data in docker volume by calling
+http://localhost:8080/api/ratings/ml/export
 
 5. (Optional) Check contents (first 20 rows)
 ```
 docker run --rm -v docker_app_csv:/from alpine sh -c "head -n 20 /from/places.csv"
+```
+```
+docker run --rm -v docker_app_csv:/from alpine sh -c "head -n 20 /from/ratings.csv"
 ```
 
 6. (Optional) Verify images in the volume
