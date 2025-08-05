@@ -1,5 +1,6 @@
 package team2.kakigowherebackend.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,6 +23,7 @@ public class Itinerary {
     private long id;
 
     private String title;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
     @ManyToOne private Tourist tourist;
@@ -37,12 +39,12 @@ public class Itinerary {
     // methods
 
     public Long getDisplayImageId() {
-        if (itineraryDetails == null || itineraryDetails.isEmpty()) return null;
+        if (itineraryDetails == null || itineraryDetails.isEmpty()) return 0L;
         return itineraryDetails.getFirst().getPlace().getId();
     }
 
     public Long getDays() {
-        if (itineraryDetails == null || itineraryDetails.isEmpty()) return null;
+        if (itineraryDetails == null || itineraryDetails.isEmpty()) return 0L;
         LocalDate lastDate = itineraryDetails.getLast().getDate();
         return ChronoUnit.DAYS.between(startDate, lastDate) + 1;
     }

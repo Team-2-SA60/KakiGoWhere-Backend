@@ -34,15 +34,15 @@ public class ItineraryServiceImpl implements ItineraryService {
     }
 
     @Override
-    public void saveTouristItinerary(String touristEmail, Itinerary itinerary) {
-        Tourist tourist = touristRepo.findByEmail(touristEmail);
-        itinerary.setTourist(tourist);
-        itineraryRepo.save(itinerary);
+    public List<ItineraryDetail> findItineraryDetails(Long id) {
+        return itineraryDetailRepo.findByItineraryId(id);
     }
 
     @Override
-    public List<ItineraryDetail> findItineraryDetails(Long id) {
-        return itineraryDetailRepo.findByItineraryId(id);
+    public void createTouristItinerary(String touristEmail, Itinerary itinerary) {
+        Tourist tourist = touristRepo.findByEmail(touristEmail);
+        itinerary.setTourist(tourist);
+        itineraryRepo.save(itinerary);
     }
 
 }

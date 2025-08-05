@@ -8,7 +8,6 @@ import java.util.List;
 public interface ItineraryService {
 
     List<Itinerary> findTouristItineraries(String email);
-    void saveTouristItinerary(String touristEmail, Itinerary itinerary);
-
     List<ItineraryDetail> findItineraryDetails(Long id);
+    void createTouristItinerary(String touristEmail, Itinerary itinerary);
 }

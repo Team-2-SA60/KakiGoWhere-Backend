@@ -1,12 +1,10 @@
 package team2.kakigowherebackend.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import team2.kakigowherebackend.dto.ItineraryDTO;
 import team2.kakigowherebackend.dto.ItineraryDetailDTO;
+import team2.kakigowherebackend.model.Itinerary;
 import team2.kakigowherebackend.service.ItineraryService;
 
 import java.util.ArrayList;
@@ -42,5 +40,18 @@ public class ItineraryController {
                     detailDtos.add(new ItineraryDetailDTO(detail));
                 });
         return ResponseEntity.ok(detailDtos);
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> createItinerary(
+            @RequestHeader("user-email") String email,
+            @RequestBody Itinerary itinerary
+    ) {
+        if (email.isEmpty() || itinerary == null) {
+            return ResponseEntity.badRequest().build();
+        } else {
+            itineraryService.createTouristItinerary(email, itinerary);
+            return ResponseEntity.ok().build();
+        }
     }
 }
