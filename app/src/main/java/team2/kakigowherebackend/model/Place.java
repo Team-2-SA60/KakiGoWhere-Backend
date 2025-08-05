@@ -53,9 +53,11 @@ public class Place {
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL)
     private List<Rating> ratings;
 
-    public Place(String name, String googleId) {
+    public Place(String name, String googleId, String description, String URL) {
         this.name = name;
         this.googleId = googleId;
+        this.description = description;
+        this.URL = URL;
     }
 
     // For copying of Place obj

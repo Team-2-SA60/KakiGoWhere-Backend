@@ -18,7 +18,7 @@ public class StatServiceImpl implements StatService {
     public LocalDate addVisit() {
         LocalDate today = LocalDate.now();
 
-        DailyStats dailyStats = dailyStatsRepo.findByDate(today);
+        DailyStats dailyStats = dailyStatsRepo.findByDate(today).orElse(null);
 
         if (dailyStats == null) {
             dailyStats = new DailyStats();

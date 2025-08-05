@@ -170,7 +170,7 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
                 boolean isExcluded = Arrays.asList(EXCLUDED_CATEGORIES).contains(category);
                 if (isExcluded) continue;
 
-                InterestCategory interestCategory = icRepo.findByName(category);
+                InterestCategory interestCategory = icRepo.findByName(category).orElse(null);
                 if (interestCategory == null) {
                     interestCategory = new InterestCategory();
                     String description = StringUtils.capitalize(category.replaceAll("_", " "));

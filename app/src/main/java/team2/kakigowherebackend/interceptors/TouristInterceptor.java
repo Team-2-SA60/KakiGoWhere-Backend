@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import team2.kakigowherebackend.utils.UserConstants;
 
 @Slf4j
 @Component
@@ -20,7 +21,7 @@ public class TouristInterceptor implements HandlerInterceptor {
         // To check if tourist is logged in
         HttpSession session = request.getSession();
 
-        if (session == null || session.getAttribute("tourist") == null) {
+        if (session == null || session.getAttribute(UserConstants.TOURIST) == null) {
             String message = "Tourist not logged in";
             response.setStatus(HttpStatus.FORBIDDEN.value());
             response.getWriter().write(message);

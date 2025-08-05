@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import team2.kakigowherebackend.dto.ExportPlaceDTO;
 import team2.kakigowherebackend.dto.PlaceDTO;
 import team2.kakigowherebackend.dto.PlaceDetailDTO;
+import team2.kakigowherebackend.model.Place;
 import team2.kakigowherebackend.service.ExportPlaceService;
 import team2.kakigowherebackend.service.PlaceService;
 import team2.kakigowherebackend.service.RetrievePlaceService;
@@ -33,27 +34,30 @@ public class PlaceController {
 
     @GetMapping
     public ResponseEntity<List<PlaceDTO>> getPlaces() {
-        List<PlaceDTO> places = placeService.getPlaces();
-        return ResponseEntity.ok(places);
+        List<Place> places = placeService.getPlaces();
+        List<PlaceDTO> placeDTOs = places.stream().map(PlaceDTO::new).toList();
+
+        return ResponseEntity.status(HttpStatus.OK).body(placeDTOs);
     }
 
     @GetMapping("/id/{placeId}")
     public ResponseEntity<PlaceDetailDTO> getPlaceById(@PathVariable long placeId) {
-        PlaceDetailDTO place = placeService.getPlaceDetail(placeId);
+        Place place = placeService.getPlaceDetail(placeId);
 
         if (place == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
-        return ResponseEntity.status(HttpStatus.OK).body(place);
+        return ResponseEntity.status(HttpStatus.OK).body(new PlaceDetailDTO(place));
     }
 
     @GetMapping("/ml/export")
     public ResponseEntity<List<ExportPlaceDTO>> exportPlaces() {
-        List<ExportPlaceDTO> places = placeService.getPlacesForMl();
+        List<Place> places = placeService.getPlaces();
+        List<ExportPlaceDTO> exportPlaceDTOS = places.stream().map(ExportPlaceDTO::new).toList();
 
         // Runs service to export all places into CSV for ML
-        exportPlaceService.buildCsv(places);
+        exportPlaceService.buildCsv(exportPlaceDTOS);
 
-        return ResponseEntity.status(HttpStatus.OK).body(places);
+        return ResponseEntity.status(HttpStatus.OK).body(exportPlaceDTOS);
     }
 
     @GetMapping("/image/{placeId}")
