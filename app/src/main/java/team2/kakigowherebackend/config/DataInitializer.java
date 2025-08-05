@@ -13,6 +13,7 @@ import team2.kakigowherebackend.service.ItineraryService;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -867,7 +868,7 @@ public class DataInitializer implements CommandLineRunner {
 
         log.info("Initializing itineraries...");
 
-        Tourist tourist = touristRepo.findByEmail(email);
+        Optional<Tourist> tourist = touristRepo.findByEmail(email);
 
         Itinerary i1 = new Itinerary("My awesome itinerary", LocalDate.of(2025, 8, 1));
         i1.setItineraryDetails(List.of(
@@ -888,7 +889,7 @@ public class DataInitializer implements CommandLineRunner {
                         placeRepo.findById(3L).get())
         ));
 
-        i1.setTourist(tourist);
+        i1.setTourist(tourist.get());
         i1.getItineraryDetails().forEach(itineraryDetail -> { itineraryDetail.setItinerary(i1); });
         itineraryRepo.save(i1);
 
@@ -906,7 +907,7 @@ public class DataInitializer implements CommandLineRunner {
                         placeRepo.findById(5L).get())
         ));
 
-        i2.setTourist(tourist);
+        i2.setTourist(tourist.get());
         i2.getItineraryDetails().forEach(itineraryDetail -> { itineraryDetail.setItinerary(i2); });
         itineraryRepo.save(i2);
     }
