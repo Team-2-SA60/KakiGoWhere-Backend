@@ -8,10 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import team2.kakigowherebackend.model.*;
-import team2.kakigowherebackend.repository.AdminRepository;
-import team2.kakigowherebackend.repository.ItineraryRepository;
-import team2.kakigowherebackend.repository.PlaceRepository;
-import team2.kakigowherebackend.repository.TouristRepository;
+import team2.kakigowherebackend.repository.*;
 import team2.kakigowherebackend.service.ItineraryService;
 
 @Slf4j
@@ -20,6 +17,7 @@ public class DataInitializer implements CommandLineRunner {
 
     private final PlaceRepository placeRepo;
     private final TouristRepository touristRepo;
+    private final InterestCategoryRepository interestCategoryRepo;
     private final AdminRepository adminRepo;
     private final ItineraryRepository itineraryRepo;
     private final ItineraryService itineraryService;
@@ -27,11 +25,13 @@ public class DataInitializer implements CommandLineRunner {
     public DataInitializer(
             PlaceRepository placeRepo,
             TouristRepository touristRepo,
+            InterestCategoryRepository interestCategoryRepo,
             AdminRepository adminRepo,
             ItineraryRepository itineraryRepo,
             ItineraryService itineraryService) {
         this.placeRepo = placeRepo;
         this.touristRepo = touristRepo;
+        this.interestCategoryRepo = interestCategoryRepo;
         this.adminRepo = adminRepo;
         this.itineraryRepo = itineraryRepo;
         this.itineraryService = itineraryService;
@@ -41,6 +41,7 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         addPlaces();
         addTourist();
+        addInterests();
         addAdmin();
         addItineraries();
     }
@@ -842,6 +843,73 @@ public class DataInitializer implements CommandLineRunner {
         log.info("Initialized tourists");
     }
 
+    private void addInterests() {
+        InterestCategory interestCategory = interestCategoryRepo.findByName("museum").orElse(null);
+        if (interestCategory == null) return;
+
+        // Get some categories
+        InterestCategory museum = interestCategoryRepo.findByName("museum").orElse(null);
+        InterestCategory food = interestCategoryRepo.findByName("food").orElse(null);
+        InterestCategory zoo = interestCategoryRepo.findByName("zoo").orElse(null);
+        InterestCategory cafe = interestCategoryRepo.findByName("cafe").orElse(null);
+        InterestCategory aquarium = interestCategoryRepo.findByName("aquarium").orElse(null);
+
+        Tourist adrian = touristRepo.findByEmail("a@kaki.com").orElse(null);
+        if (adrian != null) {
+            if (!adrian.getInterestCategories().isEmpty()) return;
+            log.info("Initializing interests...");
+            List<InterestCategory> ic = new ArrayList<>();
+            ic.add(museum);
+            ic.add(food);
+            adrian.setInterestCategories(ic);
+            touristRepo.save(adrian);
+        }
+
+        Tourist cy = touristRepo.findByEmail("cy@kaki.com").orElse(null);
+        if (cy != null) {
+            List<InterestCategory> ic = new ArrayList<>();
+            ic.add(food);
+            cy.setInterestCategories(ic);
+            touristRepo.save(cy);
+        }
+
+        Tourist gy = touristRepo.findByEmail("gy@kaki.com").orElse(null);
+        if (gy != null) {
+            List<InterestCategory> ic = new ArrayList<>();
+            ic.add(food);
+            ic.add(cafe);
+            gy.setInterestCategories(ic);
+            touristRepo.save(gy);
+        }
+
+        Tourist ks = touristRepo.findByEmail("ks@kaki.com").orElse(null);
+        if (ks != null) {
+            List<InterestCategory> ic = new ArrayList<>();
+            ic.add(aquarium);
+            ic.add(zoo);
+            ks.setInterestCategories(ic);
+            touristRepo.save(ks);
+        }
+
+        Tourist bf = touristRepo.findByEmail("bf@kaki.com").orElse(null);
+        if (bf != null) {
+            List<InterestCategory> ic = new ArrayList<>();
+            ic.add(museum);
+            bf.setInterestCategories(ic);
+            touristRepo.save(bf);
+        }
+
+        Tourist rx = touristRepo.findByEmail("rx@kaki.com").orElse(null);
+        if (rx != null) {
+            List<InterestCategory> ic = new ArrayList<>();
+            ic.add(zoo);
+            rx.setInterestCategories(ic);
+            touristRepo.save(rx);
+        }
+
+        log.info("Initialized interests");
+    }
+
     private void addAdmin() {
         String email = "admin@kaki.com";
         Admin checkAdmin = adminRepo.findByEmail(email).orElse(null);
@@ -868,6 +936,7 @@ public class DataInitializer implements CommandLineRunner {
         log.info("Initializing itineraries...");
 
         Optional<Tourist> tourist = touristRepo.findByEmail(email);
+        if (tourist.isEmpty()) return;
 
         Itinerary i1 = new Itinerary("My awesome itinerary", LocalDate.of(2025, 8, 1));
         i1.setItineraryDetails(
