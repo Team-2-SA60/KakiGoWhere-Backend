@@ -1,10 +1,6 @@
 package team2.kakigowherebackend.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -14,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
@@ -34,7 +33,8 @@ public class Place {
     @Lob private String openingDescription;
     private double latitude;
     private double longitude;
-    private boolean active;
+    private boolean active = true;
+    private boolean autoFetch = true;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "place_id")
@@ -145,27 +145,26 @@ public class Place {
         int todayInt = day.getValue() - 1; // format value to same as in db: 0 = Mon
         String todayString = day.getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
 
-        openingHours.forEach(data -> {
-            if (data.getOpenDay() == todayInt) {
-                if (!hours.toString().contains(todayString)) {
-                    hours.append(todayString)
-                            .append(": ");
-                }
-                hours.append(data.getOpenHour())
-                        .append(":")
-                        .append(data.getOpenMinute())
-                        .append(" - ")
-                        .append(data.getCloseHour())
-                        .append(":")
-                        .append(data.getCloseMinute())
-                        .append(", ");
-            }
-        });
+        openingHours.forEach(
+                data -> {
+                    if (data.getOpenDay() == todayInt) {
+                        if (!hours.toString().contains(todayString)) {
+                            hours.append(todayString).append(": ");
+                        }
+                        hours.append(data.getOpenHour())
+                                .append(":")
+                                .append(data.getOpenMinute())
+                                .append(" - ")
+                                .append(data.getCloseHour())
+                                .append(":")
+                                .append(data.getCloseMinute())
+                                .append(", ");
+                    }
+                });
 
         hours.setLength(hours.length() - 2);
         return hours.toString();
     }
-
 
     // To compare a Place to another Place, for scheduler to determine if need to save an updated
     // Place

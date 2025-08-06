@@ -1,5 +1,6 @@
 package team2.kakigowherebackend.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,8 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
     Optional<Place> findByGoogleId(String googleId);
 
     Optional<Place> findById(long placeId);
+
+    List<Place> findAllByAutoFetch(boolean autoFetch);
 
     @Query(
             "SELECT DISTINCT p FROM Place p "

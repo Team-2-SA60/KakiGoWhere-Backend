@@ -27,9 +27,7 @@ public class ExportRatingServiceImpl implements ExportRatingService {
     @Override
     public void exportRatings() {
         List<Rating> ratings = ratingService.getAllRatings();
-        List<ExportRatingDTO> dtos = ratings.stream()
-                .map(ExportRatingDTO::new)
-                .toList();
+        List<ExportRatingDTO> dtos = ratings.stream().map(ExportRatingDTO::new).toList();
         buildCsv(dtos);
     }
 
@@ -42,9 +40,7 @@ public class ExportRatingServiceImpl implements ExportRatingService {
             csv.append(r.getId()).append(",");
 
             String raw = r.getComment();
-            String normalized = raw == null
-                    ? ""
-                    : raw.replace("\r\n", " ").replace("\n", " ");
+            String normalized = raw == null ? "" : raw.replace("\r\n", " ").replace("\n", " ");
 
             // escape (quotes, commas) if needed
             csv.append(escapeCsv(normalized)).append(",");
@@ -56,7 +52,6 @@ public class ExportRatingServiceImpl implements ExportRatingService {
 
         writeToCsv(csv.toString());
     }
-
 
     @Override
     public String escapeCsv(String input) {

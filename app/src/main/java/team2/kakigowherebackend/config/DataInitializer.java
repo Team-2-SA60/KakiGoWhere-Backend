@@ -1,5 +1,9 @@
 package team2.kakigowherebackend.config;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -9,11 +13,6 @@ import team2.kakigowherebackend.repository.ItineraryRepository;
 import team2.kakigowherebackend.repository.PlaceRepository;
 import team2.kakigowherebackend.repository.TouristRepository;
 import team2.kakigowherebackend.service.ItineraryService;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Component
@@ -29,7 +28,8 @@ public class DataInitializer implements CommandLineRunner {
             PlaceRepository placeRepo,
             TouristRepository touristRepo,
             AdminRepository adminRepo,
-            ItineraryRepository itineraryRepo, ItineraryService itineraryService) {
+            ItineraryRepository itineraryRepo,
+            ItineraryService itineraryService) {
         this.placeRepo = placeRepo;
         this.touristRepo = touristRepo;
         this.adminRepo = adminRepo;
@@ -458,12 +458,11 @@ public class DataInitializer implements CommandLineRunner {
                         "https://museum.nus.edu.sg/"));
         places.add(
                 new Place(
-                        "Dr. Sun Yat-Sen Memorial House",
-                        "ChIJ6abUBm6pQjQRwfEJmDRkczE",
-                        "Sun Yat Sen Memorial House is a museum located in SÃ£o LÃ¡zaro, Macau,"
-                            + " China where former family members and relatives of Sun Yat-sen, the"
-                            + " 'Father of Modern China' used to live.",
-                        "https://nchdb.boch.gov.tw/assets/overview/historicalBuilding/20071017000001"));
+                        "Sun Yat Sen Nanyang Memorial Hall",
+                        "ChIJY4U5TGAX2jERQYsGly-qKIo",
+                        "Victorian-era villa & former revolutionary headquarters with a museum"
+                                + " dedicated to Dr. Sun Yat Sen.",
+                        "https://www.sysnmh.org.sg/"));
         places.add(
                 new Place(
                         "Asian Civilisations Museum",
@@ -871,45 +870,52 @@ public class DataInitializer implements CommandLineRunner {
         Optional<Tourist> tourist = touristRepo.findByEmail(email);
 
         Itinerary i1 = new Itinerary("My awesome itinerary", LocalDate.of(2025, 8, 1));
-        i1.setItineraryDetails(List.of(
-                new ItineraryDetail(
-                        LocalDate.of(2025, 8, 1),
-                        "Day 1 enjoy",
-                        1,
-                        placeRepo.findById(1L).get()),
-                new ItineraryDetail(
-                        LocalDate.of(2025, 8, 2),
-                        "Day 2 woohoo",
-                        2,
-                        placeRepo.findById(2L).get()),
-                new ItineraryDetail(
-                        LocalDate.of(2025, 8, 3),
-                        "Day 3 almost time to go :(",
-                        3,
-                        placeRepo.findById(3L).get())
-        ));
+        i1.setItineraryDetails(
+                List.of(
+                        new ItineraryDetail(
+                                LocalDate.of(2025, 8, 1),
+                                "Day 1 enjoy",
+                                1,
+                                placeRepo.findById(1L).get()),
+                        new ItineraryDetail(
+                                LocalDate.of(2025, 8, 2),
+                                "Day 2 woohoo",
+                                2,
+                                placeRepo.findById(2L).get()),
+                        new ItineraryDetail(
+                                LocalDate.of(2025, 8, 3),
+                                "Day 3 almost time to go :(",
+                                3,
+                                placeRepo.findById(3L).get())));
 
         i1.setTourist(tourist.get());
-        i1.getItineraryDetails().forEach(itineraryDetail -> { itineraryDetail.setItinerary(i1); });
+        i1.getItineraryDetails()
+                .forEach(
+                        itineraryDetail -> {
+                            itineraryDetail.setItinerary(i1);
+                        });
         itineraryRepo.save(i1);
 
         Itinerary i2 = new Itinerary("My fun itinerary", LocalDate.of(2025, 8, 5));
-        i2.setItineraryDetails(List.of(
-                new ItineraryDetail(
-                        LocalDate.of(2025, 8, 5),
-                        "Day 1 of fun",
-                        1,
-                        placeRepo.findById(4L).get()),
-                new ItineraryDetail(
-                        LocalDate.of(2025, 8, 6),
-                        "Day 2 of awesome-ness",
-                        2,
-                        placeRepo.findById(5L).get())
-        ));
+        i2.setItineraryDetails(
+                List.of(
+                        new ItineraryDetail(
+                                LocalDate.of(2025, 8, 5),
+                                "Day 1 of fun",
+                                1,
+                                placeRepo.findById(4L).get()),
+                        new ItineraryDetail(
+                                LocalDate.of(2025, 8, 6),
+                                "Day 2 of awesome-ness",
+                                2,
+                                placeRepo.findById(5L).get())));
 
         i2.setTourist(tourist.get());
-        i2.getItineraryDetails().forEach(itineraryDetail -> { itineraryDetail.setItinerary(i2); });
+        i2.getItineraryDetails()
+                .forEach(
+                        itineraryDetail -> {
+                            itineraryDetail.setItinerary(i2);
+                        });
         itineraryRepo.save(i2);
     }
-
 }

@@ -22,6 +22,7 @@ public class Rating {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Place place;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private Tourist tourist;
 }

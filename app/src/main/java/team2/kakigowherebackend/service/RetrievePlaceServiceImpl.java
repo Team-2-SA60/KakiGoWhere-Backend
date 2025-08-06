@@ -41,7 +41,7 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
     public void retrievePlaces() {
         log.info("Retrieving and updating places...");
 
-        List<Place> places = pRepo.findAll();
+        List<Place> places = pRepo.findAllByAutoFetch(true);
 
         for (int i = 0; i < places.size(); i++) {
             try {
@@ -75,7 +75,7 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
                 if (!updatedPlace.equals(p)) {
                     // Disabled download image so that we don't replace existing images during
                     // scheduled update
-                    // downloadImages(updatedPlace, placeNode);
+                    downloadImages(updatedPlace, placeNode);
                     pRepo.save(updatedPlace);
                     log.info("Updated place for: {}", name);
                 }

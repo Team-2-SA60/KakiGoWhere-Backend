@@ -1,9 +1,8 @@
 package team2.kakigowherebackend.dto;
 
+import java.time.LocalDate;
 import lombok.Data;
 import team2.kakigowherebackend.model.ItineraryDetail;
-
-import java.time.LocalDate;
 
 @Data
 public class ItineraryDetailDTO {
