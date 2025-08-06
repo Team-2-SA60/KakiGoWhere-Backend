@@ -59,7 +59,7 @@ public class GooglePlaceServiceImpl implements GooglePlaceService {
                         .uri(
                                 "https://places.googleapis.com/v1/"
                                         + photoName
-                                        + "/media?maxHeightPx=1600")
+                                        + "/media?maxHeightPx=600")
                         .retrieve()
                         .bodyToMono(JsonNode.class)
                         .map(

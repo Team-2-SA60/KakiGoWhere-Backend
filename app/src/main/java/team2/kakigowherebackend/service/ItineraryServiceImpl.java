@@ -1,5 +1,7 @@
 package team2.kakigowherebackend.service;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team2.kakigowherebackend.model.Itinerary;
@@ -8,9 +10,6 @@ import team2.kakigowherebackend.model.Tourist;
 import team2.kakigowherebackend.repository.ItineraryDetailRepository;
 import team2.kakigowherebackend.repository.ItineraryRepository;
 import team2.kakigowherebackend.repository.TouristRepository;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -45,5 +44,4 @@ public class ItineraryServiceImpl implements ItineraryService {
         itinerary.setTourist(tourist.get());
         itineraryRepo.save(itinerary);
     }
-
 }

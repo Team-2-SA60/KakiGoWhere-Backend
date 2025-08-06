@@ -2,11 +2,10 @@ package team2.kakigowherebackend.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 @Entity
 @Getter
