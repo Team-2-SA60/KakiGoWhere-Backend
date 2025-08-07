@@ -1,9 +1,11 @@
 package team2.kakigowherebackend.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import team2.kakigowherebackend.model.Place;
 import team2.kakigowherebackend.repository.PlaceRepository;
 
@@ -11,9 +13,11 @@ import team2.kakigowherebackend.repository.PlaceRepository;
 public class ManagePlaceServiceImpl implements ManagePlaceService {
 
     private final PlaceRepository placeRepo;
+    private final ImageService imageService;
 
-    public ManagePlaceServiceImpl(PlaceRepository placeRepo) {
+    public ManagePlaceServiceImpl(PlaceRepository placeRepo, ImageService imageService) {
         this.placeRepo = placeRepo;
+        this.imageService = imageService;
     }
 
     @Override
@@ -21,5 +25,45 @@ public class ManagePlaceServiceImpl implements ManagePlaceService {
         Pageable pageable;
         pageable = PageRequest.of(page, pageSize);
         return placeRepo.getPlacesBySearch(keyword, pageable);
+    }
+
+    @Override
+    @Transactional
+    public Place updatePlace(Place updatedPlace) {
+        Place existingPlace = placeRepo.findById(updatedPlace.getId()).orElse(null);
+
+        if (existingPlace == null) return null;
+
+        existingPlace.setName(updatedPlace.getName());
+        existingPlace.setAddress(updatedPlace.getAddress());
+        existingPlace.setDescription(updatedPlace.getDescription());
+        existingPlace.setLatitude(updatedPlace.getLatitude());
+        existingPlace.setLongitude(updatedPlace.getLongitude());
+        existingPlace.setURL(updatedPlace.getURL());
+        existingPlace.setActive(updatedPlace.isActive());
+        existingPlace.setAutoFetch(updatedPlace.isAutoFetch());
+        existingPlace.setInterestCategories(updatedPlace.getInterestCategories());
+        existingPlace.updateOpeningHours(updatedPlace.getOpeningHours());
+
+        return placeRepo.save(existingPlace);
+    }
+
+    @Override
+    @Transactional
+    public String uploadPlaceImage(long placeId, MultipartFile image) {
+        Place existingPlace = placeRepo.findById(placeId).orElse(null);
+        if (existingPlace == null) return null;
+
+        try {
+            String imagePath = imageService.upload(image, existingPlace.getGoogleId());
+
+            existingPlace.setImagePath(imagePath);
+            placeRepo.save(existingPlace);
+
+            return imagePath;
+
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

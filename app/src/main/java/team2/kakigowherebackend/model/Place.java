@@ -40,7 +40,7 @@ public class Place {
     @JoinColumn(name = "place_id")
     private List<OpeningHours> openingHours;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(
             name = "place_interests",
             joinColumns = @JoinColumn(name = "place_id"),
@@ -58,6 +58,13 @@ public class Place {
         this.googleId = googleId;
         this.description = description;
         this.URL = URL;
+    }
+
+    public void updateOpeningHours(List<OpeningHours> newHours) {
+        this.openingHours.clear();
+        if (newHours != null) {
+            this.openingHours.addAll(newHours);
+        }
     }
 
     // For copying of Place obj
