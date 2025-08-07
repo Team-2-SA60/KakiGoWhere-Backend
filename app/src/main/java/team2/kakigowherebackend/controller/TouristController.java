@@ -1,6 +1,5 @@
 package team2.kakigowherebackend.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +11,7 @@ import team2.kakigowherebackend.model.InterestCategory;
 import team2.kakigowherebackend.model.Tourist;
 import team2.kakigowherebackend.repository.InterestCategoryRepository;
 import team2.kakigowherebackend.repository.TouristRepository;
+import team2.kakigowherebackend.service.StatService;
 
 import java.util.List;
 
@@ -19,11 +19,19 @@ import java.util.List;
 @RequestMapping("/api/tourist")
 public class TouristController {
 
-    @Autowired
-    private TouristRepository touristRepository;
+    private final TouristRepository touristRepository;
+    private final InterestCategoryRepository interestCategoryRepository;
+    private final StatService statService;
 
-    @Autowired
-    private InterestCategoryRepository interestCategoryRepository;
+    public TouristController(
+            TouristRepository touristRepository,
+            InterestCategoryRepository interestCategoryRepository,
+            StatService statService
+    ){
+        this.touristRepository = touristRepository;
+        this.interestCategoryRepository = interestCategoryRepository;
+        this.statService = statService;
+    }
 
     @PostMapping("/register")
     public ResponseEntity<RegisterResponseDTO> register(@RequestBody RegisterRequestDTO request) {
@@ -37,6 +45,9 @@ public class TouristController {
         List<InterestCategory> interests = interestCategoryRepository.findAllById(request.getInterestCategoryIds());
         tourist.setInterestCategories(interests);
         touristRepository.save(tourist);
+
+        // increment daily sign-up count
+        statService.addSignUp();
 
         // create DTO response
         RegisterResponseDTO response = new RegisterResponseDTO(
