@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 
 @Entity
@@ -45,6 +46,7 @@ public class Itinerary {
 
     public Long getDays() {
         if (itineraryDetails == null || itineraryDetails.isEmpty()) return 0L;
+        itineraryDetails.sort(Comparator.comparing(ItineraryDetail::getDate));
         LocalDate lastDate = itineraryDetails.getLast().getDate();
         return ChronoUnit.DAYS.between(startDate, lastDate) + 1;
     }

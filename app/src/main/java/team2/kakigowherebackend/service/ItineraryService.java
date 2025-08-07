@@ -10,4 +10,7 @@ public interface ItineraryService {
     List<Itinerary> findTouristItineraries(String email);
     List<ItineraryDetail> findItineraryDetails(Long id);
     void createTouristItinerary(String touristEmail, Itinerary itinerary);
+    void addItineraryDetail(Long id, ItineraryDetail detail, Long placeId);
+    void editItineraryDetail(Long id, ItineraryDetail detail);
+    boolean deleteItineraryDetail(Long id);
 }

@@ -15,5 +15,5 @@ public interface ItineraryDetailRepository extends JpaRepository<ItineraryDetail
             "FROM ItineraryDetail id " +
             "JOIN id.itinerary i " +
             "WHERE i.id = :id")
-    List<ItineraryDetail> findByItineraryId(@Param("id") Long id);
+    List<ItineraryDetail> findDetailsByItineraryId(@Param("id") Long id);
 }

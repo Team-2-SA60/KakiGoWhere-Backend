@@ -8,8 +8,8 @@ import java.time.LocalDate;
 @Data
 public class ItineraryDetailDTO {
     private long id;
-    private LocalDate date;
-    private String notes;
+    private LocalDate date = null;
+    private String notes = "";
     private int sequentialOrder;
     private long placeId;
     private String placeTitle;

@@ -1,5 +1,6 @@
 package team2.kakigowherebackend.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +20,7 @@ public class ItineraryDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate date;
     private String notes;
     private int sequentialOrder;
@@ -33,4 +35,5 @@ public class ItineraryDetail {
         this.sequentialOrder = sequentialOrder;
         this.place = place;
     }
+
 }

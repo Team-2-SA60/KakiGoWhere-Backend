@@ -136,7 +136,7 @@ public class Place {
     }
 
     public String getTodayOpeningHours() {
-        if (!isOpen()) return " - ";
+        if (!isOpen() || openingHours.isEmpty()) return " - ";
         if (openingHours.size() == 1) return " Open 24 hours ";
 
         StringBuilder hours = new StringBuilder();
