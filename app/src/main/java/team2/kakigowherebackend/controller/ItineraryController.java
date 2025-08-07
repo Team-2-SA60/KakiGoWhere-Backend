@@ -57,6 +57,19 @@ public class ItineraryController {
         }
     }
 
+    @PutMapping("/detail/add/day/{itineraryId}")
+    public ResponseEntity<?> addItineraryDay(
+            @PathVariable Long itineraryId,
+            @RequestBody ItineraryDetail itineraryDetail
+    ) {
+        if (itineraryDetail == null) {
+            return ResponseEntity.badRequest().build();
+        } else {
+            itineraryService.addItineraryDay(itineraryId, itineraryDetail);
+            return ResponseEntity.ok().build();
+        }
+    }
+
     @PutMapping("detail/edit/{detailId}")
     public ResponseEntity<?> editItineraryItem(
             @PathVariable Long detailId,

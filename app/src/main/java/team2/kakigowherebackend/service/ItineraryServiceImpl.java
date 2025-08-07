@@ -53,17 +53,40 @@ public class ItineraryServiceImpl implements ItineraryService {
     }
 
     @Override
+    public void addItineraryDay(Long id, ItineraryDetail detail) {
+        Itinerary itinerary = itineraryRepo.findById(id).get();
+        List<ItineraryDetail> details = itineraryDetailRepo.findDetailsByItineraryId(id);
+
+        detail.setItinerary(itinerary);
+        detail.setSequentialOrder(details.size() + 1);
+        details.add(detail);
+        itineraryDetailRepo.saveAll(details);
+    }
+
+    @Override
     public void addItineraryDetail(Long id, ItineraryDetail detail, Long placeId) {
+        boolean found = false;
+
         List<ItineraryDetail> details = itineraryDetailRepo.findDetailsByItineraryId(id);
         Itinerary itinerary = itineraryRepo.findById(id).get();
         Place placeToAdd = placeRepo.findById(placeId).get();
 
-        detail.setItinerary(itinerary);
-        detail.setPlace(placeToAdd);
-        details.add(detail);
+        // if adding to existing itinerary day with no places saved, add the place to it
+        for (ItineraryDetail itineraryDetail : details) {
+            if (itineraryDetail.getDate().equals(detail.getDate()) && itineraryDetail.getPlace() == null) {
+                itineraryDetail.setPlace(placeToAdd);
+                found = true;
+            }
+        }
+
+        // otherwise save a new entry of itinerary item to the itinerary day
+        if (!found) {
+            detail.setItinerary(itinerary);
+            detail.setPlace(placeToAdd);
+            details.add(detail);
+        }
 
         sortOrderByDate(details);
-
         itineraryDetailRepo.saveAll(details);
     }
 

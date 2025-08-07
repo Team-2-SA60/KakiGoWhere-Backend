@@ -12,5 +12,6 @@ public interface ItineraryService {
     void createTouristItinerary(String touristEmail, Itinerary itinerary);
     void addItineraryDetail(Long id, ItineraryDetail detail, Long placeId);
     void editItineraryDetail(Long id, ItineraryDetail detail);
+    void addItineraryDay(Long id, ItineraryDetail detail);
     boolean deleteItineraryDetail(Long id);
 }

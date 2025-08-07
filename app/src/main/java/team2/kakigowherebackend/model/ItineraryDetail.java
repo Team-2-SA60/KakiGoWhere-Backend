@@ -36,4 +36,25 @@ public class ItineraryDetail {
         this.place = place;
     }
 
+    // methods
+
+    public long getPlaceId() {
+        if (place != null) return place.getId();
+        else return 0L;
+    }
+
+    public String getPlaceTitle() {
+        if (place != null) return place.getName();
+        else return "";
+    }
+
+    public boolean isPlaceOpen() {
+        if (place != null) return place.isOpen();
+        else return false;
+    }
+
+    public String getPlaceHours() {
+        if (place != null ) return place.getTodayOpeningHours();
+        else return "";
+    }
 }

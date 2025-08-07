@@ -8,7 +8,7 @@ import java.time.LocalDate;
 @Data
 public class ItineraryDetailDTO {
     private long id;
-    private LocalDate date = null;
+    private LocalDate date;
     private String notes = "";
     private int sequentialOrder;
     private long placeId;
@@ -21,9 +21,9 @@ public class ItineraryDetailDTO {
         this.date = itineraryDetail.getDate();
         this.notes = itineraryDetail.getNotes();
         this.sequentialOrder = itineraryDetail.getSequentialOrder();
-        this.placeId = itineraryDetail.getPlace().getId();
-        this.placeTitle = itineraryDetail.getPlace().getName();
-        this.placeIsOpen = itineraryDetail.getPlace().isOpen();
-        this.placeOpenHours = itineraryDetail.getPlace().getTodayOpeningHours();
+        this.placeId = itineraryDetail.getPlaceId();
+        this.placeTitle = itineraryDetail.getPlaceTitle();
+        this.placeIsOpen = itineraryDetail.isPlaceOpen();
+        this.placeOpenHours = itineraryDetail.getPlaceHours();
     }
 }
