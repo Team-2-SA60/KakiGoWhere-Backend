@@ -9,7 +9,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import team2.kakigowherebackend.model.*;
 import team2.kakigowherebackend.repository.*;
-import team2.kakigowherebackend.service.ItineraryService;
+import team2.kakigowherebackend.service.ExportPlaceService;
+import team2.kakigowherebackend.service.ExportRatingService;
 
 @Slf4j
 @Component
@@ -20,7 +21,8 @@ public class DataInitializer implements CommandLineRunner {
     private final InterestCategoryRepository interestCategoryRepo;
     private final AdminRepository adminRepo;
     private final ItineraryRepository itineraryRepo;
-    private final ItineraryService itineraryService;
+    private final ExportPlaceService exportPlaceService;
+    private final ExportRatingService exportRatingService;
 
     public DataInitializer(
             PlaceRepository placeRepo,
@@ -28,13 +30,15 @@ public class DataInitializer implements CommandLineRunner {
             InterestCategoryRepository interestCategoryRepo,
             AdminRepository adminRepo,
             ItineraryRepository itineraryRepo,
-            ItineraryService itineraryService) {
+            ExportPlaceService exportPlaceService,
+            ExportRatingService exportRatingService) {
         this.placeRepo = placeRepo;
         this.touristRepo = touristRepo;
         this.interestCategoryRepo = interestCategoryRepo;
         this.adminRepo = adminRepo;
         this.itineraryRepo = itineraryRepo;
-        this.itineraryService = itineraryService;
+        this.exportPlaceService = exportPlaceService;
+        this.exportRatingService = exportRatingService;
     }
 
     @Override
@@ -44,6 +48,7 @@ public class DataInitializer implements CommandLineRunner {
         addInterests();
         addAdmin();
         addItineraries();
+        exportCsvs();
     }
 
     private void addPlaces() {
@@ -986,5 +991,13 @@ public class DataInitializer implements CommandLineRunner {
                             itineraryDetail.setItinerary(i2);
                         });
         itineraryRepo.save(i2);
+    }
+
+    private void exportCsvs() {
+        log.info("Exporting Places CSV file for ML...");
+        exportPlaceService.exportPlaces();
+        log.info("Exporting Ratings CSV file for ML...");
+        exportRatingService.exportRatings();
+        log.info("Exported CSV files.");
     }
 }
