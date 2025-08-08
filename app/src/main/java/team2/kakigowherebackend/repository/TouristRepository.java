@@ -15,4 +15,6 @@ public interface TouristRepository extends JpaRepository<Tourist, Long> {
     Optional<Tourist> findByEmail(@Param("email") String email);
 
     Optional<Tourist> findById(long touristId);
+
+    boolean existsByEmail(String email);
 }

@@ -1,10 +1,7 @@
 package team2.kakigowherebackend.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import team2.kakigowherebackend.dto.RegisterRequestDTO;
 import team2.kakigowherebackend.dto.RegisterResponseDTO;
 import team2.kakigowherebackend.model.InterestCategory;
@@ -12,8 +9,6 @@ import team2.kakigowherebackend.model.Tourist;
 import team2.kakigowherebackend.repository.InterestCategoryRepository;
 import team2.kakigowherebackend.repository.TouristRepository;
 import team2.kakigowherebackend.service.StatService;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import team2.kakigowherebackend.dto.TouristUpdateRequestDTO;
 import team2.kakigowherebackend.service.TouristService;
 
@@ -39,6 +34,11 @@ public class TouristController {
         this.touristService = touristService;
     }
 
+    @GetMapping("/check-email")
+    public ResponseEntity<Boolean> checkEmailExists(@RequestParam String email) {
+        boolean exists = touristRepository.existsByEmail(email);
+        return ResponseEntity.ok(exists);
+    }
     @PostMapping("/register")
     public ResponseEntity<RegisterResponseDTO> register(@RequestBody RegisterRequestDTO request) {
 
