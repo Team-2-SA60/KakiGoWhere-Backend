@@ -12,6 +12,10 @@ import team2.kakigowherebackend.model.Tourist;
 import team2.kakigowherebackend.repository.InterestCategoryRepository;
 import team2.kakigowherebackend.repository.TouristRepository;
 import team2.kakigowherebackend.service.StatService;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import team2.kakigowherebackend.dto.TouristUpdateRequestDTO;
+import team2.kakigowherebackend.service.TouristService;
 
 import java.util.List;
 
@@ -22,15 +26,17 @@ public class TouristController {
     private final TouristRepository touristRepository;
     private final InterestCategoryRepository interestCategoryRepository;
     private final StatService statService;
+    private final TouristService touristService;
 
     public TouristController(
             TouristRepository touristRepository,
             InterestCategoryRepository interestCategoryRepository,
-            StatService statService
+            StatService statService, TouristService touristService
     ){
         this.touristRepository = touristRepository;
         this.interestCategoryRepository = interestCategoryRepository;
         this.statService = statService;
+        this.touristService = touristService;
     }
 
     @PostMapping("/register")
@@ -58,5 +64,14 @@ public class TouristController {
         );
 
         return ResponseEntity.ok(response);
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<Tourist> updateTourist(
+            @PathVariable Long id,
+            @RequestBody TouristUpdateRequestDTO request
+    ) {
+        // Delegate update logic to service
+        Tourist updated = touristService.updateTourist(id, request);
+        return ResponseEntity.ok(updated);
     }
 }
