@@ -38,7 +38,7 @@ jobs:
           docker run --rm -i zaproxy/zap-stable zap-baseline.py \
             -t "http://${{ secrets.DROPLET_IP }}/api" \
             -l PASS \
-            > zap_baseline_report.html
+            > zap_baseline_report.txt
 
       - name: Upload DAST report
         uses: actions/upload-artifact@v4
@@ -46,4 +46,4 @@ jobs:
         with:
           name: DAST zap report
           path: |
-            ./zap_baseline_report.html
+            ./zap_baseline_report.txt
