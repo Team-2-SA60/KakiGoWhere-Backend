@@ -1,5 +1,6 @@
 package team2.kakigowherebackend.service.impl;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,8 +48,7 @@ public class PlaceVisitServiceImpl implements PlaceVisitService {
 
     @Override
     @Transactional(readOnly = true)
-    public Map<LocalDate, Integer> getDailyVisitCounts(long placeId, LocalDate month) {
-        YearMonth ym = YearMonth.of(month.getYear(), month.getMonthValue());
+    public Map<LocalDate, Integer> getDailyVisitCounts(long placeId, YearMonth ym) {
 
         // pre-fill map with zeros for every day
         Map<LocalDate, Integer> map = new LinkedHashMap<>();
@@ -57,13 +57,17 @@ public class PlaceVisitServiceImpl implements PlaceVisitService {
         }
 
         // list of [visitDate, count]
-        var visits = visitRepo.findByPlaceAndMonth(placeId, month.getYear(), month.getMonthValue());
+        List<Object[]> visits = visitRepo.findByPlaceAndMonth(
+                placeId,
+                ym.getYear(),
+                ym.getMonthValue()
+        );
 
-        visits.forEach(row -> {
+        for (Object[] row : visits) {
             LocalDate date = (LocalDate) row[0];
-            Integer count = ((Number) row[1]).intValue();
+            int count    = ((Number) row[1]).intValue();
             map.put(date, count);
-        });
+        }
 
         return map;
     }

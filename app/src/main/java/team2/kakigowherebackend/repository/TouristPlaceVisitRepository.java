@@ -17,13 +17,15 @@ public interface TouristPlaceVisitRepository extends JpaRepository<TouristPlaceV
             LocalDate visitDate
     );
 
-    // uses SQL YEAR() and MONTH() fn on visitDate field
+    // uses SQL YEAR() and MONTH() fn on visitDate field, return [visitDate, count]
     @Query("""
-        SELECT v 
-          FROM TouristPlaceVisit v 
-         WHERE v.place.id = :placeId 
-           AND FUNCTION('YEAR',  v.visitDate)  = :year 
+        SELECT v.visitDate AS date, COUNT(v) AS cnt
+          FROM TouristPlaceVisit v
+         WHERE v.place.id = :placeId
+           AND FUNCTION('YEAR', v.visitDate)  = :year
            AND FUNCTION('MONTH', v.visitDate) = :month
+         GROUP BY v.visitDate
+         ORDER BY v.visitDate
     """)
     List<Object[]> findByPlaceAndMonth(
             @Param("placeId") Long placeId,

@@ -1,14 +1,13 @@
 package team2.kakigowherebackend.controller;
 
+import java.time.YearMonth;
 import java.time.LocalDate;
+import java.util.Map;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import team2.kakigowherebackend.service.PlaceVisitService;
 import team2.kakigowherebackend.utils.UserConstants;
@@ -36,4 +35,14 @@ public class PlaceVisitController {
 
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/{placeId}/visits")
+    public ResponseEntity<Map<LocalDate,Integer>> getVisitsByMonth(
+            @PathVariable long placeId,
+            @RequestParam("month")
+            @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) YearMonth month) {
+        Map<LocalDate, Integer> counts = visitService.getDailyVisitCounts(placeId, month);
+        return ResponseEntity.ok(counts);
+    }
+
 }
