@@ -46,6 +46,7 @@ jobs:
 
       - name: Upload DAST report
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: DAST zap report
           path: zap-results/*
