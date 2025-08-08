@@ -35,18 +35,15 @@ jobs:
 
       - name: Run Zed Attack Proxy (ZAP)
         run: |
-          mkdir -p zap-results
-          docker run --rm -v $(pwd)/zap-results:/zap/wrk \
-          zaproxy/zap-stable zap-baseline.py \
-          -t "http://${{ secrets.DROPLET_IP }}/api" \
-          -l PASS \
-          -J zap_report.json \
-          -w zap_report.md \
-          -r zap_baseline_report.html
+          docker run --rm -i zaproxy/zap-stable zap-baseline.py \
+            -t "http://${{ secrets.DROPLET_IP }}/api" \
+            -l PASS \
+            > zap_baseline_report.html
 
       - name: Upload DAST report
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: DAST zap report
-          path: zap-results/*
+          path: |
+            ./zap_baseline_report.html
