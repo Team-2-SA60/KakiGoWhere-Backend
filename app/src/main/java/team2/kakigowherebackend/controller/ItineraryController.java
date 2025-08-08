@@ -70,7 +70,19 @@ public class ItineraryController {
         }
     }
 
-    @PutMapping("detail/edit/{detailId}")
+    @DeleteMapping("/detail/delete/day/{itineraryId}")
+    public ResponseEntity<?> deleteItineraryDay(
+            @PathVariable Long itineraryId,
+            @RequestParam String lastDate
+    ) {
+        if (itineraryService.deleteItineraryDay(itineraryId, lastDate)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PutMapping("/detail/edit/{detailId}")
     public ResponseEntity<?> editItineraryItem(
             @PathVariable Long detailId,
             @RequestBody ItineraryDetail itineraryDetail
@@ -84,7 +96,7 @@ public class ItineraryController {
         }
     }
 
-    @DeleteMapping("detail/delete/{detailId}")
+    @DeleteMapping("/detail/delete/{detailId}")
     public ResponseEntity<?> deleteItineraryItem(
             @PathVariable Long detailId
     ) {

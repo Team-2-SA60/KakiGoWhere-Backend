@@ -8,7 +8,6 @@ import team2.kakigowherebackend.repository.AdminRepository;
 import team2.kakigowherebackend.repository.ItineraryRepository;
 import team2.kakigowherebackend.repository.PlaceRepository;
 import team2.kakigowherebackend.repository.TouristRepository;
-import team2.kakigowherebackend.service.ItineraryService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,18 +22,16 @@ public class DataInitializer implements CommandLineRunner {
     private final TouristRepository touristRepo;
     private final AdminRepository adminRepo;
     private final ItineraryRepository itineraryRepo;
-    private final ItineraryService itineraryService;
 
     public DataInitializer(
             PlaceRepository placeRepo,
             TouristRepository touristRepo,
             AdminRepository adminRepo,
-            ItineraryRepository itineraryRepo, ItineraryService itineraryService) {
+            ItineraryRepository itineraryRepo) {
         this.placeRepo = placeRepo;
         this.touristRepo = touristRepo;
         this.adminRepo = adminRepo;
         this.itineraryRepo = itineraryRepo;
-        this.itineraryService = itineraryService;
     }
 
     @Override
