@@ -14,7 +14,6 @@ import team2.kakigowherebackend.repository.TouristRepository;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,8 +48,12 @@ public class ItineraryServiceImpl implements ItineraryService {
 
     @Override
     public void createTouristItinerary(String touristEmail, Itinerary itinerary) {
-        Optional<Tourist> tourist = touristRepo.findByEmail(touristEmail);
-        itinerary.setTourist(tourist.get());
+        Tourist tourist = touristRepo.findByEmail(touristEmail).get();
+        List<Itinerary> existingList = tourist.getItineraryList();
+        existingList.add(itinerary);
+        tourist.setItineraryList(existingList);
+
+        itinerary.setTourist(tourist);
         itineraryRepo.save(itinerary);
     }
 
@@ -62,6 +65,9 @@ public class ItineraryServiceImpl implements ItineraryService {
         detail.setItinerary(itinerary);
         detail.setSequentialOrder(details.size() + 1);
         details.add(detail);
+
+        itinerary.setItineraryDetails(details);
+        itineraryRepo.save(itinerary);
         itineraryDetailRepo.saveAll(details);
     }
 
