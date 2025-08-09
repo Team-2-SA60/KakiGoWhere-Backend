@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -40,11 +41,13 @@ public class Itinerary {
 
     public Long getDisplayImageId() {
         if (itineraryDetails == null || itineraryDetails.isEmpty()) return 0L;
+        if (itineraryDetails.size() == 1 && itineraryDetails.getFirst().getPlace() == null) return 0L;
         return itineraryDetails.getFirst().getPlace().getId();
     }
 
     public Long getDays() {
         if (itineraryDetails == null || itineraryDetails.isEmpty()) return 0L;
+        itineraryDetails.sort(Comparator.comparing(ItineraryDetail::getDate));
         LocalDate lastDate = itineraryDetails.getLast().getDate();
         return ChronoUnit.DAYS.between(startDate, lastDate) + 1;
     }

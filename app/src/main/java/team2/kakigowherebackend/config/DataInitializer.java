@@ -1,9 +1,5 @@
 package team2.kakigowherebackend.config;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -11,6 +7,11 @@ import team2.kakigowherebackend.model.*;
 import team2.kakigowherebackend.repository.*;
 import team2.kakigowherebackend.service.ExportPlaceService;
 import team2.kakigowherebackend.service.ExportRatingService;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Component
