@@ -4,18 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import team2.kakigowherebackend.model.*;
-import team2.kakigowherebackend.repository.AdminRepository;
-import team2.kakigowherebackend.repository.ItineraryRepository;
-import team2.kakigowherebackend.repository.PlaceRepository;
-import team2.kakigowherebackend.repository.TouristRepository;
+import team2.kakigowherebackend.repository.*;
+import team2.kakigowherebackend.service.ExportPlaceService;
+import team2.kakigowherebackend.service.ExportRatingService;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import team2.kakigowherebackend.model.*;
-import team2.kakigowherebackend.repository.*;
-import team2.kakigowherebackend.service.ExportPlaceService;
-import team2.kakigowherebackend.service.ExportRatingService;
 
 @Slf4j
 @Component
@@ -34,7 +30,6 @@ public class DataInitializer implements CommandLineRunner {
             TouristRepository touristRepo,
             InterestCategoryRepository interestCategoryRepo,
             AdminRepository adminRepo,
-            ItineraryRepository itineraryRepo,
             ItineraryRepository itineraryRepo,
             ExportPlaceService exportPlaceService,
             ExportRatingService exportRatingService) {
