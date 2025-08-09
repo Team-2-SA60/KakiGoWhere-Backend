@@ -1,21 +1,18 @@
 package team2.kakigowherebackend.service;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Optional;
-
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
-
-import team2.kakigowherebackend.model.Rating;
-import team2.kakigowherebackend.model.Place;
-import team2.kakigowherebackend.model.Tourist;
-import team2.kakigowherebackend.repository.RatingRepository;
-import team2.kakigowherebackend.dto.RatingSummaryDTO;
 import team2.kakigowherebackend.dto.RatingItemDTO;
 import team2.kakigowherebackend.dto.RatingRequestDTO;
+import team2.kakigowherebackend.dto.RatingSummaryDTO;
+import team2.kakigowherebackend.model.Place;
+import team2.kakigowherebackend.model.Rating;
+import team2.kakigowherebackend.model.Tourist;
+import team2.kakigowherebackend.repository.RatingRepository;
 
 @Service
 @Transactional
@@ -24,8 +21,7 @@ public class RatingServiceImpl implements RatingService {
     private final RatingRepository ratingRepo;
     private final PlaceService placeService;
 
-    public RatingServiceImpl(RatingRepository ratingRepo,
-                             PlaceService placeService) {
+    public RatingServiceImpl(RatingRepository ratingRepo, PlaceService placeService) {
         this.ratingRepo = ratingRepo;
         this.placeService = placeService;
     }
@@ -60,7 +56,8 @@ public class RatingServiceImpl implements RatingService {
     public RatingItemDTO submitOrUpdate(long placeId, long touristId, RatingRequestDTO request) {
         // defensive fallback: in case validation did not catch
         if (request.getRating() < 1 || request.getRating() > 5) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rating must be between 1 and 5");
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "Rating must be between 1 and 5");
         }
         if (request.getComment() == null || request.getComment().trim().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Comment cannot be empty");
@@ -90,7 +87,11 @@ public class RatingServiceImpl implements RatingService {
                 saved.getTourist().getId(),
                 touristName,
                 saved.getRating(),
-                saved.getComment()
-        );
+                saved.getComment());
+    }
+
+    @Override
+    public List<Rating> getAllRatings() {
+        return ratingRepo.findAll();
     }
 }

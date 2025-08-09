@@ -5,6 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.http.HttpStatus;
+import team2.kakigowherebackend.exception.ResourceNotFoundException;
+import team2.kakigowherebackend.exception.BadRequestException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -17,5 +20,16 @@ public class GlobalExceptionHandler {
                         .map(err -> err.getField() + ": " + err.getDefaultMessage())
                         .collect(Collectors.joining(", "));
         return ResponseEntity.badRequest().body(errors);
+    }
+
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> handleResourceNotFound(ResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<String> handleBadRequest(BadRequestException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 }

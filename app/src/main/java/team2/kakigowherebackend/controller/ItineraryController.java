@@ -1,5 +1,7 @@
 package team2.kakigowherebackend.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import team2.kakigowherebackend.dto.ItineraryDTO;
@@ -7,9 +9,6 @@ import team2.kakigowherebackend.dto.ItineraryDetailDTO;
 import team2.kakigowherebackend.model.Itinerary;
 import team2.kakigowherebackend.model.ItineraryDetail;
 import team2.kakigowherebackend.service.ItineraryService;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/itinerary")
@@ -26,9 +25,10 @@ public class ItineraryController {
         List<ItineraryDTO> itineraryDtos = new ArrayList<>();
         itineraryService
                 .findTouristItineraries(email)
-                .forEach(itinerary -> {
-                    itineraryDtos.add(new ItineraryDTO(itinerary));
-                });
+                .forEach(
+                        itinerary -> {
+                            itineraryDtos.add(new ItineraryDTO(itinerary));
+                        });
         return ResponseEntity.ok(itineraryDtos);
     }
 
@@ -37,9 +37,10 @@ public class ItineraryController {
         List<ItineraryDetailDTO> detailDtos = new ArrayList<>();
         itineraryService
                 .findItineraryDetails(id)
-                .forEach(detail -> {
-                    detailDtos.add(new ItineraryDetailDTO(detail));
-                });
+                .forEach(
+                        detail -> {
+                            detailDtos.add(new ItineraryDetailDTO(detail));
+                        });
         return ResponseEntity.ok(detailDtos);
     }
 
@@ -109,9 +110,7 @@ public class ItineraryController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createItinerary(
-            @RequestHeader("user-email") String email,
-            @RequestBody Itinerary itinerary
-    ) {
+            @RequestHeader("user-email") String email, @RequestBody Itinerary itinerary) {
         if (email.isEmpty() || itinerary == null) {
             return ResponseEntity.badRequest().build();
         } else {

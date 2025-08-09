@@ -5,10 +5,12 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import team2.kakigowherebackend.repository.PlaceRepository;
 
 @Service
 public class ImageServiceImpl implements ImageService {
@@ -18,9 +20,11 @@ public class ImageServiceImpl implements ImageService {
     private String uploadDir;
 
     private final RestTemplate restTemplate;
+    private final PlaceRepository placeRepo;
 
-    public ImageServiceImpl() {
+    public ImageServiceImpl(PlaceRepository placeRepo) {
         this.restTemplate = new RestTemplate();
+        this.placeRepo = placeRepo;
     }
 
     @Override
@@ -44,7 +48,16 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public String upload(MultipartFile imageFile) {
-        return "";
+    public String upload(MultipartFile imageFile, String imageName) {
+        try {
+            Path dirPath = Paths.get(uploadDir);
+            Files.createDirectories(dirPath);
+            Path filePath = dirPath.resolve(imageName + ".jpg");
+            Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            return filePath.toString().replace("./", "/");
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to write image", e);
+        }
     }
 }
