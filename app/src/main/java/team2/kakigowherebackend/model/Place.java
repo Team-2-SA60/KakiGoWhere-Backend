@@ -61,7 +61,12 @@ public class Place {
     }
 
     public void updateOpeningHours(List<OpeningHours> newHours) {
-        this.openingHours.clear();
+        if (this.openingHours == null) {
+            this.openingHours = new ArrayList<>();
+        } else {
+            this.openingHours.clear();
+        }
+
         if (newHours != null) {
             this.openingHours.addAll(newHours);
         }
