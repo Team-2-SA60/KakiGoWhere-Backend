@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.data.domain.*;
 import org.springframework.web.multipart.MultipartFile;
+import team2.kakigowherebackend.dto.ManagePlaceDetailDTO;
 import team2.kakigowherebackend.model.InterestCategory;
 import team2.kakigowherebackend.model.OpeningHours;
 import team2.kakigowherebackend.model.Place;
@@ -73,10 +74,12 @@ class ManagePlaceServiceTest {
         updatedPlace.setInterestCategories(List.of(new InterestCategory()));
         updatedPlace.setOpeningHours(List.of(new OpeningHours()));
 
+        ManagePlaceDetailDTO dto = new ManagePlaceDetailDTO(updatedPlace);
+
         when(placeRepo.findById(1L)).thenReturn(Optional.of(existingPlace));
         when(placeRepo.save(existingPlace)).thenReturn(existingPlace);
 
-        Place result = managePlaceService.updatePlace(updatedPlace);
+        Place result = managePlaceService.updatePlace(dto);
 
         assertNotNull(result);
         assertEquals("New Name", result.getName());
@@ -96,10 +99,11 @@ class ManagePlaceServiceTest {
     void testUpdatePlace_PlaceDoesNotExist() {
         Place updatedPlace = new Place();
         updatedPlace.setId(1L);
+        ManagePlaceDetailDTO dto = new ManagePlaceDetailDTO(updatedPlace);
 
         when(placeRepo.findById(1L)).thenReturn(Optional.empty());
 
-        Place result = managePlaceService.updatePlace(updatedPlace);
+        Place result = managePlaceService.updatePlace(dto);
 
         assertNull(result);
         verify(placeRepo).findById(1L);
