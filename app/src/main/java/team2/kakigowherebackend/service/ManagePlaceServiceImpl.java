@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import team2.kakigowherebackend.dto.ManagePlaceDetailDTO;
 import team2.kakigowherebackend.model.Place;
 import team2.kakigowherebackend.repository.PlaceRepository;
 
@@ -29,7 +30,25 @@ public class ManagePlaceServiceImpl implements ManagePlaceService {
 
     @Override
     @Transactional
-    public Place updatePlace(Place updatedPlace) {
+    public Place createPlace(ManagePlaceDetailDTO newPlaceDTO) {
+        Place newPlace = new Place();
+
+        newPlace.setName(newPlaceDTO.getName());
+        newPlace.setDescription(newPlaceDTO.getDescription());
+        newPlace.setAddress(newPlaceDTO.getAddress());
+        newPlace.setLatitude(newPlaceDTO.getLatitude());
+        newPlace.setLongitude(newPlaceDTO.getLongitude());
+        newPlace.setActive(newPlaceDTO.isActive());
+        newPlace.setAutoFetch(newPlaceDTO.isAutoFetch());
+        newPlace.setInterestCategories(newPlaceDTO.getInterestCategories());
+        newPlace.updateOpeningHours(newPlaceDTO.getOpeningHours());
+
+        return placeRepo.save(newPlace);
+    }
+
+    @Override
+    @Transactional
+    public Place updatePlace(ManagePlaceDetailDTO updatedPlace) {
         Place existingPlace = placeRepo.findById(updatedPlace.getId()).orElse(null);
 
         if (existingPlace == null) return null;
@@ -55,7 +74,13 @@ public class ManagePlaceServiceImpl implements ManagePlaceService {
         if (existingPlace == null) return null;
 
         try {
-            String imagePath = imageService.upload(image, existingPlace.getGoogleId());
+            String imageName = "";
+            if (existingPlace.getGoogleId() != null) {
+                imageName = existingPlace.getGoogleId();
+            } else {
+                imageName += existingPlace.getId();
+            }
+            String imagePath = imageService.upload(image, imageName);
 
             existingPlace.setImagePath(imagePath);
             placeRepo.save(existingPlace);
