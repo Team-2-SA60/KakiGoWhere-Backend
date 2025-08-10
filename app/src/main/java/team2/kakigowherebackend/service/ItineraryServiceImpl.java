@@ -1,9 +1,5 @@
 package team2.kakigowherebackend.service;
 
-import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team2.kakigowherebackend.model.Itinerary;
@@ -14,6 +10,11 @@ import team2.kakigowherebackend.repository.ItineraryDetailRepository;
 import team2.kakigowherebackend.repository.ItineraryRepository;
 import team2.kakigowherebackend.repository.PlaceRepository;
 import team2.kakigowherebackend.repository.TouristRepository;
+
+import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -65,7 +66,7 @@ public class ItineraryServiceImpl implements ItineraryService {
         detail.setSequentialOrder(details.size() + 1);
         details.add(detail);
 
-        itinerary.setItineraryDetails(details);
+        //itinerary.setItineraryDetails(details);
         itineraryRepo.save(itinerary);
         itineraryDetailRepo.saveAll(details);
     }
@@ -89,9 +90,11 @@ public class ItineraryServiceImpl implements ItineraryService {
     public void addItineraryDetail(Long id, ItineraryDetail detail, Long placeId) {
         boolean found = false;
 
-        List<ItineraryDetail> details = itineraryDetailRepo.findDetailsByItineraryId(id);
+        //List<ItineraryDetail> details = itineraryDetailRepo.findDetailsByItineraryId(id);
         Itinerary itinerary = itineraryRepo.findById(id).get();
         Place placeToAdd = placeRepo.findById(placeId).get();
+
+        List<ItineraryDetail> details = itinerary.getItineraryDetails();
 
         // if adding to existing itinerary day with no places saved, add the place to it
         for (ItineraryDetail itineraryDetail : details) {
@@ -99,6 +102,7 @@ public class ItineraryServiceImpl implements ItineraryService {
                     && itineraryDetail.getPlace() == null) {
                 itineraryDetail.setPlace(placeToAdd);
                 found = true;
+                break;
             }
         }
 
@@ -110,7 +114,7 @@ public class ItineraryServiceImpl implements ItineraryService {
         }
 
         sortOrderByDate(details);
-        itineraryDetailRepo.saveAll(details);
+        itineraryRepo.save(itinerary);
     }
 
     @Override
@@ -137,8 +141,7 @@ public class ItineraryServiceImpl implements ItineraryService {
             }
         }
 
-        if (count == 1) { // if the itinerary detail is the only item for that day, remove only the
-            // Place
+        if (count == 1) { // if the itinerary detail is the only item for that day, remove only the Place
             deletedDetail.setPlace(null);
             deletedDetail.setNotes("");
             details =
