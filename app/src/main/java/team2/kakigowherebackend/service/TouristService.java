@@ -1,5 +1,6 @@
 package team2.kakigowherebackend.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import team2.kakigowherebackend.dto.TouristUpdateRequestDTO;
 import team2.kakigowherebackend.exception.BadRequestException;
@@ -9,15 +10,14 @@ import team2.kakigowherebackend.model.Tourist;
 import team2.kakigowherebackend.repository.InterestCategoryRepository;
 import team2.kakigowherebackend.repository.TouristRepository;
 
-import java.util.List;
-
 @Service
 public class TouristService {
     private final TouristRepository touristRepository;
     private final InterestCategoryRepository interestCategoryRepository;
 
-    public TouristService(TouristRepository touristRepository,
-                          InterestCategoryRepository interestCategoryRepository) {
+    public TouristService(
+            TouristRepository touristRepository,
+            InterestCategoryRepository interestCategoryRepository) {
         this.touristRepository = touristRepository;
         this.interestCategoryRepository = interestCategoryRepository;
     }
@@ -27,8 +27,10 @@ public class TouristService {
      * Enforces a maximum of 3 categories.
      */
     public Tourist updateTourist(Long id, TouristUpdateRequestDTO dto) {
-        Tourist existing = touristRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Tourist", "id", id));
+        Tourist existing =
+                touristRepository
+                        .findById(id)
+                        .orElseThrow(() -> new ResourceNotFoundException("Tourist", "id", id));
 
         existing.setName(dto.getName());
 

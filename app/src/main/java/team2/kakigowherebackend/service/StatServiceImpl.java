@@ -49,7 +49,7 @@ public class StatServiceImpl implements StatService {
     }
 
     @Override
-    public Optional<DailyStats> getByDate(LocalDate date){
+    public Optional<DailyStats> getByDate(LocalDate date) {
         return dailyStatsRepo.findByDate(date);
     }
 }

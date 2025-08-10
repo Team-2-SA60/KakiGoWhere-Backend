@@ -1,18 +1,16 @@
 package team2.kakigowherebackend.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.time.LocalDate;
 
 @Entity
 @Table(
-        uniqueConstraints = @UniqueConstraint(
-                columnNames = {"tourist_id","place_id","visit_date"}
-        )
-)
+        uniqueConstraints =
+                @UniqueConstraint(columnNames = {"tourist_id", "place_id", "visit_date"}))
 @Getter
 @Setter
 @NoArgsConstructor

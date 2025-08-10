@@ -6,6 +6,8 @@ import team2.kakigowherebackend.model.DailyStats;
 
 public interface StatService {
     LocalDate addVisit();
+
     LocalDate addSignUp();
+
     Optional<DailyStats> getByDate(LocalDate date);
 }

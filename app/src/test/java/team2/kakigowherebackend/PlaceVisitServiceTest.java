@@ -1,38 +1,32 @@
 package team2.kakigowherebackend;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.*;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import team2.kakigowherebackend.model.Place;
 import team2.kakigowherebackend.model.Tourist;
 import team2.kakigowherebackend.model.TouristPlaceVisit;
 import team2.kakigowherebackend.repository.PlaceRepository;
-import team2.kakigowherebackend.repository.TouristRepository;
 import team2.kakigowherebackend.repository.TouristPlaceVisitRepository;
+import team2.kakigowherebackend.repository.TouristRepository;
 import team2.kakigowherebackend.service.impl.PlaceVisitServiceImpl;
 
 class PlaceVisitServiceTest {
-    @Mock
-    private TouristPlaceVisitRepository visitRepo;
+    @Mock private TouristPlaceVisitRepository visitRepo;
 
-    @Mock
-    private TouristRepository touristRepo;
+    @Mock private TouristRepository touristRepo;
 
-    @Mock
-    private PlaceRepository placeRepo;
+    @Mock private PlaceRepository placeRepo;
 
-    @InjectMocks
-    private PlaceVisitServiceImpl service;
+    @InjectMocks private PlaceVisitServiceImpl service;
 
     // init @Mock/@InjectMocks fields
     @BeforeEach
@@ -47,7 +41,8 @@ class PlaceVisitServiceTest {
         LocalDate date = LocalDate.of(2025, 8, 9);
 
         // simulate that the entry already exists (True)
-        when(visitRepo.existsByTouristIdAndPlaceIdAndVisitDate(touristId, placeId, date)).thenReturn(true);
+        when(visitRepo.existsByTouristIdAndPlaceIdAndVisitDate(touristId, placeId, date))
+                .thenReturn(true);
 
         service.recordVisit(touristId, placeId, date);
 
@@ -58,12 +53,11 @@ class PlaceVisitServiceTest {
     @Test
     void testRecordVisit_NewVisit_SavedWithCorrectFields() {
         long touristId = 10L;
-        long placeId   = 20L;
+        long placeId = 20L;
         LocalDate date = LocalDate.of(2025, 8, 7);
 
-        when(visitRepo.existsByTouristIdAndPlaceIdAndVisitDate(
-                touristId, placeId, date
-        )).thenReturn(false);
+        when(visitRepo.existsByTouristIdAndPlaceIdAndVisitDate(touristId, placeId, date))
+                .thenReturn(false);
 
         Tourist t = new Tourist();
         Place p = new Place();
@@ -73,11 +67,14 @@ class PlaceVisitServiceTest {
         service.recordVisit(touristId, placeId, date);
 
         // assert that it is saved with the correct fields
-        verify(visitRepo).save(argThat(v -> v != null &&
-                        v.getTourist() == t &&
-                        v.getPlace() == p &&
-                        date.equals(v.getVisitDate())
-        ));
+        verify(visitRepo)
+                .save(
+                        argThat(
+                                v ->
+                                        v != null
+                                                && v.getTourist() == t
+                                                && v.getPlace() == p
+                                                && date.equals(v.getVisitDate())));
     }
 
     @Test
@@ -85,10 +82,10 @@ class PlaceVisitServiceTest {
         long placeId = 30L;
         YearMonth ym = YearMonth.of(2025, 8);
 
-        List<Object[]> rows = List.of(
-                new Object[]{ LocalDate.of(2025, 8, 2),  5L },
-                new Object[]{ LocalDate.of(2025, 8, 15), 3L }
-        );
+        List<Object[]> rows =
+                List.of(
+                        new Object[] {LocalDate.of(2025, 8, 2), 5L},
+                        new Object[] {LocalDate.of(2025, 8, 15), 3L});
         when(visitRepo.findByPlaceAndMonth(placeId, 2025, 8)).thenReturn(rows);
 
         Map<LocalDate, Integer> map = service.getDailyVisitCounts(placeId, ym); // act
@@ -106,8 +103,7 @@ class PlaceVisitServiceTest {
         YearMonth ym = YearMonth.of(2024, 2); // Feb 2024 (leap year, 29 days)
 
         // simulate empty list
-        when(visitRepo.findByPlaceAndMonth(placeId, 2024, 2))
-                .thenReturn(Collections.emptyList());
+        when(visitRepo.findByPlaceAndMonth(placeId, 2024, 2)).thenReturn(Collections.emptyList());
 
         Map<LocalDate, Integer> map = service.getDailyVisitCounts(placeId, ym);
 

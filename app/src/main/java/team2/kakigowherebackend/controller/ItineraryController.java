@@ -48,8 +48,7 @@ public class ItineraryController {
     public ResponseEntity<?> addItineraryItem(
             @PathVariable Long itineraryId,
             @RequestParam Long placeId,
-            @RequestBody ItineraryDetail itineraryDetail
-    ) {
+            @RequestBody ItineraryDetail itineraryDetail) {
         if (itineraryDetail == null) {
             return ResponseEntity.badRequest().build();
         } else {
@@ -60,9 +59,7 @@ public class ItineraryController {
 
     @PutMapping("/detail/add/day/{itineraryId}")
     public ResponseEntity<?> addItineraryDay(
-            @PathVariable Long itineraryId,
-            @RequestBody ItineraryDetail itineraryDetail
-    ) {
+            @PathVariable Long itineraryId, @RequestBody ItineraryDetail itineraryDetail) {
         if (itineraryDetail == null) {
             return ResponseEntity.badRequest().build();
         } else {
@@ -73,9 +70,7 @@ public class ItineraryController {
 
     @DeleteMapping("/detail/delete/day/{itineraryId}")
     public ResponseEntity<?> deleteItineraryDay(
-            @PathVariable Long itineraryId,
-            @RequestParam String lastDate
-    ) {
+            @PathVariable Long itineraryId, @RequestParam String lastDate) {
         if (itineraryService.deleteItineraryDay(itineraryId, lastDate)) {
             return ResponseEntity.ok().build();
         } else {
@@ -85,22 +80,17 @@ public class ItineraryController {
 
     @PutMapping("/detail/edit/{detailId}")
     public ResponseEntity<?> editItineraryItem(
-            @PathVariable Long detailId,
-            @RequestBody ItineraryDetail itineraryDetail
-    ) {
+            @PathVariable Long detailId, @RequestBody ItineraryDetail itineraryDetail) {
         if (itineraryDetail == null) {
             return ResponseEntity.badRequest().build();
-        }
-        else {
+        } else {
             itineraryService.editItineraryDetail(detailId, itineraryDetail);
             return ResponseEntity.ok().build();
         }
     }
 
     @DeleteMapping("/detail/delete/{detailId}")
-    public ResponseEntity<?> deleteItineraryItem(
-            @PathVariable Long detailId
-    ) {
+    public ResponseEntity<?> deleteItineraryItem(@PathVariable Long detailId) {
         if (itineraryService.deleteItineraryDetail(detailId)) {
             return ResponseEntity.ok().build();
         } else {

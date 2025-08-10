@@ -5,10 +5,9 @@ import static org.mockito.Mockito.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.*;
-
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -20,20 +19,15 @@ import team2.kakigowherebackend.service.RetrievePlaceServiceImpl;
 
 public class RetrievePlacesServiceTest {
 
-    @Mock
-    private PlaceRepository placeRepo;
+    @Mock private PlaceRepository placeRepo;
 
-    @Mock
-    private TouristRepository touristRepo;
+    @Mock private TouristRepository touristRepo;
 
-    @Mock
-    private InterestCategoryRepository icRepo;
+    @Mock private InterestCategoryRepository icRepo;
 
-    @Mock
-    private GooglePlaceService gpService; // won't be used here
+    @Mock private GooglePlaceService gpService; // won't be used here
 
-    @InjectMocks
-    private RetrievePlaceServiceImpl service;
+    @InjectMocks private RetrievePlaceServiceImpl service;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -59,7 +53,7 @@ public class RetrievePlacesServiceTest {
         // Create a JsonNode with a changed displayName
         ObjectNode placeNode = objectMapper.createObjectNode();
         ObjectNode displayNameNode = objectMapper.createObjectNode();
-        displayNameNode.put("text", "New Name");  // Different from old name
+        displayNameNode.put("text", "New Name"); // Different from old name
         displayNameNode.put("shortFormattedAddress", "New address");
         placeNode.set("displayName", displayNameNode);
 
@@ -77,7 +71,8 @@ public class RetrievePlacesServiceTest {
     void testMapGooglePlace_setsExpectedFields() throws Exception {
         Place place = new Place();
 
-        String jsonStr = """
+        String jsonStr =
+                """
             {
                 "displayName": {"text": "Test Place"},
                 "websiteUri": "http://test.com",
@@ -107,7 +102,8 @@ public class RetrievePlacesServiceTest {
     void testAddOpeningHours_addsOpeningHoursCorrectly() throws Exception {
         Place place = new Place();
 
-        String jsonStr = """
+        String jsonStr =
+                """
             {
                 "regularOpeningHours": {
                     "periods": [
@@ -136,7 +132,8 @@ public class RetrievePlacesServiceTest {
     void testCheckAndAddInterestCategories_addsCategoriesAndSavesNew() {
         Place place = new Place();
 
-        String jsonStr = """
+        String jsonStr =
+                """
             {
                 "types": ["restaurant", "museum", "point_of_interest"]
             }
@@ -145,7 +142,8 @@ public class RetrievePlacesServiceTest {
         JsonNode placeNode = null;
         try {
             placeNode = objectMapper.readTree(jsonStr);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         // Only "restaurant" and "museum" should be added, "point_of_interest" excluded
         when(icRepo.findByName("restaurant")).thenReturn(Optional.empty());
@@ -155,10 +153,11 @@ public class RetrievePlacesServiceTest {
         service.checkAndAddInterestCategories(place, placeNode);
 
         assertEquals(2, place.getInterestCategories().size());
-        assertTrue(place.getInterestCategories().stream()
-                .anyMatch(c -> c.getName().equals("restaurant")));
-        assertTrue(place.getInterestCategories().stream()
-                .anyMatch(c -> c.getName().equals("museum")));
+        assertTrue(
+                place.getInterestCategories().stream()
+                        .anyMatch(c -> c.getName().equals("restaurant")));
+        assertTrue(
+                place.getInterestCategories().stream().anyMatch(c -> c.getName().equals("museum")));
 
         verify(icRepo, times(2)).save(any(InterestCategory.class));
     }
@@ -167,7 +166,8 @@ public class RetrievePlacesServiceTest {
     void testCheckAndAddRatings_setsRatings() throws Exception {
         Place place = new Place();
 
-        String jsonStr = """
+        String jsonStr =
+                """
             {
                 "reviews": [
                     {"rating": 5, "text": {"text": "Excellent!"}},

@@ -41,7 +41,8 @@ public class Itinerary {
 
     public Long getDisplayImageId() {
         if (itineraryDetails == null || itineraryDetails.isEmpty()) return 0L;
-        if (itineraryDetails.size() == 1 && itineraryDetails.getFirst().getPlace() == null) return 0L;
+        if (itineraryDetails.size() == 1 && itineraryDetails.getFirst().getPlace() == null)
+            return 0L;
         return itineraryDetails.getFirst().getPlace().getId();
     }
 
