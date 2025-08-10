@@ -1,5 +1,10 @@
 package team2.kakigowherebackend.service;
 
+import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team2.kakigowherebackend.model.Itinerary;
@@ -10,11 +15,6 @@ import team2.kakigowherebackend.repository.ItineraryDetailRepository;
 import team2.kakigowherebackend.repository.ItineraryRepository;
 import team2.kakigowherebackend.repository.PlaceRepository;
 import team2.kakigowherebackend.repository.TouristRepository;
-
-import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -96,7 +96,8 @@ public class ItineraryServiceImpl implements ItineraryService {
 
         // if adding to existing itinerary day with no places saved, add the place to it
         for (ItineraryDetail itineraryDetail : details) {
-            if (itineraryDetail.getDate().equals(detail.getDate()) && itineraryDetail.getPlace() == null) {
+            if (itineraryDetail.getDate().equals(detail.getDate())
+                    && itineraryDetail.getPlace() == null) {
                 itineraryDetail.setPlace(placeToAdd);
                 found = true;
             }
@@ -140,11 +141,11 @@ public class ItineraryServiceImpl implements ItineraryService {
         if (count == 1) { // if the itinerary detail is the only item for that day, remove only the Place
             deletedDetail.setPlace(null);
             deletedDetail.setNotes("");
-            details = details.stream()
-                    .map(d -> d.getId() == deletedDetail.getId() ? deletedDetail : d)
-                    .collect(Collectors.toList());
-        }
-        else if (count > 1) { // else delete the whole itinerary item and re-fetch list
+            details =
+                    details.stream()
+                            .map(d -> d.getId() == deletedDetail.getId() ? deletedDetail : d)
+                            .collect(Collectors.toList());
+        } else if (count > 1) { // else delete the whole itinerary item and re-fetch list
             itineraryDetailRepo.deleteById(id);
             details = itineraryDetailRepo.findDetailsByItineraryId(itineraryId);
         }

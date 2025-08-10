@@ -1,9 +1,7 @@
 package team2.kakigowherebackend.dto;
 
-import lombok.Data;
-import team2.kakigowherebackend.model.InterestCategory;
-
 import java.util.List;
+import lombok.Data;
 
 @Data
 public class RegisterRequestDTO {
@@ -11,7 +9,9 @@ public class RegisterRequestDTO {
     private String email;
     private String password;
     private List<Long> interestCategoryIds;
-    public RegisterRequestDTO(String name, String email, String password, List<Long> interestCategoryIds) {
+
+    public RegisterRequestDTO(
+            String name, String email, String password, List<Long> interestCategoryIds) {
         this.name = name;
         this.email = email;
         this.password = password;

@@ -21,6 +21,7 @@ public class ItineraryDetail {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate date;
+
     private String notes;
     private int sequentialOrder;
 
@@ -53,7 +54,7 @@ public class ItineraryDetail {
     }
 
     public String getPlaceHours() {
-        if (place != null ) return place.getTodayOpeningHours();
+        if (place != null) return place.getTodayOpeningHours();
         else return "";
     }
 }
