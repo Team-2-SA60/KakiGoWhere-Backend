@@ -38,13 +38,13 @@ class AuthServiceTest {
 
         mockAdmin = new Admin();
         mockAdmin.setId(1L);
-        mockAdmin.setEmail("admin@example.com");
-        mockAdmin.setPassword("encodedPassword");
+        mockAdmin.setEmail("admin@test.com");
+        mockAdmin.setPassword("test");
 
         mockTourist = new Tourist();
         mockTourist.setId(2L);
-        mockTourist.setEmail("tourist@example.com");
-        mockTourist.setPassword("encodedPassword");
+        mockTourist.setEmail("tourist@test.com");
+        mockTourist.setPassword("test");
     }
 
     @Test
@@ -54,7 +54,7 @@ class AuthServiceTest {
         User result = authService.findUserByRoleAndId(UserConstants.ADMIN, 1L);
 
         assertNotNull(result);
-        assertEquals("admin@example.com", result.getEmail());
+        assertEquals("admin@test.com", result.getEmail());
         verify(adminRepo).findById(1L);
         verifyNoInteractions(touristRepo);
     }
@@ -66,7 +66,7 @@ class AuthServiceTest {
         User result = authService.findUserByRoleAndId(UserConstants.TOURIST, 2L);
 
         assertNotNull(result);
-        assertEquals("tourist@example.com", result.getEmail());
+        assertEquals("tourist@test.com", result.getEmail());
         verify(touristRepo).findById(2L);
         verifyNoInteractions(adminRepo);
     }
@@ -81,23 +81,23 @@ class AuthServiceTest {
 
     @Test
     void testFindUserByEmail_Found() {
-        when(userRepo.findByEmail("user@example.com")).thenReturn(Optional.of(mockAdmin));
+        when(userRepo.findByEmail("user@test.com")).thenReturn(Optional.of(mockAdmin));
 
-        User result = authService.findUserByEmail("user@example.com");
+        User result = authService.findUserByEmail("user@test.com");
 
         assertNotNull(result);
-        assertEquals("encodedPassword", result.getPassword());
-        verify(userRepo).findByEmail("user@example.com");
+        assertEquals("test", result.getPassword());
+        verify(userRepo).findByEmail("user@test.com");
     }
 
     @Test
     void testFindUserByEmail_NotFound() {
-        when(userRepo.findByEmail("missing@example.com")).thenReturn(Optional.empty());
+        when(userRepo.findByEmail("missing@test.com")).thenReturn(Optional.empty());
 
-        User result = authService.findUserByEmail("missing@example.com");
+        User result = authService.findUserByEmail("missing@test.com");
 
         assertNull(result);
-        verify(userRepo).findByEmail("missing@example.com");
+        verify(userRepo).findByEmail("missing@test.com");
     }
 
     @Test

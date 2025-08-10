@@ -51,7 +51,7 @@ jobs:
         if: always()
         run: |
           mkdir -p target
-          mvn clean verify
+          mvn clean verify surefire-report:report
 
       - name: Upload JaCoCo Report
         if: always()
@@ -59,3 +59,10 @@ jobs:
         with:
           name: jacoco-report
           path: app/target/site/jacoco
+
+      - name: Upload Unit Test Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-tests-report
+          path: app/target/reports
