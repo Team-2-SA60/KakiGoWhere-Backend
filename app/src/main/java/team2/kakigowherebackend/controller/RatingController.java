@@ -36,7 +36,7 @@ public class RatingController {
         RatingItemDTO dto = ratingService.getMyRatingItem(placeId, touristId);
         // handle "no rating yet"
         if (dto == null) {
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(dto);
     }
@@ -45,7 +45,7 @@ public class RatingController {
     public ResponseEntity<List<RatingItemDTO>> getOthers(
             @PathVariable long placeId, @RequestParam Long touristId) {
         List<RatingItemDTO> list = ratingService.getOtherRatings(placeId, touristId);
-        return ResponseEntity.ok(list);
+        return ResponseEntity.ok(list == null? List.of() : list);
     }
 
     @PostMapping("/{placeId}")
