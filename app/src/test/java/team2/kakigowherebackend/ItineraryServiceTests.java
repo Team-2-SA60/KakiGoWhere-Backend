@@ -126,6 +126,27 @@ public class ItineraryServiceTests {
     }
 
     @Test
+    void testDeleteTouristItinerary_DeletesItinerary() {
+        Long itineraryId = 2L;
+
+        // perform call
+        when(itineraryRepo.findById(itineraryId))
+                .thenReturn(Optional.of(mockItineraries.getLast()));
+
+        ArgumentCaptor<Itinerary> deletionCaptor = ArgumentCaptor.forClass(Itinerary.class);
+        boolean result = itineraryService.deleteTouristItinerary(itineraryId);
+
+        // assert outcome
+        verify(itineraryRepo, times(2)).findById(itineraryId);
+        verify(itineraryRepo, times(1)).delete(deletionCaptor.capture());
+
+        List<Itinerary> deletedItems = deletionCaptor.getAllValues();
+        assertTrue(result);
+        assertEquals(1, deletedItems.size());
+        assertEquals(deletedItems.getFirst(), mockItineraries.getLast());
+    }
+
+    @Test
     void testAddItineraryDay_AddsNewDetailWithoutPlace() {
         Long itineraryId = 1L;
         ItineraryDetail newDetail = new ItineraryDetail();
