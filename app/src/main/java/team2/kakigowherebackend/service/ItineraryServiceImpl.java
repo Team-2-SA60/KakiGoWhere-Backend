@@ -57,6 +57,15 @@ public class ItineraryServiceImpl implements ItineraryService {
     }
 
     @Override
+    public boolean deleteTouristItinerary(Long id) {
+        if (!itineraryRepo.findById(id).isPresent()) {
+            return false;
+        }
+        itineraryRepo.delete(itineraryRepo.findById(id).get());
+        return true;
+    }
+
+    @Override
     public void addItineraryDay(Long id, ItineraryDetail detail) {
         Itinerary itinerary = itineraryRepo.findById(id).get();
         List<ItineraryDetail> details = itineraryDetailRepo.findDetailsByItineraryId(id);

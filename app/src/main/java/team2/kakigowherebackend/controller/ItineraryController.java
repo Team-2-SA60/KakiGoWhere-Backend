@@ -108,4 +108,13 @@ public class ItineraryController {
             return ResponseEntity.ok().build();
         }
     }
+
+    @DeleteMapping("/delete/{itineraryId}")
+    public ResponseEntity<?> deleteItinerary(@PathVariable Long itineraryId) {
+        if (itineraryService.deleteTouristItinerary(itineraryId)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }
