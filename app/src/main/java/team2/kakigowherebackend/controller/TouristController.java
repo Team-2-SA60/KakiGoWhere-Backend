@@ -12,6 +12,7 @@ import team2.kakigowherebackend.repository.InterestCategoryRepository;
 import team2.kakigowherebackend.repository.TouristRepository;
 import team2.kakigowherebackend.service.StatService;
 import team2.kakigowherebackend.service.TouristService;
+import team2.kakigowherebackend.utils.PasswordEncoderUtil;
 
 @RestController
 @RequestMapping("/api/tourist")
@@ -43,7 +44,13 @@ public class TouristController {
     public ResponseEntity<RegisterResponseDTO> register(@RequestBody RegisterRequestDTO request) {
 
         // create entity
-        Tourist tourist = new Tourist(request.getEmail(), request.getPassword(), request.getName());
+        String encodedPassword = PasswordEncoderUtil.encodePassword(request.getPassword());
+        Tourist tourist =
+                new Tourist(
+                        request.getEmail(),
+                        encodedPassword,
+                        request.getName());
+
         List<InterestCategory> interests =
                 interestCategoryRepository.findAllById(request.getInterestCategoryIds());
         tourist.setInterestCategories(interests);
