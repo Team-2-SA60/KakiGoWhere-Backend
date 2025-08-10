@@ -192,18 +192,18 @@ public class ItineraryServiceTests {
         newDetail.setDate(targetDate);
 
         // perform call
-        when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId)).thenReturn(mockItineraryDetailsList);
+        //when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId)).thenReturn(mockItineraryDetailsList);
         when(itineraryRepo.findById(itineraryId)).thenReturn(Optional.of(mockItineraries.getFirst()));
         when(placeRepo.findById(placeId)).thenReturn(Optional.of(mockPlace));
         itineraryService.addItineraryDetail(itineraryId, newDetail, placeId);
 
         // assert outcome
-        verify(itineraryDetailRepo, times(1)).findDetailsByItineraryId(itineraryId);
+        //verify(itineraryDetailRepo, times(1)).findDetailsByItineraryId(itineraryId);
         verify(itineraryRepo, times(1)).findById(itineraryId);
         verify(placeRepo, times(1)).findById(placeId);
-        verify(itineraryDetailRepo, times(1)).saveAll(mockItineraryDetailsList);
+        verify(itineraryRepo, times(1)).save(mockItineraries.getFirst());
 
-        assertEquals(2, mockItineraryDetailsList.size());
+        assertEquals(2, mockItineraries.getFirst().getItineraryDetails().size());
     }
 
     @Test
@@ -222,16 +222,16 @@ public class ItineraryServiceTests {
         newList.add(newDetail);
 
         // perform call
-        when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId)).thenReturn(listWithPlace);
+        //when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId)).thenReturn(listWithPlace);
         when(itineraryRepo.findById(itineraryId)).thenReturn(Optional.of(mockItineraries.getFirst()));
         when(placeRepo.findById(placeId)).thenReturn(Optional.of(mockPlace));
         itineraryService.addItineraryDetail(itineraryId, newDetail, placeId);
 
         // assert outcome
-        verify(itineraryDetailRepo, times(1)).findDetailsByItineraryId(itineraryId);
+        //verify(itineraryDetailRepo, times(1)).findDetailsByItineraryId(itineraryId);
         verify(itineraryRepo, times(1)).findById(itineraryId);
         verify(placeRepo, times(1)).findById(placeId);
-        verify(itineraryDetailRepo, times(1)).saveAll(newList);
+        verify(itineraryRepo, times(1)).save(mockItineraries.getFirst());
 
         assertEquals(3, newList.size());
     }
