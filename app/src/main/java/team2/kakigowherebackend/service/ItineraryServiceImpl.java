@@ -48,8 +48,12 @@ public class ItineraryServiceImpl implements ItineraryService {
 
     @Override
     public void createTouristItinerary(String touristEmail, Itinerary itinerary) {
-        Optional<Tourist> tourist = touristRepo.findByEmail(touristEmail);
-        itinerary.setTourist(tourist.get());
+        Tourist tourist = touristRepo.findByEmail(touristEmail).get();
+        List<Itinerary> existingList = tourist.getItineraryList();
+        existingList.add(itinerary);
+        tourist.setItineraryList(existingList);
+
+        itinerary.setTourist(tourist);
         itineraryRepo.save(itinerary);
     }
 
@@ -61,6 +65,9 @@ public class ItineraryServiceImpl implements ItineraryService {
         detail.setItinerary(itinerary);
         detail.setSequentialOrder(details.size() + 1);
         details.add(detail);
+
+        itinerary.setItineraryDetails(details);
+        itineraryRepo.save(itinerary);
         itineraryDetailRepo.saveAll(details);
     }
 
@@ -121,8 +128,8 @@ public class ItineraryServiceImpl implements ItineraryService {
         }
 
         ItineraryDetail deletedDetail = itineraryDetailRepo.findById(id).get();
-        List<ItineraryDetail> details =
-                itineraryDetailRepo.findDetailsByItineraryId(deletedDetail.getItinerary().getId());
+        Long itineraryId = deletedDetail.getItinerary().getId();
+        List<ItineraryDetail> details = itineraryDetailRepo.findDetailsByItineraryId(itineraryId);
         int count = 0;
 
         for (ItineraryDetail itineraryDetail : details) {
@@ -131,8 +138,7 @@ public class ItineraryServiceImpl implements ItineraryService {
             }
         }
 
-        if (count == 1) { // if the itinerary detail is the only item for that day, remove only the
-            // Place
+        if (count == 1) { // if the itinerary detail is the only item for that day, remove only the Place
             deletedDetail.setPlace(null);
             deletedDetail.setNotes("");
             details =
@@ -141,7 +147,7 @@ public class ItineraryServiceImpl implements ItineraryService {
                             .collect(Collectors.toList());
         } else if (count > 1) { // else delete the whole itinerary item and re-fetch list
             itineraryDetailRepo.deleteById(id);
-            details = itineraryDetailRepo.findDetailsByItineraryId(id);
+            details = itineraryDetailRepo.findDetailsByItineraryId(itineraryId);
         }
 
         sortOrderByDate(details);
