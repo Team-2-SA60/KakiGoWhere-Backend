@@ -1,15 +1,19 @@
 package team2.kakigowherebackend;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.MockitoAnnotations;
 import team2.kakigowherebackend.model.Itinerary;
 import team2.kakigowherebackend.model.ItineraryDetail;
+import team2.kakigowherebackend.model.Place;
 import team2.kakigowherebackend.model.Tourist;
 import team2.kakigowherebackend.repository.ItineraryDetailRepository;
 import team2.kakigowherebackend.repository.ItineraryRepository;
+import team2.kakigowherebackend.repository.PlaceRepository;
 import team2.kakigowherebackend.repository.TouristRepository;
 import team2.kakigowherebackend.service.ItineraryServiceImpl;
 
@@ -21,7 +25,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
 public class ItineraryServiceTests {
 
     @Mock
@@ -30,110 +33,224 @@ public class ItineraryServiceTests {
     private ItineraryDetailRepository itineraryDetailRepo;
     @Mock
     private TouristRepository touristRepo;
+    @Mock
+    private PlaceRepository placeRepo;
 
     @InjectMocks
     private ItineraryServiceImpl itineraryService;
 
+    Place mockPlace;
+    Tourist mockTourist;
+    List<Itinerary> mockItineraries;
+    List<ItineraryDetail> mockItineraryDetailsList;
+
+    private AutoCloseable closeable;
+    @BeforeEach
+    void setUp() {
+        closeable = MockitoAnnotations.openMocks(this);
+
+        mockPlace = new Place();
+        mockPlace.setId(1L);
+        mockPlace.setName("Test Place");
+
+        mockTourist = new Tourist();
+        mockTourist.setId(1L);
+        mockTourist.setEmail("test@example.com");
+
+        mockItineraries = new ArrayList<>();
+        mockItineraries.add(new Itinerary());
+        mockItineraries.add(new Itinerary());
+
+        mockItineraries.getFirst().setId(1L);
+        mockItineraries.getFirst().setStartDate(LocalDate.of(2025, 8, 12));
+        mockItineraries.getFirst().setTourist(mockTourist);
+        mockItineraries.getLast().setId(2L);
+        mockItineraries.getLast().setStartDate(LocalDate.of(2025, 8, 18));
+        mockItineraries.getLast().setTourist(mockTourist);
+
+        mockItineraryDetailsList = new ArrayList<>();
+        mockItineraryDetailsList.add(new ItineraryDetail());
+        mockItineraryDetailsList.add(new ItineraryDetail());
+
+        mockItineraryDetailsList.getFirst().setId(1L);
+        mockItineraryDetailsList.getFirst().setDate(LocalDate.of(2025, 8, 12));
+        mockItineraryDetailsList.getFirst().setItinerary(mockItineraries.getFirst());
+        mockItineraryDetailsList.getLast().setId(2L);
+        mockItineraryDetailsList.getLast().setDate(LocalDate.of(2025, 8, 13));
+        mockItineraryDetailsList.getLast().setItinerary(mockItineraries.getFirst());
+
+        mockItineraries.getFirst().setItineraryDetails(mockItineraryDetailsList);
+        mockTourist.setItineraryList(mockItineraries);
+    }
+
     @Test
-    void findTouristItineraries_ReturnsList() {
-        // define sample data
-        String email = "test@kaki.com";
-        Tourist mockTourist = new Tourist(email, "pw", "tester");
-        List<Itinerary> mockItineraries = List.of(
-                new Itinerary(1L, "My fun itinerary", LocalDate.of(2025, 8,5), mockTourist, null),
-                new Itinerary(2L, "My awesome itinerary", LocalDate.of(2025, 8, 10), mockTourist, null)
-        );
+    void testFindTouristItineraries_ReturnsList_IfFound() {
+        String email = "test@example.com";
 
-        // mock repository behaviour
+        // perform call
         when(itineraryRepo.findByTouristEmail(email)).thenReturn(mockItineraries);
-
-        // perform test
         List<Itinerary> result = itineraryService.findTouristItineraries(email);
 
         // assert outcome
+        verify(itineraryRepo, times(1)).findByTouristEmail(email);
+
         assertEquals(2, result.size());
         assertEquals(mockTourist, result.getFirst().getTourist());
     }
 
     @Test
-    void createTouristItinerary_AddsNewItinerary() {
-        // define sample data
-        String email = "test@kaki.com";
-        Tourist mockTourist = new Tourist(email, "pw", "tester");
-        Itinerary mockItinerary = new Itinerary(1L, "My existing itinerary", LocalDate.of(2025, 8,12), mockTourist, null);
-        Itinerary newItinerary = new Itinerary(2L, "My new itinerary", LocalDate.of(2025, 8, 18), mockTourist, null);
-        mockTourist.setItineraryList(new ArrayList<>(List.of(mockItinerary)));
+    void testFindItineraryDetails_ReturnsList_IfFound() {
+        Long itineraryId = 1L;
 
-        // mock repository behaviour
+        // perform call
+        when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId)).thenReturn(mockItineraryDetailsList);
+        List<ItineraryDetail> result = itineraryService.findItineraryDetails(itineraryId);
+
+        // assert outcome
+        verify(itineraryDetailRepo, times(1)).findDetailsByItineraryId(itineraryId);
+
+        assertEquals(2, result.size());
+        assertTrue(result.contains(mockItineraryDetailsList.getFirst()));
+        assertTrue(result.contains(mockItineraryDetailsList.getLast()));
+    }
+
+    @Test
+    void testCreateTouristItinerary_AddsNewItinerary() {
+        String email = "test@example.com";
+        Itinerary newItinerary = new Itinerary();
+
+        // perform call
         when(touristRepo.findByEmail(email)).thenReturn(Optional.of(mockTourist));
-
-        // perform test
         itineraryService.createTouristItinerary(email, newItinerary);
 
         // assert outcome
-        assertEquals(2, mockTourist.getItineraryList().size());
+        verify(touristRepo, times(1)).findByEmail(email);
+        verify(itineraryRepo, times(1)).save(newItinerary);
+
+        assertEquals(3, mockTourist.getItineraryList().size());
         assertTrue(mockTourist.getItineraryList().contains(newItinerary));
         assertEquals(mockTourist, newItinerary.getTourist());
     }
 
     @Test
-    void addItineraryDay_AddsNewDetailWithoutPlace() {
-        // define sample data
+    void testAddItineraryDay_AddsNewDetailWithoutPlace() {
         Long itineraryId = 1L;
-        Tourist mockTourist = new Tourist();
-        Itinerary mockItinerary = new Itinerary(itineraryId, "My fun itinerary", LocalDate.of(2025, 8, 12), mockTourist, new ArrayList<>());
-        ItineraryDetail newDetail = new ItineraryDetail(2L, LocalDate.of(2025, 8, 13), "New day", 1, mockItinerary, null);
+        ItineraryDetail newDetail = new ItineraryDetail();
+        List<ItineraryDetail> newList = new ArrayList<>(mockItineraryDetailsList);
+        newList.add(newDetail);
 
-        // mock repository behaviour
-        when(itineraryRepo.findById(itineraryId)).thenReturn(Optional.of(mockItinerary));
-        when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId)).thenReturn(new ArrayList<>());
-
-        // perform test
+        // perform call
+        when(itineraryRepo.findById(itineraryId)).thenReturn(Optional.of(mockItineraries.getFirst()));
+        when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId)).thenReturn(mockItineraryDetailsList);
         itineraryService.addItineraryDay(itineraryId, newDetail);
 
         // assert outcome
-        assertEquals(1, mockItinerary.getItineraryDetails().size());
-        assertNull(mockItinerary.getItineraryDetails().getLast().getPlace());
+        verify(itineraryRepo, times(1)).findById(itineraryId);
+        verify(itineraryDetailRepo, times(1)).findDetailsByItineraryId(itineraryId);
+        verify(itineraryRepo, times(1)).save(mockItineraries.getFirst());
+        verify(itineraryDetailRepo, times(1)).saveAll(newList);
+
+        assertEquals(3, newList.size());
+        assertTrue(newList.contains(newDetail));
+        assertNull(newDetail.getPlace());
     }
 
     @Test
-    void deleteItineraryDay_RemoveAllItineraryDetails() {
+    void testDeleteItineraryDay_RemoveAllItineraryDetails() {
         // define sample data
         Long itineraryId = 1L;
-        LocalDate targetDate = LocalDate.of(2025, 8, 15);
-        Itinerary mockItinerary = new Itinerary();
-        mockItinerary.setId(itineraryId);
+        LocalDate targetDate = LocalDate.of(2025, 8, 13);
+        ItineraryDetail newDetailOnDate = new ItineraryDetail();
+        newDetailOnDate.setId(3L);
+        newDetailOnDate.setDate(targetDate);
+        newDetailOnDate.setItinerary(mockItineraries.getFirst());
+        List<ItineraryDetail> newList = new ArrayList<>(mockItineraryDetailsList);
+        newList.add(newDetailOnDate);
 
-        ItineraryDetail matchingDetail1 = new ItineraryDetail();
-        matchingDetail1.setItinerary(mockItinerary);
-        matchingDetail1.setDate(targetDate);
+        // perform call
+        when(itineraryRepo.findById(itineraryId)).thenReturn(Optional.of(mockItineraries.getFirst()));
+        when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId)).thenReturn(newList);
 
-        ItineraryDetail matchingDetail2 = new ItineraryDetail();
-        matchingDetail2.setItinerary(mockItinerary);
-        matchingDetail2.setDate(targetDate);
-
-        ItineraryDetail nonMatchingDetail = new ItineraryDetail();
-        nonMatchingDetail.setItinerary(mockItinerary);
-        nonMatchingDetail.setDate(targetDate.plusDays(1));
-
-        mockItinerary.setItineraryDetails(new ArrayList<>(List.of(matchingDetail1, nonMatchingDetail, matchingDetail2)));
-
-        // mock repository behaviour
-        when(itineraryRepo.findById(itineraryId)).thenReturn(Optional.of(mockItinerary));
-        when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId)).thenReturn(List.of(matchingDetail1, nonMatchingDetail, matchingDetail2));
-
-        // perform test
         ArgumentCaptor<ItineraryDetail> deletionCaptor = ArgumentCaptor.forClass(ItineraryDetail.class);
         boolean result = itineraryService.deleteItineraryDay(itineraryId, targetDate.toString());
 
         // assert outcome
+        verify(itineraryRepo, times(1)).findById(itineraryId);
+        verify(itineraryDetailRepo, times(1)).findDetailsByItineraryId(itineraryId);
         verify(itineraryDetailRepo, times(2)).delete(deletionCaptor.capture());
+
         List<ItineraryDetail> deletedItems = deletionCaptor.getAllValues();
         assertEquals(2, deletedItems.size());
-        assertTrue(deletedItems.contains(matchingDetail1));
-        assertTrue(deletedItems.contains(matchingDetail2));
-        assertFalse(deletedItems.contains(nonMatchingDetail));
+        assertTrue(deletedItems.contains(newDetailOnDate));
+        assertFalse(deletedItems.contains(mockItineraryDetailsList.getFirst()));
         assertTrue(result);
     }
 
+    @Test
+    void testAddItineraryDetail_IfNoExistingItem_AddPlace() {
+        Long itineraryId = 1L;
+        Long placeId = 1L;
+        LocalDate targetDate = LocalDate.of(2025, 8, 13);
+        ItineraryDetail newDetail = new ItineraryDetail();
+        newDetail.setDate(targetDate);
+
+        // perform call
+        when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId)).thenReturn(mockItineraryDetailsList);
+        when(itineraryRepo.findById(itineraryId)).thenReturn(Optional.of(mockItineraries.getFirst()));
+        when(placeRepo.findById(placeId)).thenReturn(Optional.of(mockPlace));
+        itineraryService.addItineraryDetail(itineraryId, newDetail, placeId);
+
+        // assert outcome
+        verify(itineraryDetailRepo, times(1)).findDetailsByItineraryId(itineraryId);
+        verify(itineraryRepo, times(1)).findById(itineraryId);
+        verify(placeRepo, times(1)).findById(placeId);
+        verify(itineraryDetailRepo, times(1)).saveAll(mockItineraryDetailsList);
+
+        assertEquals(2, mockItineraryDetailsList.size());
+    }
+
+    @Test
+    void testAddItineraryDetail_IfExistingItem_AddNewItem() {
+        // add existing Place to itinerary item on same day
+        List<ItineraryDetail> listWithPlace = new ArrayList<>(mockItineraryDetailsList);
+        listWithPlace.getLast().setPlace(mockPlace);
+
+        Long itineraryId = 1L;
+        Long placeId = 1L;
+        LocalDate targetDate = LocalDate.of(2025, 8, 13);
+        ItineraryDetail newDetail = new ItineraryDetail();
+        newDetail.setDate(targetDate);
+
+        List<ItineraryDetail> newList = new ArrayList<>(mockItineraryDetailsList);
+        newList.add(newDetail);
+
+        // perform call
+        when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId)).thenReturn(listWithPlace);
+        when(itineraryRepo.findById(itineraryId)).thenReturn(Optional.of(mockItineraries.getFirst()));
+        when(placeRepo.findById(placeId)).thenReturn(Optional.of(mockPlace));
+        itineraryService.addItineraryDetail(itineraryId, newDetail, placeId);
+
+        // assert outcome
+        verify(itineraryDetailRepo, times(1)).findDetailsByItineraryId(itineraryId);
+        verify(itineraryRepo, times(1)).findById(itineraryId);
+        verify(placeRepo, times(1)).findById(placeId);
+        verify(itineraryDetailRepo, times(1)).saveAll(newList);
+
+        assertEquals(3, newList.size());
+    }
+
+    @Test
+    void testDeleteItineraryDetail_IfOnlyItem_RemovePlace() {
+        //
+    }
+
+    @Test
+    void testDeleteItineraryDetail_IfMoreThanOneItem_RemoveItem() {
+        //
+    }
+
+    @AfterEach
+    void tearDown() throws Exception {
+        closeable.close();
+    }
 }
