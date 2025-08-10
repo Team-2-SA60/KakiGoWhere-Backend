@@ -1,18 +1,15 @@
 package team2.kakigowherebackend;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-
 import org.springframework.web.server.ResponseStatusException;
-
 import team2.kakigowherebackend.dto.RatingItemDTO;
 import team2.kakigowherebackend.dto.RatingRequestDTO;
 import team2.kakigowherebackend.dto.RatingSummaryDTO;
@@ -24,11 +21,9 @@ import team2.kakigowherebackend.service.RatingServiceImpl;
 
 class RatingServiceTest {
 
-    @Mock
-    private RatingRepository ratingRepo;
+    @Mock private RatingRepository ratingRepo;
 
-    @InjectMocks
-    private RatingServiceImpl service;
+    @InjectMocks private RatingServiceImpl service;
 
     @BeforeEach
     void setUp() {
@@ -51,9 +46,12 @@ class RatingServiceTest {
     @Test
     void testGetSummary_WithRatings_ComputesAverage() {
         long placeId = 2L;
-        Rating r1 = new Rating(); r1.setRating(4);
-        Rating r2 = new Rating(); r2.setRating(5);
-        Rating r3 = new Rating(); r3.setRating(3);
+        Rating r1 = new Rating();
+        r1.setRating(4);
+        Rating r2 = new Rating();
+        r2.setRating(5);
+        Rating r3 = new Rating();
+        r3.setRating(3);
         when(ratingRepo.findByPlaceId(placeId)).thenReturn(Arrays.asList(r1, r2, r3));
 
         RatingSummaryDTO out = service.getSummary(placeId);
@@ -86,10 +84,10 @@ class RatingServiceTest {
     @Test
     void testGetOtherRatings_Passthrough() {
         long placeId = 4L, touristId = 11L;
-        List<RatingItemDTO> list = Arrays.asList(
-                new RatingItemDTO(1L, 2L, "B", 4, "Nice"),
-                new RatingItemDTO(2L, 3L, "C", 3, "Ok")
-        );
+        List<RatingItemDTO> list =
+                Arrays.asList(
+                        new RatingItemDTO(1L, 2L, "B", 4, "Nice"),
+                        new RatingItemDTO(2L, 3L, "C", 3, "Ok"));
         when(ratingRepo.findOtherRatingItemDTOs(placeId, touristId)).thenReturn(list);
 
         List<RatingItemDTO> out = service.getOtherRatings(placeId, touristId);
@@ -104,8 +102,10 @@ class RatingServiceTest {
         req.setRating(0); // invalid (<1)
         req.setComment("ok");
 
-        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
-                () -> service.submitOrUpdate(placeId, touristId, req));
+        ResponseStatusException ex =
+                assertThrows(
+                        ResponseStatusException.class,
+                        () -> service.submitOrUpdate(placeId, touristId, req));
         assertEquals(400, ex.getStatusCode().value());
     }
 
@@ -116,8 +116,10 @@ class RatingServiceTest {
         req.setRating(6); // invalid (>5)
         req.setComment("ok");
 
-        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
-                () -> service.submitOrUpdate(placeId, touristId, req));
+        ResponseStatusException ex =
+                assertThrows(
+                        ResponseStatusException.class,
+                        () -> service.submitOrUpdate(placeId, touristId, req));
         assertEquals(400, ex.getStatusCode().value());
     }
 
@@ -128,8 +130,10 @@ class RatingServiceTest {
         req.setRating(4); // valid rating
         req.setComment("   "); // blank after trim
 
-        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
-                () -> service.submitOrUpdate(placeId, touristId, req));
+        ResponseStatusException ex =
+                assertThrows(
+                        ResponseStatusException.class,
+                        () -> service.submitOrUpdate(placeId, touristId, req));
         assertEquals(400, ex.getStatusCode().value());
     }
 
@@ -152,7 +156,8 @@ class RatingServiceTest {
         existing.setRating(2);
         existing.setComment("old");
 
-        when(ratingRepo.findByPlaceIdAndTouristId(placeId, touristId)).thenReturn(Optional.of(existing));
+        when(ratingRepo.findByPlaceIdAndTouristId(placeId, touristId))
+                .thenReturn(Optional.of(existing));
 
         // incoming request
         RatingRequestDTO req = new RatingRequestDTO();
@@ -182,12 +187,15 @@ class RatingServiceTest {
         req.setRating(3);
         req.setComment("okish");
 
-        when(ratingRepo.save(any(Rating.class))).thenAnswer(inv -> {
-            Rating r = inv.getArgument(0);
-            r.setId(999L); // simulate DB id
-            if (r.getTourist() != null) r.getTourist().setName("New User"); // name for DTO
-            return r;
-        });
+        when(ratingRepo.save(any(Rating.class)))
+                .thenAnswer(
+                        inv -> {
+                            Rating r = inv.getArgument(0);
+                            r.setId(999L); // simulate DB id
+                            if (r.getTourist() != null)
+                                r.getTourist().setName("New User"); // name for DTO
+                            return r;
+                        });
 
         RatingItemDTO out = service.submitOrUpdate(placeId, touristId, req);
 
@@ -197,12 +205,16 @@ class RatingServiceTest {
         assertEquals(3, out.getRating());
         assertEquals("okish", out.getComment());
 
-        verify(ratingRepo).save(argThat(r ->
-                r.getPlace() != null && r.getPlace().getId() == placeId &&
-                        r.getTourist() != null && r.getTourist().getId() == touristId &&
-                        r.getRating() == 3 &&
-                        "okish".equals(r.getComment())
-        ));
+        verify(ratingRepo)
+                .save(
+                        argThat(
+                                r ->
+                                        r.getPlace() != null
+                                                && r.getPlace().getId() == placeId
+                                                && r.getTourist() != null
+                                                && r.getTourist().getId() == touristId
+                                                && r.getRating() == 3
+                                                && "okish".equals(r.getComment())));
     }
 
     @Test

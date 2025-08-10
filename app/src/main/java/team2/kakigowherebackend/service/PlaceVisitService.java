@@ -10,5 +10,4 @@ public interface PlaceVisitService {
 
     // return no. of visits per month
     Map<LocalDate, Integer> getDailyVisitCounts(long placeId, YearMonth month);
-
 }

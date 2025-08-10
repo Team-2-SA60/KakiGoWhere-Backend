@@ -1,18 +1,16 @@
 package team2.kakigowherebackend;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import team2.kakigowherebackend.dto.TouristUpdateRequestDTO;
 import team2.kakigowherebackend.exception.BadRequestException;
 import team2.kakigowherebackend.exception.ResourceNotFoundException;
@@ -24,14 +22,11 @@ import team2.kakigowherebackend.service.TouristService;
 
 class TouristServiceTest {
 
-    @Mock
-    private TouristRepository touristRepository;
+    @Mock private TouristRepository touristRepository;
 
-    @Mock
-    private InterestCategoryRepository interestCategoryRepository;
+    @Mock private InterestCategoryRepository interestCategoryRepository;
 
-    @InjectMocks
-    private TouristService service;
+    @InjectMocks private TouristService service;
 
     @BeforeEach
     void setUp() {

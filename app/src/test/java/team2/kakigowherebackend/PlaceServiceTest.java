@@ -1,5 +1,14 @@
 package team2.kakigowherebackend;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -12,23 +21,11 @@ import team2.kakigowherebackend.model.Place;
 import team2.kakigowherebackend.repository.PlaceRepository;
 import team2.kakigowherebackend.service.PlaceServiceImpl;
 
-import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 class PlaceServiceTest {
 
-    @Mock
-    private PlaceRepository placeRepo;
+    @Mock private PlaceRepository placeRepo;
 
-    @InjectMocks
-    private PlaceServiceImpl placeService;
+    @InjectMocks private PlaceServiceImpl placeService;
 
     private Path tempDir;
 

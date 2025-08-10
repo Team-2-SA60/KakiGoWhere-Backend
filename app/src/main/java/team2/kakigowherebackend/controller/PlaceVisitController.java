@@ -1,14 +1,13 @@
 package team2.kakigowherebackend.controller;
 
-import java.time.YearMonth;
-import java.time.LocalDate;
-import java.util.Map;
 import jakarta.servlet.http.HttpSession;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.Map;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.format.annotation.DateTimeFormat;
-
 import team2.kakigowherebackend.service.PlaceVisitService;
 import team2.kakigowherebackend.utils.UserConstants;
 
@@ -25,8 +24,7 @@ public class PlaceVisitController {
     public ResponseEntity<Void> recordVisit(
             @PathVariable long placeId,
             @SessionAttribute(name = UserConstants.TOURIST, required = false) Long touristId,
-            HttpSession session
-    ) {
+            HttpSession session) {
         if (touristId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -37,12 +35,10 @@ public class PlaceVisitController {
     }
 
     @GetMapping("/{placeId}/visits")
-    public ResponseEntity<Map<LocalDate,Integer>> getVisitsByMonth(
+    public ResponseEntity<Map<LocalDate, Integer>> getVisitsByMonth(
             @PathVariable long placeId,
-            @RequestParam("month")
-            @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) YearMonth month) {
+            @RequestParam("month") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) YearMonth month) {
         Map<LocalDate, Integer> counts = visitService.getDailyVisitCounts(placeId, month);
         return ResponseEntity.ok(counts);
     }
-
 }

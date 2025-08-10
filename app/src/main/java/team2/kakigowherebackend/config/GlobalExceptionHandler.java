@@ -1,13 +1,13 @@
 package team2.kakigowherebackend.config;
 
 import java.util.stream.Collectors;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.http.HttpStatus;
-import team2.kakigowherebackend.exception.ResourceNotFoundException;
 import team2.kakigowherebackend.exception.BadRequestException;
+import team2.kakigowherebackend.exception.ResourceNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -21,7 +21,6 @@ public class GlobalExceptionHandler {
                         .collect(Collectors.joining(", "));
         return ResponseEntity.badRequest().body(errors);
     }
-
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<String> handleResourceNotFound(ResourceNotFoundException ex) {

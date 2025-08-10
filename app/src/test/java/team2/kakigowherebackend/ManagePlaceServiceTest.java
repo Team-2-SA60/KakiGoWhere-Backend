@@ -1,5 +1,9 @@
 package team2.kakigowherebackend;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -12,21 +16,13 @@ import team2.kakigowherebackend.repository.PlaceRepository;
 import team2.kakigowherebackend.service.ImageService;
 import team2.kakigowherebackend.service.ManagePlaceServiceImpl;
 
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 class ManagePlaceServiceTest {
 
-    @Mock
-    private PlaceRepository placeRepo;
+    @Mock private PlaceRepository placeRepo;
 
-    @Mock
-    private ImageService imageService;
+    @Mock private ImageService imageService;
 
-    @InjectMocks
-    private ManagePlaceServiceImpl managePlaceService;
+    @InjectMocks private ManagePlaceServiceImpl managePlaceService;
 
     @BeforeEach
     void setUp() {
@@ -159,7 +155,8 @@ class ManagePlaceServiceTest {
         MultipartFile image = mock(MultipartFile.class);
 
         when(placeRepo.findById(placeId)).thenReturn(Optional.of(place));
-        when(imageService.upload(image, "google123")).thenThrow(new RuntimeException("Upload failed"));
+        when(imageService.upload(image, "google123"))
+                .thenThrow(new RuntimeException("Upload failed"));
 
         String result = managePlaceService.uploadPlaceImage(placeId, image);
 

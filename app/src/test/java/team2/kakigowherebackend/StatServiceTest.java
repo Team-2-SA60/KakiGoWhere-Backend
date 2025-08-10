@@ -1,27 +1,23 @@
 package team2.kakigowherebackend;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
 import java.util.*;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import team2.kakigowherebackend.model.DailyStats;
 import team2.kakigowherebackend.repository.DailyStatsRepository;
 import team2.kakigowherebackend.service.StatServiceImpl;
 
 class StatServiceTest {
-    @Mock
-    private DailyStatsRepository dailyStatsRepo;
+    @Mock private DailyStatsRepository dailyStatsRepo;
 
-    @InjectMocks
-    private StatServiceImpl service;
+    @InjectMocks private StatServiceImpl service;
 
     @BeforeEach
     void setUp() {
@@ -43,7 +39,6 @@ class StatServiceTest {
         // ensure repo saves the same instance
         verify(dailyStatsRepo).save(same(existing));
     }
-
 
     @Test
     void testAddVisit_MissingRow_CreatesNewWithTodayAndSaves() {

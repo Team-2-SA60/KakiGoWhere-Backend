@@ -1,5 +1,9 @@
 package team2.kakigowherebackend;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -15,24 +19,15 @@ import team2.kakigowherebackend.service.AuthServiceImpl;
 import team2.kakigowherebackend.utils.PasswordEncoderUtil;
 import team2.kakigowherebackend.utils.UserConstants;
 
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 class AuthServiceTest {
 
-    @Mock
-    private UserRepository userRepo;
+    @Mock private UserRepository userRepo;
 
-    @Mock
-    private TouristRepository touristRepo;
+    @Mock private TouristRepository touristRepo;
 
-    @Mock
-    private AdminRepository adminRepo;
+    @Mock private AdminRepository adminRepo;
 
-    @InjectMocks
-    private AuthServiceImpl authService;
+    @InjectMocks private AuthServiceImpl authService;
 
     private Admin mockAdmin;
     private Tourist mockTourist;
@@ -108,8 +103,7 @@ class AuthServiceTest {
     @Test
     void testAuthenticate_MatchingPassword() {
         try (var mocked = mockStatic(PasswordEncoderUtil.class)) {
-            mocked.when(() -> PasswordEncoderUtil.matches("raw", "encoded"))
-                    .thenReturn(true);
+            mocked.when(() -> PasswordEncoderUtil.matches("raw", "encoded")).thenReturn(true);
 
             assertTrue(authService.authenticate("raw", "encoded"));
             mocked.verify(() -> PasswordEncoderUtil.matches("raw", "encoded"));
@@ -119,8 +113,7 @@ class AuthServiceTest {
     @Test
     void testAuthenticate_NonMatchingPassword() {
         try (var mocked = mockStatic(PasswordEncoderUtil.class)) {
-            mocked.when(() -> PasswordEncoderUtil.matches("raw", "encoded"))
-                    .thenReturn(false);
+            mocked.when(() -> PasswordEncoderUtil.matches("raw", "encoded")).thenReturn(false);
 
             assertFalse(authService.authenticate("raw", "encoded"));
             mocked.verify(() -> PasswordEncoderUtil.matches("raw", "encoded"));

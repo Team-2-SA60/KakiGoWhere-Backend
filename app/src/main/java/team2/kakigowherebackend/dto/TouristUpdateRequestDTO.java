@@ -6,12 +6,11 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter @Setter
+@Getter
+@Setter
 public class TouristUpdateRequestDTO {
-    @NotBlank
-    private String name;
+    @NotBlank private String name;
 
     @Size(max = 3)
     private List<Long> interestCategoryIds;
-
 }
