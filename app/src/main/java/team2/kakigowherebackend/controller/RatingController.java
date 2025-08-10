@@ -45,7 +45,7 @@ public class RatingController {
     public ResponseEntity<List<RatingItemDTO>> getOthers(
             @PathVariable long placeId, @RequestParam Long touristId) {
         List<RatingItemDTO> list = ratingService.getOtherRatings(placeId, touristId);
-        return ResponseEntity.ok(list == null? List.of() : list);
+        return ResponseEntity.ok(list == null ? List.of() : list);
     }
 
     @PostMapping("/{placeId}")
