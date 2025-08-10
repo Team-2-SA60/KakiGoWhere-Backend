@@ -129,7 +129,7 @@ jobs:
       - name: Run Zed Attack Proxy (ZAP)
         run: |
           docker run --rm -i zaproxy/zap-stable zap-baseline.py \
-            -t "http://${{ secrets.DROPLET_IP }}/api" \
+            -t "http://${{ secrets.DROPLET_IP }}:8080/api" \
             -l PASS \
             > zap_baseline_report.txt
 
