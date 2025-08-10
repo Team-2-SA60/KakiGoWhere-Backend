@@ -127,7 +127,8 @@ public class ItineraryServiceImpl implements ItineraryService {
         }
 
         ItineraryDetail deletedDetail = itineraryDetailRepo.findById(id).get();
-        List<ItineraryDetail> details = itineraryDetailRepo.findDetailsByItineraryId(deletedDetail.getItinerary().getId());
+        Long itineraryId = deletedDetail.getItinerary().getId();
+        List<ItineraryDetail> details = itineraryDetailRepo.findDetailsByItineraryId(itineraryId);
         int count = 0;
 
         for (ItineraryDetail itineraryDetail : details) {
@@ -145,7 +146,7 @@ public class ItineraryServiceImpl implements ItineraryService {
         }
         else if (count > 1) { // else delete the whole itinerary item and re-fetch list
             itineraryDetailRepo.deleteById(id);
-            details = itineraryDetailRepo.findDetailsByItineraryId(id);
+            details = itineraryDetailRepo.findDetailsByItineraryId(itineraryId);
         }
 
         sortOrderByDate(details);
