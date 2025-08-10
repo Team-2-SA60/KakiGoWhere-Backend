@@ -1,7 +1,5 @@
 package team2.kakigowherebackend.controller;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import team2.kakigowherebackend.dto.ItineraryDTO;
@@ -9,6 +7,9 @@ import team2.kakigowherebackend.dto.ItineraryDetailDTO;
 import team2.kakigowherebackend.model.Itinerary;
 import team2.kakigowherebackend.model.ItineraryDetail;
 import team2.kakigowherebackend.service.ItineraryService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/itinerary")
@@ -108,4 +109,14 @@ public class ItineraryController {
             return ResponseEntity.ok().build();
         }
     }
+
+    @DeleteMapping("/delete/{itineraryId}")
+    public ResponseEntity<?> deleteItinerary(@PathVariable Long itineraryId) {
+        if (itineraryService.deleteTouristItinerary(itineraryId)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
 }

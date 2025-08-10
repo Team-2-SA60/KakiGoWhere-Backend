@@ -1,8 +1,9 @@
 package team2.kakigowherebackend.service;
 
-import java.util.List;
 import team2.kakigowherebackend.model.Itinerary;
 import team2.kakigowherebackend.model.ItineraryDetail;
+
+import java.util.List;
 
 public interface ItineraryService {
 
@@ -11,6 +12,8 @@ public interface ItineraryService {
     List<ItineraryDetail> findItineraryDetails(Long id);
 
     void createTouristItinerary(String touristEmail, Itinerary itinerary);
+
+    boolean deleteTouristItinerary(Long id);
 
     void addItineraryDetail(Long id, ItineraryDetail detail, Long placeId);
 
