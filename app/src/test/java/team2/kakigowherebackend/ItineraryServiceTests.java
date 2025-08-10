@@ -1,5 +1,12 @@
 package team2.kakigowherebackend;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,27 +24,14 @@ import team2.kakigowherebackend.repository.PlaceRepository;
 import team2.kakigowherebackend.repository.TouristRepository;
 import team2.kakigowherebackend.service.ItineraryServiceImpl;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 public class ItineraryServiceTests {
 
-    @Mock
-    private ItineraryRepository itineraryRepo;
-    @Mock
-    private ItineraryDetailRepository itineraryDetailRepo;
-    @Mock
-    private TouristRepository touristRepo;
-    @Mock
-    private PlaceRepository placeRepo;
+    @Mock private ItineraryRepository itineraryRepo;
+    @Mock private ItineraryDetailRepository itineraryDetailRepo;
+    @Mock private TouristRepository touristRepo;
+    @Mock private PlaceRepository placeRepo;
 
-    @InjectMocks
-    private ItineraryServiceImpl itineraryService;
+    @InjectMocks private ItineraryServiceImpl itineraryService;
 
     Place mockPlace;
     Tourist mockTourist;
@@ -45,6 +39,7 @@ public class ItineraryServiceTests {
     List<ItineraryDetail> mockItineraryDetailsList;
 
     private AutoCloseable closeable;
+
     @BeforeEach
     void setUp() {
         closeable = MockitoAnnotations.openMocks(this);
@@ -100,7 +95,8 @@ public class ItineraryServiceTests {
         Long itineraryId = 1L;
 
         // perform call
-        when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId)).thenReturn(mockItineraryDetailsList);
+        when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId))
+                .thenReturn(mockItineraryDetailsList);
         List<ItineraryDetail> result = itineraryService.findItineraryDetails(itineraryId);
 
         // assert outcome
@@ -137,8 +133,10 @@ public class ItineraryServiceTests {
         newList.add(newDetail);
 
         // perform call
-        when(itineraryRepo.findById(itineraryId)).thenReturn(Optional.of(mockItineraries.getFirst()));
-        when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId)).thenReturn(mockItineraryDetailsList);
+        when(itineraryRepo.findById(itineraryId))
+                .thenReturn(Optional.of(mockItineraries.getFirst()));
+        when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId))
+                .thenReturn(mockItineraryDetailsList);
         itineraryService.addItineraryDay(itineraryId, newDetail);
 
         // assert outcome
@@ -165,10 +163,12 @@ public class ItineraryServiceTests {
         newList.add(newDetailOnDate);
 
         // perform call
-        when(itineraryRepo.findById(itineraryId)).thenReturn(Optional.of(mockItineraries.getFirst()));
+        when(itineraryRepo.findById(itineraryId))
+                .thenReturn(Optional.of(mockItineraries.getFirst()));
         when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId)).thenReturn(newList);
 
-        ArgumentCaptor<ItineraryDetail> deletionCaptor = ArgumentCaptor.forClass(ItineraryDetail.class);
+        ArgumentCaptor<ItineraryDetail> deletionCaptor =
+                ArgumentCaptor.forClass(ItineraryDetail.class);
         boolean result = itineraryService.deleteItineraryDay(itineraryId, targetDate.toString());
 
         // assert outcome
@@ -192,8 +192,10 @@ public class ItineraryServiceTests {
         newDetail.setDate(targetDate);
 
         // perform call
-        when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId)).thenReturn(mockItineraryDetailsList);
-        when(itineraryRepo.findById(itineraryId)).thenReturn(Optional.of(mockItineraries.getFirst()));
+        when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId))
+                .thenReturn(mockItineraryDetailsList);
+        when(itineraryRepo.findById(itineraryId))
+                .thenReturn(Optional.of(mockItineraries.getFirst()));
         when(placeRepo.findById(placeId)).thenReturn(Optional.of(mockPlace));
         itineraryService.addItineraryDetail(itineraryId, newDetail, placeId);
 
@@ -223,7 +225,8 @@ public class ItineraryServiceTests {
 
         // perform call
         when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId)).thenReturn(listWithPlace);
-        when(itineraryRepo.findById(itineraryId)).thenReturn(Optional.of(mockItineraries.getFirst()));
+        when(itineraryRepo.findById(itineraryId))
+                .thenReturn(Optional.of(mockItineraries.getFirst()));
         when(placeRepo.findById(placeId)).thenReturn(Optional.of(mockPlace));
         itineraryService.addItineraryDetail(itineraryId, newDetail, placeId);
 
@@ -246,7 +249,8 @@ public class ItineraryServiceTests {
         Long itineraryId = 1L; // the itinerary this detail comes from
 
         // perform call
-        when(itineraryDetailRepo.findById(itineraryDetailId)).thenReturn(Optional.of(listWithPlace.getLast()));
+        when(itineraryDetailRepo.findById(itineraryDetailId))
+                .thenReturn(Optional.of(listWithPlace.getLast()));
         when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId)).thenReturn(listWithPlace);
         itineraryService.deleteItineraryDetail(itineraryDetailId);
 
@@ -272,7 +276,8 @@ public class ItineraryServiceTests {
         Long itineraryId = 1L; // the itinerary this detail comes from
 
         // perform call
-        when(itineraryDetailRepo.findById(itineraryDetailId)).thenReturn(Optional.of(newList.getLast()));
+        when(itineraryDetailRepo.findById(itineraryDetailId))
+                .thenReturn(Optional.of(newList.getLast()));
         when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId)).thenReturn(newList);
 
         ArgumentCaptor<Long> deletionCaptor = ArgumentCaptor.forClass(Long.class);
