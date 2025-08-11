@@ -11,9 +11,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,9 +27,10 @@ class PlaceVisitInterceptorTest {
     // stub controller to exercise the interceptor
     @RestController
     static class PlaceControllerStub {
-        @GetMapping("/api/places/id/{id}")
-        public ResponseEntity<String> get(@PathVariable("id") Long id) {
-            if (id == 999999L) {
+        // match your real controller: /api/places/id/{placeId}
+        @GetMapping("/api/places/id/{placeId}")
+        public ResponseEntity<String> get(@PathVariable("placeId") Long placeId) {
+            if (placeId == 999999L) {
                 return ResponseEntity.status(404).body("not found");
             }
             return ResponseEntity.ok("ok");
@@ -43,20 +44,18 @@ class PlaceVisitInterceptorTest {
 
         PlaceVisitInterceptor interceptor = new PlaceVisitInterceptor(statService);
 
-        mockMvc = MockMvcBuilders
-                .standaloneSetup(new PlaceControllerStub())
-                .addInterceptors(interceptor)
-                .build();
+        mockMvc =
+                MockMvcBuilders.standaloneSetup(new PlaceControllerStub())
+                        .addInterceptors(interceptor)
+                        .build();
     }
 
     @Test
     void samePlace_onlyCountsOnce_perSession() throws Exception {
         MockHttpSession session = new MockHttpSession();
 
-        mockMvc.perform(get("/api/places/id/1").session(session))
-                .andExpect(status().isOk());
-        mockMvc.perform(get("/api/places/id/1").session(session))
-                .andExpect(status().isOk());
+        mockMvc.perform(get("/api/places/id/1").session(session)).andExpect(status().isOk());
+        mockMvc.perform(get("/api/places/id/1").session(session)).andExpect(status().isOk());
 
         verify(statService, times(1)).addPlaceVisit(1L);
     }

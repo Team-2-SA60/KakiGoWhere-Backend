@@ -26,6 +26,7 @@ public class DailyStats {
     @NotNull
     @Column(nullable = false, unique = true)
     private LocalDate date;
+
     private int numberOfUniqueVisits;
     private int numberOfSignUps;
 

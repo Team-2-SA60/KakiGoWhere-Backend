@@ -13,21 +13,24 @@ import team2.kakigowherebackend.model.PlaceStats;
 @Repository
 public interface PlaceStatsRepository extends JpaRepository<PlaceStats, Long> {
 
-    @Query("""
+    @Query(
+            """
            SELECT ps
            FROM PlaceStats ps
            WHERE ps.dailyStats = :daily
              AND ps.place = :place
            """)
-    Optional<PlaceStats> findByDailyStatsAndPlace(@Param("daily") DailyStats daily, @Param("place") Place place);
+    Optional<PlaceStats> findByDailyStatsAndPlace(
+            @Param("daily") DailyStats daily, @Param("place") Place place);
 
-    @Query("""
-           SELECT ps 
+    @Query(
+            """
+           SELECT ps
            FROM PlaceStats ps
            JOIN ps.dailyStats d
-           WHERE d.date = :date 
+           WHERE d.date = :date
            AND ps.place.id = :placeId
             """)
-    Optional<PlaceStats> findByDateAndPlaceId(@Param("date") LocalDate date, @Param("placeId")Long placeId);
-
+    Optional<PlaceStats> findByDateAndPlaceId(
+            @Param("date") LocalDate date, @Param("placeId") Long placeId);
 }

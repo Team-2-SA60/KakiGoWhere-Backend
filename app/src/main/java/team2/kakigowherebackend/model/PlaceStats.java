@@ -11,12 +11,10 @@ import lombok.Setter;
 @Entity
 @Table(
         uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "uk_placestats_day_place",
-                        columnNames = {"daily_stats_id", "place_id"}
-                )
-        }
-)
+            @UniqueConstraint(
+                    name = "uk_placestats_day_place",
+                    columnNames = {"daily_stats_id", "place_id"})
+        })
 @Getter
 @Setter
 @AllArgsConstructor
@@ -37,7 +35,7 @@ public class PlaceStats {
     private int numberOfPageVisits;
 
     @NotNull
-    @ManyToOne (optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "place_id", nullable = false)
     private Place place;
 

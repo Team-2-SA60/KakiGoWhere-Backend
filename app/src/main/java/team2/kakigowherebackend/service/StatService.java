@@ -15,5 +15,4 @@ public interface StatService {
     Optional<DailyStats> getByDate(LocalDate date);
 
     Optional<PlaceStats> getPlaceStats(LocalDate date, Long placeId);
-
 }

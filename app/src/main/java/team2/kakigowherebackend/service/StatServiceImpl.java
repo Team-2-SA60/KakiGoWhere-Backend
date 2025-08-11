@@ -18,7 +18,10 @@ public class StatServiceImpl implements StatService {
     private final PlaceStatsRepository placeStatsRepo;
     private final PlaceRepository placeRepo;
 
-    public StatServiceImpl(DailyStatsRepository dailyStatsRepo, PlaceStatsRepository placeStatsRepo, PlaceRepository placeRepo) {
+    public StatServiceImpl(
+            DailyStatsRepository dailyStatsRepo,
+            PlaceStatsRepository placeStatsRepo,
+            PlaceRepository placeRepo) {
         this.dailyStatsRepo = dailyStatsRepo;
         this.placeStatsRepo = placeStatsRepo;
         this.placeRepo = placeRepo;
@@ -62,18 +65,19 @@ public class StatServiceImpl implements StatService {
     public LocalDate addPlaceVisit(Long placeId) {
         LocalDate today = LocalDate.now();
         DailyStats dailyStats = dailyStatsRepo.findByDate(today).orElse(null);
-        if(dailyStats == null) {
+        if (dailyStats == null) {
             dailyStats = new DailyStats();
             dailyStats.setDate(today);
             dailyStatsRepo.save(dailyStats);
         }
 
         Place place = placeRepo.findById(placeId).orElse(null);
-        if(place == null) {
+        if (place == null) {
             return today;
         }
 
-        PlaceStats placeStats = placeStatsRepo.findByDailyStatsAndPlace(dailyStats, place).orElse(null);
+        PlaceStats placeStats =
+                placeStatsRepo.findByDailyStatsAndPlace(dailyStats, place).orElse(null);
         if (placeStats == null) {
             placeStats = new PlaceStats();
             placeStats.setDailyStats(dailyStats);

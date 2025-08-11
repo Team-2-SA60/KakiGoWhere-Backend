@@ -28,7 +28,9 @@ public class PlaceVisitInterceptor implements HandlerInterceptor {
 
     // extract placeId from the GET request
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(
+            HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws Exception {
 
         if (!"GET".equalsIgnoreCase(request.getMethod())) {
             return true;
@@ -36,11 +38,12 @@ public class PlaceVisitInterceptor implements HandlerInterceptor {
 
         @SuppressWarnings("unchecked")
         Map<String, String> pathVars =
-                (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+                (Map<String, String>)
+                        request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 
         if (pathVars != null) {
-            // specifically look for the {id} in /api/places/id/{id}
-            String idStr = pathVars.get("id");
+            // specifically look for {placeId} in /api/places/id/{placeId}
+            String idStr = pathVars.get("placeId");
             if (idStr != null) {
                 try {
                     Long placeId = Long.valueOf(idStr);
@@ -55,7 +58,8 @@ public class PlaceVisitInterceptor implements HandlerInterceptor {
 
     // counts once per place per session (per day, in case session left overnight)
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+    public void afterCompletion(
+            HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
             throws Exception {
 
         Object placeIdObj = request.getAttribute(ATTR_PLACE_ID);
