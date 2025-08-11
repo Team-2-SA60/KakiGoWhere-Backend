@@ -2,14 +2,17 @@ package team2.kakigowherebackend.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.Comparator;
-import java.util.List;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
+import java.util.List;
 
 @Entity
 @Getter
@@ -22,8 +25,10 @@ public class Itinerary {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @NotBlank(message = "Title cannot be blank")
     private String title;
 
+    @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
