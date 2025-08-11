@@ -1,7 +1,6 @@
 package team2.kakigowherebackend.controller;
 
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import team2.kakigowherebackend.dto.ItineraryDTO;
@@ -9,6 +8,9 @@ import team2.kakigowherebackend.dto.ItineraryDetailDTO;
 import team2.kakigowherebackend.model.Itinerary;
 import team2.kakigowherebackend.model.ItineraryDetail;
 import team2.kakigowherebackend.service.ItineraryService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/itinerary")
@@ -59,7 +61,8 @@ public class ItineraryController {
 
     @PutMapping("/detail/add/day/{itineraryId}")
     public ResponseEntity<?> addItineraryDay(
-            @PathVariable Long itineraryId, @RequestBody ItineraryDetail itineraryDetail) {
+            @PathVariable Long itineraryId,
+            @RequestBody ItineraryDetail itineraryDetail) {
         if (itineraryDetail == null) {
             return ResponseEntity.badRequest().build();
         } else {
@@ -70,7 +73,8 @@ public class ItineraryController {
 
     @DeleteMapping("/detail/delete/day/{itineraryId}")
     public ResponseEntity<?> deleteItineraryDay(
-            @PathVariable Long itineraryId, @RequestParam String lastDate) {
+            @PathVariable Long itineraryId,
+            @RequestParam String lastDate) {
         if (itineraryService.deleteItineraryDay(itineraryId, lastDate)) {
             return ResponseEntity.ok().build();
         } else {
@@ -80,7 +84,8 @@ public class ItineraryController {
 
     @PutMapping("/detail/edit/{detailId}")
     public ResponseEntity<?> editItineraryItem(
-            @PathVariable Long detailId, @RequestBody ItineraryDetail itineraryDetail) {
+            @PathVariable Long detailId,
+            @RequestBody ItineraryDetail itineraryDetail) {
         if (itineraryDetail == null) {
             return ResponseEntity.badRequest().build();
         } else {
@@ -100,7 +105,8 @@ public class ItineraryController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createItinerary(
-            @RequestHeader("user-email") String email, @RequestBody Itinerary itinerary) {
+            @RequestHeader("user-email") String email,
+            @Valid @RequestBody Itinerary itinerary) {
         if (email.isEmpty() || itinerary == null) {
             return ResponseEntity.badRequest().build();
         } else {
