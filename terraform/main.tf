@@ -26,7 +26,7 @@ resource "digitalocean_droplet" "app" {
   name       = "KakiGoWhere"
   region     = "sgp1"
   image      = "ubuntu-24-04-x64"
-  size       = "s-2vcpu-2gb"
+  size       = "s-4vcpu-8gb-240gb-intel"
   ssh_keys   = [var.ssh_key_fingerprint]
 }
 
