@@ -23,6 +23,7 @@ public class DataInitializer implements CommandLineRunner {
     private final ItineraryRepository itineraryRepo;
     private final ExportPlaceService exportPlaceService;
     private final ExportRatingService exportRatingService;
+    private final DailyStatsRepository dailyStatsRepo;
 
     public DataInitializer(
             PlaceRepository placeRepo,
@@ -31,7 +32,8 @@ public class DataInitializer implements CommandLineRunner {
             AdminRepository adminRepo,
             ItineraryRepository itineraryRepo,
             ExportPlaceService exportPlaceService,
-            ExportRatingService exportRatingService) {
+            ExportRatingService exportRatingService,
+            DailyStatsRepository dailyStatsRepo) {
         this.placeRepo = placeRepo;
         this.touristRepo = touristRepo;
         this.interestCategoryRepo = interestCategoryRepo;
@@ -39,6 +41,7 @@ public class DataInitializer implements CommandLineRunner {
         this.itineraryRepo = itineraryRepo;
         this.exportPlaceService = exportPlaceService;
         this.exportRatingService = exportRatingService;
+        this.dailyStatsRepo = dailyStatsRepo;
     }
 
     @Override
@@ -49,6 +52,7 @@ public class DataInitializer implements CommandLineRunner {
         addInterests();
         addAdmin();
         addItineraries();
+        addDailyStats();
         exportCsvs();
     }
 
@@ -1012,6 +1016,24 @@ public class DataInitializer implements CommandLineRunner {
                             itineraryDetail.setItinerary(i2);
                         });
         itineraryRepo.save(i2);
+    }
+
+    private void addDailyStats() {
+        LocalDate start = LocalDate.of(2025, 7, 1);
+        LocalDate end = LocalDate.of(2025, 8, 10);
+
+        for (LocalDate d = start; !d.isAfter(end); d = d.plusDays(1)) {
+            // skip if already present
+            if (dailyStatsRepo.findByDate(d).isPresent()) continue;
+
+            DailyStats ds = new DailyStats();
+            ds.setDate(d);
+            // add deterministic values
+            ds.setNumberOfUniqueVisits(100 + d.getDayOfMonth());
+            ds.setNumberOfSignUps(10 + (d.getDayOfMonth() % 5));
+
+            dailyStatsRepo.save(ds);
+        }
     }
 
     private void exportCsvs() {
