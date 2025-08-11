@@ -18,7 +18,7 @@ import team2.kakigowherebackend.model.InterestCategory;
 import team2.kakigowherebackend.model.Tourist;
 import team2.kakigowherebackend.repository.InterestCategoryRepository;
 import team2.kakigowherebackend.repository.TouristRepository;
-import team2.kakigowherebackend.service.TouristService;
+import team2.kakigowherebackend.service.TouristServiceImpl;
 
 class TouristServiceTest {
 
@@ -26,7 +26,7 @@ class TouristServiceTest {
 
     @Mock private InterestCategoryRepository interestCategoryRepository;
 
-    @InjectMocks private TouristService service;
+    @InjectMocks private TouristServiceImpl service;
 
     @BeforeEach
     void setUp() {
