@@ -19,17 +19,17 @@ jobs:
 
       - name: Run ZAP Baseline Scan
         run: |
-          docker run --rm \
-            -u $(id -u):$(id -g) \
-            -v $(pwd):/zap/wrk \
+          mkdir -p temp
+          docker run --rm -i \
+            -v ${{ github.workspace }}/temp:/zap/wrk:rw \
+            --user root \
             zaproxy/zap-stable zap-baseline.py \
-              -t "http://${{ secrets.DROPLET_IP }}" \
-              -l PASS \
-              -r zap_baseline_report.html
+            -t "http://${{ secrets.DROPLET_IP }}" \
+            -r zap_baseline_report.html \
 
       - name: Upload DAST report
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: DAST zap report
-          path: zap_baseline_report.html
+          path: temp/zap_baseline_report.html
