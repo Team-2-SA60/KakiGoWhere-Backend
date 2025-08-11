@@ -24,7 +24,7 @@ cd app
 
 JaCoCo report in **target/site/jacoco**
 ```
-./mvnw clean verify
+./mvnw clean verify surefire-report:report
 ```
 
 ## Docker

@@ -45,6 +45,7 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         addPlaces();
         addTourist();
+        addCategories();
         addInterests();
         addAdmin();
         addItineraries();
@@ -848,16 +849,36 @@ public class DataInitializer implements CommandLineRunner {
         log.info("Initialized tourists");
     }
 
+    private void addCategories() {
+        InterestCategory interestCategory =
+                interestCategoryRepo.findByName("food_and_beverage").orElse(null);
+        if (interestCategory != null) return;
+
+        log.info("Initializing categories...");
+        interestCategoryRepo.save(new InterestCategory("food_and_beverage", "Food and Beverage"));
+        interestCategoryRepo.save(new InterestCategory("gardens_and_nature", "Gardens and Nature"));
+        interestCategoryRepo.save(new InterestCategory("museums", "Museums"));
+        interestCategoryRepo.save(new InterestCategory("culture", "Culture"));
+        interestCategoryRepo.save(new InterestCategory("entertainment", "Entertainment"));
+        interestCategoryRepo.save(new InterestCategory("theme_parks", "Theme Parks"));
+        interestCategoryRepo.save(new InterestCategory("wildlife_and_zoos", "Wildlife and Zoos"));
+        interestCategoryRepo.save(new InterestCategory("shopping", "Shopping"));
+        interestCategoryRepo.save(new InterestCategory("heritage_sites", "Heritage Sites"));
+        log.info("Initialized categories");
+    }
+
     private void addInterests() {
-        InterestCategory interestCategory = interestCategoryRepo.findByName("museum").orElse(null);
+        InterestCategory interestCategory =
+                interestCategoryRepo.findByName("food_and_beverage").orElse(null);
         if (interestCategory == null) return;
 
         // Get some categories
-        InterestCategory museum = interestCategoryRepo.findByName("museum").orElse(null);
-        InterestCategory food = interestCategoryRepo.findByName("food").orElse(null);
-        InterestCategory zoo = interestCategoryRepo.findByName("zoo").orElse(null);
-        InterestCategory cafe = interestCategoryRepo.findByName("cafe").orElse(null);
-        InterestCategory aquarium = interestCategoryRepo.findByName("aquarium").orElse(null);
+        InterestCategory museum = interestCategoryRepo.findByName("museums").orElse(null);
+        InterestCategory food = interestCategoryRepo.findByName("food_and_beverage").orElse(null);
+        InterestCategory zoo = interestCategoryRepo.findByName("wildlife_and_zoos").orElse(null);
+        InterestCategory culture = interestCategoryRepo.findByName("culture").orElse(null);
+        InterestCategory gardens =
+                interestCategoryRepo.findByName("gardens_and_nature").orElse(null);
 
         Tourist adrian = touristRepo.findByEmail("a@kaki.com").orElse(null);
         if (adrian != null) {
@@ -882,7 +903,7 @@ public class DataInitializer implements CommandLineRunner {
         if (gy != null) {
             List<InterestCategory> ic = new ArrayList<>();
             ic.add(food);
-            ic.add(cafe);
+            ic.add(culture);
             gy.setInterestCategories(ic);
             touristRepo.save(gy);
         }
@@ -890,7 +911,7 @@ public class DataInitializer implements CommandLineRunner {
         Tourist ks = touristRepo.findByEmail("ks@kaki.com").orElse(null);
         if (ks != null) {
             List<InterestCategory> ic = new ArrayList<>();
-            ic.add(aquarium);
+            ic.add(gardens);
             ic.add(zoo);
             ks.setInterestCategories(ic);
             touristRepo.save(ks);
