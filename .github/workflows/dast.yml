@@ -17,14 +17,15 @@ jobs:
         run: |
           docker pull zaproxy/zap-stable
 
-      - name: Run Zed Attack Proxy (ZAP)
+      - name: Run ZAP Baseline Scan
         run: |
           docker run --rm \
+            -u $(id -u):$(id -g) \
             -v $(pwd):/zap/wrk \
             zaproxy/zap-stable zap-baseline.py \
-            -t "http://${{ secrets.DROPLET_IP }}" \
-            -l PASS \
-            -r zap_baseline_report.html
+              -t "http://${{ secrets.DROPLET_IP }}" \
+              -l PASS \
+              -r zap_baseline_report.html
 
       - name: Upload DAST report
         uses: actions/upload-artifact@v4
