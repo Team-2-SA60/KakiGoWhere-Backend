@@ -1,10 +1,5 @@
-package team2.kakigowherebackend.service.impl;
+package team2.kakigowherebackend.service;
 
-import java.time.LocalDate;
-import java.time.YearMonth;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team2.kakigowherebackend.model.Place;
@@ -13,7 +8,12 @@ import team2.kakigowherebackend.model.TouristPlaceVisit;
 import team2.kakigowherebackend.repository.PlaceRepository;
 import team2.kakigowherebackend.repository.TouristPlaceVisitRepository;
 import team2.kakigowherebackend.repository.TouristRepository;
-import team2.kakigowherebackend.service.PlaceVisitService;
+
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class PlaceVisitServiceImpl implements PlaceVisitService {
