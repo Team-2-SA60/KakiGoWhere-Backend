@@ -19,11 +19,12 @@ jobs:
 
       - name: Run Zed Attack Proxy (ZAP)
         run: |
-          docker run --rm -i zaproxy/zap-stable zap-baseline.py \
+          docker run --rm \
             -v $(pwd):/zap/wrk \
+            zaproxy/zap-stable zap-baseline.py \
             -t "http://${{ secrets.DROPLET_IP }}" \
             -l PASS \
-            -r zap_report.html
+            -r zap_baseline_report.html
 
       - name: Upload DAST report
         uses: actions/upload-artifact@v4
