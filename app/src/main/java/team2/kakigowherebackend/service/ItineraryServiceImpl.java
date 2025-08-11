@@ -1,9 +1,5 @@
 package team2.kakigowherebackend.service;
 
-import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team2.kakigowherebackend.model.Itinerary;
@@ -14,6 +10,11 @@ import team2.kakigowherebackend.repository.ItineraryDetailRepository;
 import team2.kakigowherebackend.repository.ItineraryRepository;
 import team2.kakigowherebackend.repository.PlaceRepository;
 import team2.kakigowherebackend.repository.TouristRepository;
+
+import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -41,52 +42,49 @@ public class ItineraryServiceImpl implements ItineraryService {
     }
 
     @Override
-    public List<ItineraryDetail> findItineraryDetails(Long id) {
-        return itineraryDetailRepo.findDetailsByItineraryId(id);
+    public List<ItineraryDetail> findItineraryDetails(Long itineraryId) {
+        return itineraryDetailRepo.findDetailsByItineraryId(itineraryId);
     }
 
     @Override
-    public void createTouristItinerary(String touristEmail, Itinerary itinerary) {
-        Tourist tourist = touristRepo.findByEmail(touristEmail).get();
-        List<Itinerary> existingList = tourist.getItineraryList();
-        existingList.add(itinerary);
-        tourist.setItineraryList(existingList);
+    public Itinerary createItinerary(String touristEmail, Itinerary itinerary) {
+        Tourist tourist = touristRepo.findByEmail(touristEmail).orElse(null);
+        if (tourist == null) return null;
 
+        tourist.getItineraryList().add(itinerary);
         itinerary.setTourist(tourist);
-        itineraryRepo.save(itinerary);
+        return itineraryRepo.save(itinerary);
     }
 
     @Override
-    public boolean deleteTouristItinerary(Long id) {
-        if (!itineraryRepo.findById(id).isPresent()) {
-            return false;
-        }
-        itineraryRepo.delete(itineraryRepo.findById(id).get());
+    public boolean deleteItinerary(Long itineraryId) {
+        Itinerary itinerary = itineraryRepo.findById(itineraryId).orElse(null);
+        if (itinerary == null) return false;
+
+        itineraryRepo.delete(itinerary);
         return true;
     }
 
     @Override
-    public void addItineraryDay(Long id, ItineraryDetail detail) {
-        Itinerary itinerary = itineraryRepo.findById(id).get();
-        List<ItineraryDetail> details = itineraryDetailRepo.findDetailsByItineraryId(id);
+    public Itinerary addItineraryDay(Long itineraryId, ItineraryDetail detail) {
+        Itinerary itinerary = itineraryRepo.findById(itineraryId).orElse(null);
+        if (itinerary == null) return null;
 
+        List<ItineraryDetail> itineraryDetails = itinerary.getItineraryDetails();
+        itineraryDetails.add(detail);
         detail.setItinerary(itinerary);
-        detail.setSequentialOrder(details.size() + 1);
-        details.add(detail);
 
-        // itinerary.setItineraryDetails(details);
-        itineraryRepo.save(itinerary);
-        itineraryDetailRepo.saveAll(details);
+        sortOrderByDate(itineraryDetails);
+        return itineraryRepo.save(itinerary);
     }
 
     @Override
-    public boolean deleteItineraryDay(Long id, String lastDate) {
-        if (!itineraryRepo.findById(id).isPresent()) {
-            return false;
-        }
+    public boolean deleteItineraryDay(Long itineraryId, String lastDate) {
+        Itinerary itinerary = itineraryRepo.findById(itineraryId).orElse(null);
+        if (itinerary == null) return false;
 
-        List<ItineraryDetail> details = itineraryDetailRepo.findDetailsByItineraryId(id);
-        for (ItineraryDetail detail : details) {
+        List<ItineraryDetail> itineraryDetails = itineraryDetailRepo.findDetailsByItineraryId(itineraryId);
+        for (ItineraryDetail detail : itineraryDetails) {
             if (detail.getDate().equals(LocalDate.parse(lastDate))) {
                 itineraryDetailRepo.delete(detail);
             }
@@ -95,71 +93,70 @@ public class ItineraryServiceImpl implements ItineraryService {
     }
 
     @Override
-    public void addItineraryDetail(Long id, ItineraryDetail detail, Long placeId) {
-        boolean found = false;
-
-        // List<ItineraryDetail> details = itineraryDetailRepo.findDetailsByItineraryId(id);
-        Itinerary itinerary = itineraryRepo.findById(id).get();
-        Place placeToAdd = placeRepo.findById(placeId).get();
+    public Itinerary addItineraryDetail(Long itineraryId, ItineraryDetail newDetail, Long placeId) {
+        Itinerary itinerary = itineraryRepo.findById(itineraryId).orElse(null);
+        Place placeToAdd = placeRepo.findById(placeId).orElse(null);
+        if (itinerary == null || placeToAdd == null) return null;
 
         List<ItineraryDetail> details = itinerary.getItineraryDetails();
+        boolean emptyDay = false;
 
         // if adding to existing itinerary day with no places saved, add the place to it
-        for (ItineraryDetail itineraryDetail : details) {
-            if (itineraryDetail.getDate().equals(detail.getDate())
-                    && itineraryDetail.getPlace() == null) {
-                itineraryDetail.setPlace(placeToAdd);
-                found = true;
+        for (ItineraryDetail detail : details) {
+            if (detail.getDate().isEqual(newDetail.getDate()) && detail.getPlace() == null) {
+                detail.setPlace(placeToAdd);
+                emptyDay = true;
                 break;
             }
         }
 
         // otherwise save a new entry of itinerary item to the itinerary day
-        if (!found) {
-            detail.setItinerary(itinerary);
-            detail.setPlace(placeToAdd);
-            details.add(detail);
+        if (!emptyDay) {
+            newDetail.setItinerary(itinerary);
+            newDetail.setPlace(placeToAdd);
+            details.add(newDetail);
         }
 
         sortOrderByDate(details);
-        itineraryRepo.save(itinerary);
+        return itineraryRepo.save(itinerary);
     }
 
     @Override
-    public void editItineraryDetail(Long id, ItineraryDetail detail) {
-        ItineraryDetail itineraryDetail = itineraryDetailRepo.findById(id).get();
-        itineraryDetail.setNotes(detail.getNotes());
-        itineraryDetailRepo.save(itineraryDetail);
+    public ItineraryDetail editItineraryDetail(Long detailId, ItineraryDetail newDetail) {
+        ItineraryDetail detail = itineraryDetailRepo.findById(detailId).orElse(null);
+        if (detail == null) return null;
+
+        detail.setNotes(newDetail.getNotes());
+        return itineraryDetailRepo.save(detail);
     }
 
     @Override
-    public boolean deleteItineraryDetail(Long id) {
-        if (!itineraryDetailRepo.findById(id).isPresent()) {
-            return false;
-        }
+    public boolean deleteItineraryDetail(Long detailId) {
+        ItineraryDetail detail = itineraryDetailRepo.findById(detailId).orElse(null);
+        if (detail == null) return false;
 
-        ItineraryDetail deletedDetail = itineraryDetailRepo.findById(id).get();
-        Long itineraryId = deletedDetail.getItinerary().getId();
+        Long itineraryId = detail.getItinerary().getId();
         List<ItineraryDetail> details = itineraryDetailRepo.findDetailsByItineraryId(itineraryId);
-        int count = 0;
 
+        int count = 0;
         for (ItineraryDetail itineraryDetail : details) {
-            if (itineraryDetail.getDate().equals(deletedDetail.getDate())) {
+            if (itineraryDetail.getDate().isEqual(detail.getDate())) {
                 count++;
             }
         }
 
-        if (count == 1) { // if the itinerary detail is the only item for that day, remove only the
-            // Place
-            deletedDetail.setPlace(null);
-            deletedDetail.setNotes("");
-            details =
-                    details.stream()
-                            .map(d -> d.getId() == deletedDetail.getId() ? deletedDetail : d)
-                            .collect(Collectors.toList());
-        } else if (count > 1) { // else delete the whole itinerary item and re-fetch list
-            itineraryDetailRepo.deleteById(id);
-            details = itineraryDetailRepo.findDetailsByItineraryId(itineraryId);
+        // if the itinerary detail is the only item for that day, remove only the Place
+        if (count == 1) {
+            detail.setPlace(null);
+            detail.setNotes("");
+            details = details.stream()
+                        .map(d -> d.getId() == detail.getId() ? detail : d)
+                        .collect(Collectors.toList());
+        }
+        // else delete the whole itinerary item and update current list
+        else if (count > 1) {
+            itineraryDetailRepo.deleteById(detailId);
+            details.removeIf(d -> d.getId() == detailId);
         }
 
         sortOrderByDate(details);
