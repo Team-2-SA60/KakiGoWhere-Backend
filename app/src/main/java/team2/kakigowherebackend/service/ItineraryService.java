@@ -1,9 +1,8 @@
 package team2.kakigowherebackend.service;
 
+import java.util.List;
 import team2.kakigowherebackend.model.Itinerary;
 import team2.kakigowherebackend.model.ItineraryDetail;
-
-import java.util.List;
 
 public interface ItineraryService {
 
@@ -24,5 +23,4 @@ public interface ItineraryService {
     ItineraryDetail editItineraryDetail(Long detailId, ItineraryDetail newDetail);
 
     boolean deleteItineraryDetail(Long detailId);
-
 }

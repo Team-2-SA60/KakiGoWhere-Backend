@@ -1,5 +1,9 @@
 package team2.kakigowherebackend.service;
 
+import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team2.kakigowherebackend.model.Itinerary;
@@ -10,11 +14,6 @@ import team2.kakigowherebackend.repository.ItineraryDetailRepository;
 import team2.kakigowherebackend.repository.ItineraryRepository;
 import team2.kakigowherebackend.repository.PlaceRepository;
 import team2.kakigowherebackend.repository.TouristRepository;
-
-import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -83,7 +82,8 @@ public class ItineraryServiceImpl implements ItineraryService {
         Itinerary itinerary = itineraryRepo.findById(itineraryId).orElse(null);
         if (itinerary == null) return false;
 
-        List<ItineraryDetail> itineraryDetails = itineraryDetailRepo.findDetailsByItineraryId(itineraryId);
+        List<ItineraryDetail> itineraryDetails =
+                itineraryDetailRepo.findDetailsByItineraryId(itineraryId);
         for (ItineraryDetail detail : itineraryDetails) {
             if (detail.getDate().equals(LocalDate.parse(lastDate))) {
                 itineraryDetailRepo.delete(detail);
@@ -149,9 +149,10 @@ public class ItineraryServiceImpl implements ItineraryService {
         if (count == 1) {
             detail.setPlace(null);
             detail.setNotes("");
-            details = details.stream()
-                        .map(d -> d.getId() == detail.getId() ? detail : d)
-                        .collect(Collectors.toList());
+            details =
+                    details.stream()
+                            .map(d -> d.getId() == detail.getId() ? detail : d)
+                            .collect(Collectors.toList());
         }
         // else delete the whole itinerary item and update current list
         else if (count > 1) {

@@ -2,7 +2,7 @@ package team2.kakigowherebackend.service;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -87,7 +87,8 @@ public class StatServiceImpl implements StatService {
             placeStats.setPlace(place);
         }
 
-        placeStats.setNumberOfPageVisits(placeStats.getNumberOfPageVisits() + 1);
+        Integer current = placeStats.getNumberOfPageVisits();
+        placeStats.setNumberOfPageVisits((current == null ? 0 : current) + 1);
         placeStatsRepo.save(placeStats);
 
         return today;
@@ -109,7 +110,7 @@ public class StatServiceImpl implements StatService {
         LocalDate end = month.atEndOfMonth();
 
         // prefill all days with 0
-        Map<LocalDate, Integer> result = new HashMap<>();
+        Map<LocalDate, Integer> result = new LinkedHashMap<>();
         for (LocalDate d = start; !d.isAfter(end); d = d.plusDays(1)) {
             result.put(d, 0);
         }
