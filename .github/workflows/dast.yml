@@ -25,6 +25,7 @@ jobs:
             --user root \
             zaproxy/zap-stable zap-baseline.py \
             -t "http://${{ secrets.DROPLET_IP }}" \
+            -l PASS \
             -r zap_baseline_report.html \
 
       - name: Upload DAST report
