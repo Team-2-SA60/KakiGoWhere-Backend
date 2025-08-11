@@ -23,7 +23,8 @@ public class ItineraryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ItineraryDTO>> getItineraries(@RequestHeader("user-email") String email) {
+    public ResponseEntity<List<ItineraryDTO>> getItineraries(
+            @RequestHeader("user-email") String email) {
         List<ItineraryDTO> itineraryDtos = new ArrayList<>();
         itineraryService
                 .findTouristItineraries(email)
@@ -32,7 +33,8 @@ public class ItineraryController {
     }
 
     @GetMapping("/detail/{itineraryId}")
-    public ResponseEntity<List<ItineraryDetailDTO>> getItineraryDetails(@PathVariable long itineraryId) {
+    public ResponseEntity<List<ItineraryDetailDTO>> getItineraryDetails(
+            @PathVariable long itineraryId) {
         List<ItineraryDetailDTO> detailDtos = new ArrayList<>();
         itineraryService
                 .findItineraryDetails(itineraryId)
@@ -46,19 +48,35 @@ public class ItineraryController {
             @Valid @RequestBody Itinerary itinerary) {
         if (email.isEmpty() || itinerary == null) return ResponseEntity.badRequest().build();
 
-        itineraryService.createTouristItinerary(email, itinerary);
-            return ResponseEntity.ok().build();
-
+        Itinerary createdItinerary = itineraryService.createItinerary(email, itinerary);
+        if (createdItinerary == null) return ResponseEntity.notFound().build();
+        else return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/delete/{itineraryId}")
     public ResponseEntity<?> deleteItinerary(
             @PathVariable Long itineraryId) {
-        if (itineraryService.deleteTouristItinerary(itineraryId)) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
+        if (itineraryService.deleteItinerary(itineraryId)) return ResponseEntity.ok().build();
+        else return ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/detail/add/day/{itineraryId}")
+    public ResponseEntity<?> addItineraryDay(
+            @PathVariable Long itineraryId,
+            @Valid @RequestBody ItineraryDetail itineraryDetail) {
+        if (itineraryDetail == null) return ResponseEntity.badRequest().build();
+
+        Itinerary updatedItinerary = itineraryService.addItineraryDay(itineraryId, itineraryDetail);
+        if (updatedItinerary == null) return ResponseEntity.notFound().build();
+        else return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/detail/delete/day/{itineraryId}")
+    public ResponseEntity<?> deleteItineraryDay(
+            @PathVariable Long itineraryId,
+            @RequestParam String lastDate) {
+        if (itineraryService.deleteItineraryDay(itineraryId, lastDate)) return ResponseEntity.ok().build();
+        else return ResponseEntity.notFound().build();
     }
 
     @PutMapping("/detail/add/{itineraryId}")
@@ -66,56 +84,28 @@ public class ItineraryController {
             @PathVariable Long itineraryId,
             @RequestParam Long placeId,
             @Valid @RequestBody ItineraryDetail itineraryDetail) {
-        if (itineraryDetail == null) {
-            return ResponseEntity.badRequest().build();
-        } else {
-            itineraryService.addItineraryDetail(itineraryId, itineraryDetail, placeId);
-            return ResponseEntity.ok().build();
-        }
-    }
+        if (itineraryDetail == null) return ResponseEntity.badRequest().build();
 
-    @PutMapping("/detail/add/day/{itineraryId}")
-    public ResponseEntity<?> addItineraryDay(
-            @PathVariable Long itineraryId,
-            @Valid @RequestBody ItineraryDetail itineraryDetail) {
-        if (itineraryDetail == null) {
-            return ResponseEntity.badRequest().build();
-        } else {
-            itineraryService.addItineraryDay(itineraryId, itineraryDetail);
-            return ResponseEntity.ok().build();
-        }
-    }
-
-    @DeleteMapping("/detail/delete/day/{itineraryId}")
-    public ResponseEntity<?> deleteItineraryDay(
-            @PathVariable Long itineraryId,
-            @RequestParam String lastDate) {
-        if (itineraryService.deleteItineraryDay(itineraryId, lastDate)) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
+        Itinerary updatedItinerary = itineraryService.addItineraryDetail(itineraryId, itineraryDetail, placeId);
+        if (updatedItinerary == null) return ResponseEntity.notFound().build();
+        else return ResponseEntity.ok().build();
     }
 
     @PutMapping("/detail/edit/{detailId}")
     public ResponseEntity<?> editItineraryItem(
             @PathVariable Long detailId,
             @Valid @RequestBody ItineraryDetail itineraryDetail) {
-        if (itineraryDetail == null) {
-            return ResponseEntity.badRequest().build();
-        } else {
-            itineraryService.editItineraryDetail(detailId, itineraryDetail);
-            return ResponseEntity.ok().build();
-        }
+        if (itineraryDetail == null) return ResponseEntity.badRequest().build();
+
+        ItineraryDetail updatedDetail = itineraryService.editItineraryDetail(detailId, itineraryDetail);
+        if (updatedDetail == null) return ResponseEntity.notFound().build();
+        else return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/detail/delete/{detailId}")
     public ResponseEntity<?> deleteItineraryItem(
             @PathVariable Long detailId) {
-        if (itineraryService.deleteItineraryDetail(detailId)) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
+        if (itineraryService.deleteItineraryDetail(detailId)) return ResponseEntity.ok().build();
+        else return ResponseEntity.badRequest().build();
     }
 }

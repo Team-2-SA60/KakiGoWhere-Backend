@@ -11,18 +11,18 @@ public interface ItineraryService {
 
     List<ItineraryDetail> findItineraryDetails(Long itineraryId);
 
-    Itinerary createTouristItinerary(String touristEmail, Itinerary itinerary);
+    Itinerary createItinerary(String touristEmail, Itinerary itinerary);
 
-    boolean deleteTouristItinerary(Long id);
+    boolean deleteItinerary(Long itineraryId);
 
-    Itinerary addItineraryDetail(Long id, ItineraryDetail detail, Long placeId);
+    Itinerary addItineraryDay(Long itineraryId, ItineraryDetail detail);
 
-    Itinerary editItineraryDetail(Long id, ItineraryDetail detail);
+    boolean deleteItineraryDay(Long itineraryId, String lastDate);
 
-    boolean deleteItineraryDetail(Long id);
+    Itinerary addItineraryDetail(Long itineraryId, ItineraryDetail newDetail, Long placeId);
 
-    Itinerary addItineraryDay(Long id, ItineraryDetail detail);
+    ItineraryDetail editItineraryDetail(Long detailId, ItineraryDetail newDetail);
 
-    boolean deleteItineraryDay(Long id, String lastDate);
+    boolean deleteItineraryDetail(Long detailId);
 
 }

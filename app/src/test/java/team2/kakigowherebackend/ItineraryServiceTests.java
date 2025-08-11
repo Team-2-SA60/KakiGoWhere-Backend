@@ -1,12 +1,5 @@
 package team2.kakigowherebackend;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +16,14 @@ import team2.kakigowherebackend.repository.ItineraryRepository;
 import team2.kakigowherebackend.repository.PlaceRepository;
 import team2.kakigowherebackend.repository.TouristRepository;
 import team2.kakigowherebackend.service.ItineraryServiceImpl;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class ItineraryServiceTests {
 
@@ -114,7 +115,7 @@ public class ItineraryServiceTests {
 
         // perform call
         when(touristRepo.findByEmail(email)).thenReturn(Optional.of(mockTourist));
-        itineraryService.createTouristItinerary(email, newItinerary);
+        itineraryService.createItinerary(email, newItinerary);
 
         // assert outcome
         verify(touristRepo, times(1)).findByEmail(email);
@@ -134,7 +135,7 @@ public class ItineraryServiceTests {
                 .thenReturn(Optional.of(mockItineraries.getLast()));
 
         ArgumentCaptor<Itinerary> deletionCaptor = ArgumentCaptor.forClass(Itinerary.class);
-        boolean result = itineraryService.deleteTouristItinerary(itineraryId);
+        boolean result = itineraryService.deleteItinerary(itineraryId);
 
         // assert outcome
         verify(itineraryRepo, times(2)).findById(itineraryId);
