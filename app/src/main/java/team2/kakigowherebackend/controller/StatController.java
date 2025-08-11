@@ -1,7 +1,8 @@
 package team2.kakigowherebackend.controller;
 
 import java.time.LocalDate;
-import java.util.Optional;
+import java.time.YearMonth;
+import java.util.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,5 +32,14 @@ public class StatController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/places/{placeId}/visits")
+    public ResponseEntity<Map<LocalDate, Integer>> getVisitsByMonth(
+            @PathVariable long placeId,
+            @RequestParam("month") @DateTimeFormat(pattern = "yyyy-MM") YearMonth month) {
+
+        Map<LocalDate, Integer> counts = statService.getDailyVisitCounts(placeId, month);
+        return ResponseEntity.ok(counts);
     }
 }

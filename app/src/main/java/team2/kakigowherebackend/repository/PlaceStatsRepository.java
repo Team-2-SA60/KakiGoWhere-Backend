@@ -1,6 +1,7 @@
 package team2.kakigowherebackend.repository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -33,4 +34,7 @@ public interface PlaceStatsRepository extends JpaRepository<PlaceStats, Long> {
             """)
     Optional<PlaceStats> findByDateAndPlaceId(
             @Param("date") LocalDate date, @Param("placeId") Long placeId);
+
+    List<PlaceStats> findByPlace_IdAndDailyStats_DateBetween(
+            long placeId, LocalDate start, LocalDate end);
 }
