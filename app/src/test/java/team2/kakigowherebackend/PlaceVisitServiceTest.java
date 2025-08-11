@@ -1,11 +1,5 @@
 package team2.kakigowherebackend;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import java.time.LocalDate;
-import java.time.YearMonth;
-import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -17,7 +11,17 @@ import team2.kakigowherebackend.model.TouristPlaceVisit;
 import team2.kakigowherebackend.repository.PlaceRepository;
 import team2.kakigowherebackend.repository.TouristPlaceVisitRepository;
 import team2.kakigowherebackend.repository.TouristRepository;
-import team2.kakigowherebackend.service.impl.PlaceVisitServiceImpl;
+import team2.kakigowherebackend.service.PlaceVisitServiceImpl;
+
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 class PlaceVisitServiceTest {
     @Mock private TouristPlaceVisitRepository visitRepo;

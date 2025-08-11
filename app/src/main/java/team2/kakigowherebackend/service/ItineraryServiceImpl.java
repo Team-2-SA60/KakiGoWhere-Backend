@@ -41,19 +41,21 @@ public class ItineraryServiceImpl implements ItineraryService {
     }
 
     @Override
-    public List<ItineraryDetail> findItineraryDetails(Long id) {
-        return itineraryDetailRepo.findDetailsByItineraryId(id);
+    public List<ItineraryDetail> findItineraryDetails(Long itineraryId) {
+        return itineraryDetailRepo.findDetailsByItineraryId(itineraryId);
     }
 
     @Override
-    public void createTouristItinerary(String touristEmail, Itinerary itinerary) {
-        Tourist tourist = touristRepo.findByEmail(touristEmail).get();
+    public Itinerary createTouristItinerary(String touristEmail, Itinerary itinerary) {
+        Tourist tourist = touristRepo.findByEmail(touristEmail).orElse(null);
+        if (tourist == null) return null;
+
         List<Itinerary> existingList = tourist.getItineraryList();
         existingList.add(itinerary);
         tourist.setItineraryList(existingList);
 
         itinerary.setTourist(tourist);
-        itineraryRepo.save(itinerary);
+        return itineraryRepo.save(itinerary);
     }
 
     @Override

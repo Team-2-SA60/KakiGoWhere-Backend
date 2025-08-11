@@ -1,26 +1,28 @@
 package team2.kakigowherebackend.service;
 
-import java.util.List;
 import team2.kakigowherebackend.model.Itinerary;
 import team2.kakigowherebackend.model.ItineraryDetail;
+
+import java.util.List;
 
 public interface ItineraryService {
 
     List<Itinerary> findTouristItineraries(String email);
 
-    List<ItineraryDetail> findItineraryDetails(Long id);
+    List<ItineraryDetail> findItineraryDetails(Long itineraryId);
 
-    void createTouristItinerary(String touristEmail, Itinerary itinerary);
+    Itinerary createTouristItinerary(String touristEmail, Itinerary itinerary);
 
     boolean deleteTouristItinerary(Long id);
 
-    void addItineraryDetail(Long id, ItineraryDetail detail, Long placeId);
+    Itinerary addItineraryDetail(Long id, ItineraryDetail detail, Long placeId);
 
-    void editItineraryDetail(Long id, ItineraryDetail detail);
+    Itinerary editItineraryDetail(Long id, ItineraryDetail detail);
 
-    void addItineraryDay(Long id, ItineraryDetail detail);
+    boolean deleteItineraryDetail(Long id);
+
+    Itinerary addItineraryDay(Long id, ItineraryDetail detail);
 
     boolean deleteItineraryDay(Long id, String lastDate);
 
-    boolean deleteItineraryDetail(Long id);
 }
