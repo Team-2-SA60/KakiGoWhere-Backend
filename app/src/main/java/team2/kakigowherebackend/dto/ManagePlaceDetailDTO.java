@@ -1,16 +1,21 @@
 package team2.kakigowherebackend.dto;
 
+import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import team2.kakigowherebackend.model.InterestCategory;
 import team2.kakigowherebackend.model.OpeningHours;
 import team2.kakigowherebackend.model.Place;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ManagePlaceDetailDTO {
     private long id;
     private String googleId;
-    private String name;
+    @NotEmpty private String name;
     private String address;
     private String description;
     private String URL;

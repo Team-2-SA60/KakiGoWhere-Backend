@@ -43,8 +43,14 @@ public class PlaceServiceImpl implements PlaceService {
 
         if (place == null || place.getImagePath() == null) return null;
 
+        String imageName = "";
+        if (place.getGoogleId() != null) {
+            imageName = place.getGoogleId();
+        } else {
+            imageName += place.getId();
+        }
         Path imageDir = Paths.get(uploadDir);
-        Path imagePath = imageDir.resolve(place.getGoogleId() + ".jpg").normalize();
+        Path imagePath = imageDir.resolve(imageName + ".jpg").normalize();
         Resource resource = new UrlResource(imagePath.toUri());
 
         if (!resource.exists() || !resource.isReadable()) {
