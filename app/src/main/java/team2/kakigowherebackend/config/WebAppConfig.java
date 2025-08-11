@@ -7,23 +7,29 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import team2.kakigowherebackend.interceptors.LoggingInterceptor;
 import team2.kakigowherebackend.interceptors.VisitInterceptor;
+import team2.kakigowherebackend.interceptors.PlaceVisitInterceptor;
 
 @Component
 public class WebAppConfig implements WebMvcConfigurer {
     private final LoggingInterceptor loggingInterceptor;
     private final VisitInterceptor visitInterceptor;
+    private final PlaceVisitInterceptor placeVisitInterceptor;
 
     @Value("${cors.allowed.origin}")
     private String allowedOrigin;
 
-    public WebAppConfig(LoggingInterceptor loggingInterceptor, VisitInterceptor visitInterceptor) {
+    public WebAppConfig(LoggingInterceptor loggingInterceptor, VisitInterceptor visitInterceptor, PlaceVisitInterceptor placeVisitInterceptor) {
         this.loggingInterceptor = loggingInterceptor;
         this.visitInterceptor = visitInterceptor;
+        this.placeVisitInterceptor = placeVisitInterceptor;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(visitInterceptor);
+        // restrict placeVisitInterceptor to api/places/id/{id} path
+        registry.addInterceptor(placeVisitInterceptor)
+                .addPathPatterns("/api/places/id/**");
         registry.addInterceptor(loggingInterceptor);
     }
 
