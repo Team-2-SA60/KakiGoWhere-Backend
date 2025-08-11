@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,8 @@ public class DataInitializer implements CommandLineRunner {
     private final ItineraryRepository itineraryRepo;
     private final ExportPlaceService exportPlaceService;
     private final ExportRatingService exportRatingService;
+    private final DailyStatsRepository dailyStatsRepo;
+    private final PlaceStatsRepository placeStatsRepo;
 
     public DataInitializer(
             PlaceRepository placeRepo,
@@ -31,7 +34,9 @@ public class DataInitializer implements CommandLineRunner {
             AdminRepository adminRepo,
             ItineraryRepository itineraryRepo,
             ExportPlaceService exportPlaceService,
-            ExportRatingService exportRatingService) {
+            ExportRatingService exportRatingService,
+            DailyStatsRepository dailyStatsRepo,
+            PlaceStatsRepository placeStatsRepo) {
         this.placeRepo = placeRepo;
         this.touristRepo = touristRepo;
         this.interestCategoryRepo = interestCategoryRepo;
@@ -39,6 +44,8 @@ public class DataInitializer implements CommandLineRunner {
         this.itineraryRepo = itineraryRepo;
         this.exportPlaceService = exportPlaceService;
         this.exportRatingService = exportRatingService;
+        this.dailyStatsRepo = dailyStatsRepo;
+        this.placeStatsRepo = placeStatsRepo;
     }
 
     @Override
@@ -49,6 +56,8 @@ public class DataInitializer implements CommandLineRunner {
         addInterests();
         addAdmin();
         addItineraries();
+        addDailyStats();
+        addPlaceStats();
         exportCsvs();
     }
 
@@ -1012,6 +1021,51 @@ public class DataInitializer implements CommandLineRunner {
                             itineraryDetail.setItinerary(i2);
                         });
         itineraryRepo.save(i2);
+    }
+
+    private void addDailyStats() {
+        LocalDate start = LocalDate.of(2025, 7, 1);
+        LocalDate end = LocalDate.of(2025, 8, 10);
+
+        for (LocalDate d = start; !d.isAfter(end); d = d.plusDays(1)) {
+            // skip if already present
+            if (dailyStatsRepo.findByDate(d).isPresent()) continue;
+
+            DailyStats ds = new DailyStats();
+            ds.setDate(d);
+            // add deterministic values
+            ds.setNumberOfUniqueVisits(100 + d.getDayOfMonth());
+            ds.setNumberOfSignUps(10 + (d.getDayOfMonth() % 5));
+
+            dailyStatsRepo.save(ds);
+        }
+    }
+
+    private void addPlaceStats() {
+        LocalDate start = LocalDate.of(2025, 7, 1);
+        LocalDate end = LocalDate.of(2025, 8, 10);
+
+        for (LocalDate d = start; !d.isAfter(end); d = d.plusDays(1)) {
+            DailyStats daily = dailyStatsRepo.findByDate(d).orElse(null);
+            if (daily == null) continue;
+
+            for (long placeId = 1L; placeId <= 100L; placeId++) {
+                Place place = placeRepo.findById(placeId).orElse(null);
+                if (place == null) continue;
+
+                if (placeStatsRepo.findByDailyStatsAndPlace(daily, place).isPresent()) continue;
+
+                PlaceStats ps = new PlaceStats();
+                ps.setDailyStats(daily);
+                ps.setPlace(place);
+
+                // random 100..500 inclusive
+                int visits = ThreadLocalRandom.current().nextInt(100, 501);
+                ps.setNumberOfPageVisits(visits);
+
+                placeStatsRepo.save(ps);
+            }
+        }
     }
 
     private void exportCsvs() {
