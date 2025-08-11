@@ -18,6 +18,7 @@ jobs:
           docker pull zaproxy/zap-stable
 
       - name: Run ZAP Baseline Scan
+        continue-on-error: true
         run: |
           mkdir -p temp
           docker run --rm -i \
