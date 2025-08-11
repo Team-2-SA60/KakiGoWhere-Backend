@@ -1,0 +1,32 @@
+name: dast.yml
+on:
+  push:
+    branches:
+      - dast-update
+
+jobs:
+  dast:
+    name: Run DAST
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Pull Zed Attack Proxy (ZAP)
+        run: |
+          docker pull zaproxy/zap-stable
+
+      - name: Run Zed Attack Proxy (ZAP)
+        run: |
+          docker run --rm -i zaproxy/zap-stable zap-baseline.py \
+            -t "http://${{ secrets.DROPLET_IP }}" \
+            -l PASS \
+            -r zap_report.html
+
+      - name: Upload DAST report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: DAST zap report
+          path: zap_baseline_report.html
