@@ -1,6 +1,9 @@
 package team2.kakigowherebackend.service;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -98,5 +101,24 @@ public class StatServiceImpl implements StatService {
     @Override
     public Optional<PlaceStats> getPlaceStats(LocalDate date, Long placeId) {
         return placeStatsRepo.findByDateAndPlaceId(date, placeId);
+    }
+
+    @Override
+    public Map<LocalDate, Integer> getDailyVisitCounts(long placeId, YearMonth month) {
+        LocalDate start = month.atDay(1);
+        LocalDate end = month.atEndOfMonth();
+
+        // prefill all days with 0
+        Map<LocalDate, Integer> result = new HashMap<>();
+        for (LocalDate d = start; !d.isAfter(end); d = d.plusDays(1)) {
+            result.put(d, 0);
+        }
+
+        placeStatsRepo
+                .findByPlace_IdAndDailyStats_DateBetween(placeId, start, end)
+                .forEach(
+                        ps -> result.put(ps.getDailyStats().getDate(), ps.getNumberOfPageVisits()));
+
+        return result;
     }
 }

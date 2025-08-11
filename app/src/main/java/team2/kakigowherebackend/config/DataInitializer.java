@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import team2.kakigowherebackend.model.*;
 import team2.kakigowherebackend.repository.*;
@@ -15,6 +16,7 @@ import team2.kakigowherebackend.service.ExportRatingService;
 
 @Slf4j
 @Component
+@Profile("!test")
 public class DataInitializer implements CommandLineRunner {
 
     private final PlaceRepository placeRepo;
