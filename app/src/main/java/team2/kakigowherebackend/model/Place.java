@@ -1,6 +1,10 @@
 package team2.kakigowherebackend.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -10,9 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Data
@@ -153,24 +154,24 @@ public class Place {
 
         StringBuilder hours = new StringBuilder();
 
-        DayOfWeek day = LocalDate.now().getDayOfWeek(); // return is 1 = Mon
-        int todayInt = day.getValue() - 1; // format value to same as in db: 0 = Mon
+        DayOfWeek day = LocalDate.now().getDayOfWeek(); // return is 1 = Mon, 7 = Sun
         String todayString = day.getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+        int dayInt = (day.getValue() == 7) ? 0 : day.getValue(); // if Sun, amend to Sun = 0 to match db
 
         openingHours.forEach(
                 data -> {
-                    if (data.getOpenDay() == todayInt) {
+                    if (data.getOpenDay() == dayInt) {
                         if (!hours.toString().contains(todayString)) {
                             hours.append(todayString).append(": ");
                         }
                         hours.append(data.getOpenHour())
                                 .append(":")
                                 .append(data.getOpenMinute())
-                                .append(" - ")
+                                .append((data.getOpenMinute() == 0) ? "0 - " : " - ")
                                 .append(data.getCloseHour())
                                 .append(":")
                                 .append(data.getCloseMinute())
-                                .append(", ");
+                                .append((data.getCloseMinute() == 0) ? "0, " : ", ");
                     }
                 });
 
