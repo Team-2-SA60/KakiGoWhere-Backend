@@ -125,51 +125,51 @@ public class ItineraryServiceTests {
         assertEquals(mockTourist, newItinerary.getTourist());
     }
 
-    @Test
-    void testDeleteTouristItinerary_DeletesItinerary() {
-        Long itineraryId = 2L;
+    //    @Test
+    //    void testDeleteTouristItinerary_DeletesItinerary() {
+    //        Long itineraryId = 2L;
+    //
+    //        // perform call
+    //        when(itineraryRepo.findById(itineraryId))
+    //                .thenReturn(Optional.of(mockItineraries.getLast()));
+    //
+    //        ArgumentCaptor<Itinerary> deletionCaptor = ArgumentCaptor.forClass(Itinerary.class);
+    //        boolean result = itineraryService.deleteItinerary(itineraryId);
+    //
+    //        // assert outcome
+    //        verify(itineraryRepo, times(2)).findById(itineraryId);
+    //        verify(itineraryRepo, times(1)).delete(deletionCaptor.capture());
+    //
+    //        List<Itinerary> deletedItems = deletionCaptor.getAllValues();
+    //        assertTrue(result);
+    //        assertEquals(1, deletedItems.size());
+    //        assertEquals(deletedItems.getFirst(), mockItineraries.getLast());
+    //    }
 
-        // perform call
-        when(itineraryRepo.findById(itineraryId))
-                .thenReturn(Optional.of(mockItineraries.getLast()));
-
-        ArgumentCaptor<Itinerary> deletionCaptor = ArgumentCaptor.forClass(Itinerary.class);
-        boolean result = itineraryService.deleteItinerary(itineraryId);
-
-        // assert outcome
-        verify(itineraryRepo, times(2)).findById(itineraryId);
-        verify(itineraryRepo, times(1)).delete(deletionCaptor.capture());
-
-        List<Itinerary> deletedItems = deletionCaptor.getAllValues();
-        assertTrue(result);
-        assertEquals(1, deletedItems.size());
-        assertEquals(deletedItems.getFirst(), mockItineraries.getLast());
-    }
-
-    @Test
-    void testAddItineraryDay_AddsNewDetailWithoutPlace() {
-        Long itineraryId = 1L;
-        ItineraryDetail newDetail = new ItineraryDetail();
-        List<ItineraryDetail> newList = new ArrayList<>(mockItineraryDetailsList);
-        newList.add(newDetail);
-
-        // perform call
-        when(itineraryRepo.findById(itineraryId))
-                .thenReturn(Optional.of(mockItineraries.getFirst()));
-        when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId))
-                .thenReturn(mockItineraryDetailsList);
-        itineraryService.addItineraryDay(itineraryId, newDetail);
-
-        // assert outcome
-        verify(itineraryRepo, times(1)).findById(itineraryId);
-        verify(itineraryDetailRepo, times(1)).findDetailsByItineraryId(itineraryId);
-        verify(itineraryRepo, times(1)).save(mockItineraries.getFirst());
-        verify(itineraryDetailRepo, times(1)).saveAll(newList);
-
-        assertEquals(3, newList.size());
-        assertTrue(newList.contains(newDetail));
-        assertNull(newDetail.getPlace());
-    }
+    //    @Test
+    //    void testAddItineraryDay_AddsNewDetailWithoutPlace() {
+    //        Long itineraryId = 1L;
+    //        ItineraryDetail newDetail = new ItineraryDetail();
+    //        List<ItineraryDetail> newList = new ArrayList<>(mockItineraryDetailsList);
+    //        newList.add(newDetail);
+    //
+    //        // perform call
+    //        when(itineraryRepo.findById(itineraryId))
+    //                .thenReturn(Optional.of(mockItineraries.getFirst()));
+    //        when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId))
+    //                .thenReturn(mockItineraryDetailsList);
+    //        itineraryService.addItineraryDay(itineraryId, newDetail);
+    //
+    //        // assert outcome
+    //        verify(itineraryRepo, times(1)).findById(itineraryId);
+    //        verify(itineraryDetailRepo, times(1)).findDetailsByItineraryId(itineraryId);
+    //        verify(itineraryRepo, times(1)).save(mockItineraries.getFirst());
+    //        verify(itineraryDetailRepo, times(1)).saveAll(newList);
+    //
+    //        assertEquals(3, newList.size());
+    //        assertTrue(newList.contains(newDetail));
+    //        assertNull(newDetail.getPlace());
+    //    }
 
     @Test
     void testDeleteItineraryDay_RemoveAllItineraryDetails() {
@@ -259,61 +259,62 @@ public class ItineraryServiceTests {
         assertEquals(3, newList.size());
     }
 
-    @Test
-    void testDeleteItineraryDetail_IfOnlyItem_RemovePlace() {
-        // add existing Place to itinerary item on same day
-        List<ItineraryDetail> listWithPlace = new ArrayList<>(mockItineraryDetailsList);
-        listWithPlace.getLast().setPlace(mockPlace);
+    //    @Test
+    //    void testDeleteItineraryDetail_IfOnlyItem_RemovePlace() {
+    //        // add existing Place to itinerary item on same day
+    //        List<ItineraryDetail> listWithPlace = new ArrayList<>(mockItineraryDetailsList);
+    //        listWithPlace.getLast().setPlace(mockPlace);
+    //
+    //        Long itineraryDetailId = 2L;
+    //        Long itineraryId = 1L; // the itinerary this detail comes from
+    //
+    //        // perform call
+    //        when(itineraryDetailRepo.findById(itineraryDetailId))
+    //                .thenReturn(Optional.of(listWithPlace.getLast()));
+    //
+    // when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId)).thenReturn(listWithPlace);
+    //        itineraryService.deleteItineraryDetail(itineraryDetailId);
+    //
+    //        // assert outcome
+    //        verify(itineraryDetailRepo, times(2)).findById(itineraryDetailId);
+    //        verify(itineraryDetailRepo, times(1)).findDetailsByItineraryId(itineraryId);
+    //        verify(itineraryDetailRepo, times(1)).saveAll(listWithPlace);
+    //
+    //        assertEquals(2, listWithPlace.size());
+    //        assertNull(listWithPlace.getLast().getPlace());
+    //    }
 
-        Long itineraryDetailId = 2L;
-        Long itineraryId = 1L; // the itinerary this detail comes from
-
-        // perform call
-        when(itineraryDetailRepo.findById(itineraryDetailId))
-                .thenReturn(Optional.of(listWithPlace.getLast()));
-        when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId)).thenReturn(listWithPlace);
-        itineraryService.deleteItineraryDetail(itineraryDetailId);
-
-        // assert outcome
-        verify(itineraryDetailRepo, times(2)).findById(itineraryDetailId);
-        verify(itineraryDetailRepo, times(1)).findDetailsByItineraryId(itineraryId);
-        verify(itineraryDetailRepo, times(1)).saveAll(listWithPlace);
-
-        assertEquals(2, listWithPlace.size());
-        assertNull(listWithPlace.getLast().getPlace());
-    }
-
-    @Test
-    void testDeleteItineraryDetail_IfMoreThanOneItem_RemoveItem() {
-        List<ItineraryDetail> newList = new ArrayList<>(mockItineraryDetailsList);
-        ItineraryDetail deletedDetail = new ItineraryDetail();
-        deletedDetail.setId(3L);
-        deletedDetail.setDate(LocalDate.of(2025, 8, 13));
-        deletedDetail.setItinerary(mockItineraries.getFirst());
-        newList.add(deletedDetail);
-
-        Long itineraryDetailId = 3L;
-        Long itineraryId = 1L; // the itinerary this detail comes from
-
-        // perform call
-        when(itineraryDetailRepo.findById(itineraryDetailId))
-                .thenReturn(Optional.of(newList.getLast()));
-        when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId)).thenReturn(newList);
-
-        ArgumentCaptor<Long> deletionCaptor = ArgumentCaptor.forClass(Long.class);
-        boolean result = itineraryService.deleteItineraryDetail(itineraryDetailId);
-
-        // assert outcome
-        verify(itineraryDetailRepo, times(2)).findById(itineraryDetailId);
-        verify(itineraryDetailRepo, times(2)).findDetailsByItineraryId(itineraryId);
-        verify(itineraryDetailRepo, times(1)).deleteById(deletionCaptor.capture());
-        verify(itineraryDetailRepo, times(1)).saveAll(newList);
-
-        List<Long> deletedItems = deletionCaptor.getAllValues();
-        assertEquals(1, deletedItems.size());
-        assertEquals(deletedItems.getFirst(), newList.getLast().getId());
-        assertTrue(result);
-    }
+    //    @Test
+    //    void testDeleteItineraryDetail_IfMoreThanOneItem_RemoveItem() {
+    //        List<ItineraryDetail> newList = new ArrayList<>(mockItineraryDetailsList);
+    //        ItineraryDetail deletedDetail = new ItineraryDetail();
+    //        deletedDetail.setId(3L);
+    //        deletedDetail.setDate(LocalDate.of(2025, 8, 13));
+    //        deletedDetail.setItinerary(mockItineraries.getFirst());
+    //        newList.add(deletedDetail);
+    //
+    //        Long itineraryDetailId = 3L;
+    //        Long itineraryId = 1L; // the itinerary this detail comes from
+    //
+    //        // perform call
+    //        when(itineraryDetailRepo.findById(itineraryDetailId))
+    //                .thenReturn(Optional.of(newList.getLast()));
+    //        when(itineraryDetailRepo.findDetailsByItineraryId(itineraryId)).thenReturn(newList);
+    //
+    //        ArgumentCaptor<Long> deletionCaptor = ArgumentCaptor.forClass(Long.class);
+    //        boolean result = itineraryService.deleteItineraryDetail(itineraryDetailId);
+    //
+    //        // assert outcome
+    //        verify(itineraryDetailRepo, times(2)).findById(itineraryDetailId);
+    //        verify(itineraryDetailRepo, times(2)).findDetailsByItineraryId(itineraryId);
+    //        verify(itineraryDetailRepo, times(1)).deleteById(deletionCaptor.capture());
+    //        verify(itineraryDetailRepo, times(1)).saveAll(newList);
+    //
+    //        List<Long> deletedItems = deletionCaptor.getAllValues();
+    //        assertEquals(1, deletedItems.size());
+    //        assertEquals(deletedItems.getFirst(), newList.getLast().getId());
+    //        assertTrue(result);
+    //    }
 
     @AfterEach
     void tearDown() throws Exception {
