@@ -29,7 +29,7 @@ public class PlaceServiceImpl implements PlaceService {
 
     @Override
     public List<Place> getPlaces() {
-        return placeRepo.findAll();
+        return placeRepo.findAllByActive(true);
     }
 
     @Override

@@ -52,7 +52,7 @@ public class ManagePlaceController {
 
     @PostMapping("/create")
     public ResponseEntity<ManagePlaceDetailDTO> createPlace(
-            @RequestBody ManagePlaceDetailDTO newPlace) {
+            @Valid @RequestBody ManagePlaceDetailDTO newPlace) {
         Place createdPlace = mpService.createPlace(newPlace);
 
         if (createdPlace == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -60,7 +60,7 @@ public class ManagePlaceController {
         return ResponseEntity.status(HttpStatus.OK).body(new ManagePlaceDetailDTO(createdPlace));
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     public ResponseEntity<ManagePlaceDetailDTO> updatePlace(
             @Valid @RequestBody ManagePlaceDetailDTO updatedPlace) {
         Place place = mpService.updatePlace(updatedPlace);

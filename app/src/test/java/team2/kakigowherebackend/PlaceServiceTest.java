@@ -41,13 +41,15 @@ class PlaceServiceTest {
     @Test
     void testGetPlaces() {
         Place place1 = new Place();
+        place1.setActive(true);
         Place place2 = new Place();
-        when(placeRepo.findAll()).thenReturn(Arrays.asList(place1, place2));
+        place2.setActive(true);
+        when(placeRepo.findAllByActive(true)).thenReturn(Arrays.asList(place1, place2));
 
         List<Place> result = placeService.getPlaces();
 
         assertEquals(2, result.size());
-        verify(placeRepo, times(1)).findAll();
+        verify(placeRepo, times(1)).findAllByActive(true);
     }
 
     @Test

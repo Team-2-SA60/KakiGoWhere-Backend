@@ -23,6 +23,11 @@ public class VisitInterceptor implements HandlerInterceptor {
             HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
 
+        // Don't count for OPTIONS method
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+
         // To check if user visit is unique
         HttpSession session = request.getSession(true);
 

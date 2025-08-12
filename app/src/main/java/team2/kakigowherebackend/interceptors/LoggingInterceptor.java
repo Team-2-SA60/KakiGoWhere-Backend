@@ -14,7 +14,10 @@ public class LoggingInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(
             HttpServletRequest request, HttpServletResponse response, Object handler) {
-        log.info("Request URL: {}", request.getRequestURL().toString());
+        log.info(
+                "Request URL: {}, Method: {}",
+                request.getRequestURL().toString(),
+                request.getMethod());
         Enumeration<String> paramNames = request.getParameterNames();
 
         while (paramNames.hasMoreElements()) {
