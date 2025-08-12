@@ -55,7 +55,7 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
                 String googleId = p.getGoogleId();
 
                 // Fetch Place Detail from Google Places API
-                JsonNode placeNode = gpService.searchPlace(googleId).block();
+                JsonNode placeNode = gpService.getPlace(googleId).block();
 
                 if (placeNode == null) {
                     log.info("Failed to retrieve from Google place for: {}", name);
@@ -91,7 +91,7 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
     public void mapGooglePlace(Place place, JsonNode placeNode) {
         JsonNode displayNameNode = placeNode.path("displayName").path("text");
         JsonNode websiteUriNode = placeNode.path("websiteUri");
-        JsonNode addressNode = placeNode.path("shortFormattedAddress");
+        JsonNode addressNode = placeNode.path("formattedAddress");
         JsonNode latNode = placeNode.path("location").path("latitude");
         JsonNode lngNode = placeNode.path("location").path("longitude");
         JsonNode businessStatusNode = placeNode.path("businessStatus");
