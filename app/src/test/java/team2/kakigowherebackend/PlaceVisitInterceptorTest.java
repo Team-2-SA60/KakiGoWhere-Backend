@@ -1,4 +1,4 @@
-package team2.kakigowherebackend.interceptors;
+package team2.kakigowherebackend;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import team2.kakigowherebackend.interceptors.PlaceVisitInterceptor;
 import team2.kakigowherebackend.service.StatService;
 
 class PlaceVisitInterceptorTest {
