@@ -18,6 +18,8 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
 
     List<Place> findAllByAutoFetch(boolean autoFetch);
 
+    List<Place> findAllByActive(boolean active);
+
     @Query(
             "SELECT DISTINCT p FROM Place p "
                     + "JOIN p.interestCategories ic "
