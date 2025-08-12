@@ -144,6 +144,10 @@ public class ManagePlaceServiceImpl implements ManagePlaceService {
     @Override
     @Transactional
     public Place savePlaceByGoogleId(String googleId) {
+        // if this place already exist (by GoogleId) don't add
+        Optional<Place> checkExistingPlace = placeRepo.findByGoogleId(googleId);
+        if (checkExistingPlace.isPresent()) return null;
+
         JsonNode placeNode = googlePlaceService.getPlace(googleId).block();
         if (placeNode == null) return null;
 
