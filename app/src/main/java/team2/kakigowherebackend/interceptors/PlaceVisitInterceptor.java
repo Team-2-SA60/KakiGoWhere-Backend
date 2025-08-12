@@ -32,24 +32,22 @@ public class PlaceVisitInterceptor implements HandlerInterceptor {
             HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
 
-        if (!"GET".equalsIgnoreCase(request.getMethod())) {
-            return true;
-        }
+        if ("GET".equalsIgnoreCase(request.getMethod())) {
+            @SuppressWarnings("unchecked")
+            Map<String, String> pathVars =
+                    (Map<String, String>)
+                            request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 
-        @SuppressWarnings("unchecked")
-        Map<String, String> pathVars =
-                (Map<String, String>)
-                        request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-
-        if (pathVars != null) {
-            // specifically look for {placeId} in /api/places/id/{placeId}
-            String idStr = pathVars.get("placeId");
-            if (idStr != null) {
-                try {
-                    Long placeId = Long.valueOf(idStr);
-                    request.setAttribute(ATTR_PLACE_ID, placeId);
-                } catch (NumberFormatException ignored) {
-                    // skip counting if non-numeric
+            if (pathVars != null) {
+                // specifically look for {placeId} in /api/places/id/{placeId}
+                String idStr = pathVars.get("placeId");
+                if (idStr != null) {
+                    try {
+                        Long placeId = Long.valueOf(idStr);
+                        request.setAttribute(ATTR_PLACE_ID, placeId);
+                    } catch (NumberFormatException ignored) {
+                        // skip counting if non-numeric
+                    }
                 }
             }
         }
