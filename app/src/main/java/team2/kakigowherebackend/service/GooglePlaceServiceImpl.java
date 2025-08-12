@@ -3,6 +3,7 @@ package team2.kakigowherebackend.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -29,14 +30,31 @@ public class GooglePlaceServiceImpl implements GooglePlaceService {
                         .build();
     }
 
-    // Fetch GET request to Google Places API (new) and retrieve a Place Detail by googleId
-    // https://developers.google.com/maps/documentation/places/web-service/place-details
     @Override
-    public Mono<JsonNode> searchPlace(String googleId) {
+    public Mono<JsonNode> searchPlacesByText(String text) {
 
         // Specify what fields to retrieve from request
         String fieldMask =
-                "id,displayName,websiteUri,types,photos,location,regularOpeningHours,businessStatus,editorialSummary,reviews,shortFormattedAddress";
+                "places.id,places.displayName,places.formattedAddress,places.googleMapsUri";
+
+        return webClient
+                .post()
+                .uri("https://places.googleapis.com/v1/places:searchText")
+                .header("Content-Type", "application/json")
+                .header("X-Goog-FieldMask", fieldMask)
+                .bodyValue(Map.of("textQuery", text))
+                .retrieve()
+                .bodyToMono(JsonNode.class);
+    }
+
+    // Fetch GET request to Google Places API (new) and retrieve a Place Detail by googleId
+    // https://developers.google.com/maps/documentation/places/web-service/place-details
+    @Override
+    public Mono<JsonNode> getPlace(String googleId) {
+
+        // Specify what fields to retrieve from request
+        String fieldMask =
+                "id,displayName,websiteUri,types,photos,location,regularOpeningHours,businessStatus,editorialSummary,reviews,formattedAddress";
 
         return webClient
                 .get()

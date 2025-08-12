@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import team2.kakigowherebackend.dto.GoogleSearchDTO;
 import team2.kakigowherebackend.dto.ManagePlaceDetailDTO;
 import team2.kakigowherebackend.dto.PlaceDTO;
 import team2.kakigowherebackend.model.Place;
@@ -87,5 +88,29 @@ public class ManagePlaceController {
 
         String imagePath = mpService.uploadPlaceImage(placeId, image);
         return ResponseEntity.status(HttpStatus.OK).body(imagePath);
+    }
+
+    @GetMapping("/google")
+    public ResponseEntity<List<GoogleSearchDTO>> searchPlacesByText(
+            @RequestParam(defaultValue = "") String search) {
+
+        if (search.isEmpty()) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        List<GoogleSearchDTO> searchList = mpService.searchPlacesByText(search);
+
+        if (searchList.isEmpty()) return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(searchList);
+    }
+
+    @PostMapping("/google/add")
+    public ResponseEntity<Place> addPlaceByGoogleId(@RequestBody GoogleSearchDTO googleSearchDTO) {
+        if (googleSearchDTO.getGoogleId() == null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        Place createdPlace = mpService.savePlaceByGoogleId(googleSearchDTO.getGoogleId());
+        if (createdPlace == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(createdPlace);
     }
 }

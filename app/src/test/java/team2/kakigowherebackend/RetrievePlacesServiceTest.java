@@ -27,7 +27,7 @@ public class RetrievePlacesServiceTest {
 
     @Mock private GooglePlaceService gpService; // won't be used here
 
-    @InjectMocks private RetrievePlaceServiceImpl service;
+    @InjectMocks private RetrievePlaceServiceImpl retrievePlaceService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -58,10 +58,10 @@ public class RetrievePlacesServiceTest {
         placeNode.set("displayName", displayNameNode);
 
         // Mock gpService to return this changed placeNode
-        when(gpService.searchPlace("google-123")).thenReturn(Mono.just(placeNode));
+        when(gpService.getPlace("google-123")).thenReturn(Mono.just(placeNode));
 
         // Act: call service method
-        service.retrievePlaces();
+        retrievePlaceService.retrievePlaces();
 
         // Assert: verify placeRepo.save was called once
         verify(placeRepo, times(1)).save(any(Place.class));
@@ -76,7 +76,7 @@ public class RetrievePlacesServiceTest {
             {
                 "displayName": {"text": "Test Place"},
                 "websiteUri": "http://test.com",
-                "shortFormattedAddress": "123 Test Ave",
+                "formattedAddress": "123 Test Ave",
                 "location": {"latitude": 1.23, "longitude": 4.56},
                 "businessStatus": "OPERATIONAL",
                 "editorialSummary": {"text": "Great place!"},
@@ -86,7 +86,7 @@ public class RetrievePlacesServiceTest {
 
         JsonNode placeNode = objectMapper.readTree(jsonStr);
 
-        service.mapGooglePlace(place, placeNode);
+        retrievePlaceService.mapGooglePlace(place, placeNode);
 
         assertEquals("Test Place", place.getName());
         assertEquals("http://test.com", place.getURL());
@@ -118,7 +118,7 @@ public class RetrievePlacesServiceTest {
 
         JsonNode placeNode = objectMapper.readTree(jsonStr);
 
-        service.addOpeningHours(place, placeNode);
+        retrievePlaceService.addOpeningHours(place, placeNode);
 
         assertEquals(1, place.getOpeningHours().size());
         OpeningHours oh = place.getOpeningHours().get(0);
@@ -150,7 +150,7 @@ public class RetrievePlacesServiceTest {
         when(icRepo.findByName("museum")).thenReturn(Optional.empty());
         when(icRepo.save(any(InterestCategory.class))).thenAnswer(i -> i.getArgument(0));
 
-        service.checkAndAddInterestCategories(place, placeNode);
+        retrievePlaceService.checkAndAddInterestCategories(place, placeNode);
 
         assertEquals(2, place.getInterestCategories().size());
         assertTrue(
@@ -184,7 +184,7 @@ public class RetrievePlacesServiceTest {
         }
         when(touristRepo.findAll()).thenReturn(tourists);
 
-        service.checkAndAddRatings(place, placeNode);
+        retrievePlaceService.checkAndAddRatings(place, placeNode);
 
         assertNotNull(place.getRatings());
         assertEquals(2, place.getRatings().size());
@@ -211,7 +211,7 @@ public class RetrievePlacesServiceTest {
         when(gpService.downloadPhoto("photo_1", "google-123")).thenReturn("/images/google-123.jpg");
 
         // Act
-        service.downloadImages(place, placeNode);
+        retrievePlaceService.downloadImages(place, placeNode);
 
         // Assert
         assertEquals("/images/google-123.jpg", place.getImagePath());
@@ -227,7 +227,7 @@ public class RetrievePlacesServiceTest {
         ObjectNode placeNode = objectMapper.createObjectNode(); // no "photos" field
 
         // Act
-        service.downloadImages(place, placeNode);
+        retrievePlaceService.downloadImages(place, placeNode);
 
         // Assert
         assertNull(place.getImagePath());

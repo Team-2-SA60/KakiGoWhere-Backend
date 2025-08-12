@@ -1,11 +1,17 @@
 package team2.kakigowherebackend.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import team2.kakigowherebackend.dto.GoogleSearchDTO;
 import team2.kakigowherebackend.dto.ManagePlaceDetailDTO;
 import team2.kakigowherebackend.model.Place;
 import team2.kakigowherebackend.repository.PlaceRepository;
@@ -15,10 +21,18 @@ public class ManagePlaceServiceImpl implements ManagePlaceService {
 
     private final PlaceRepository placeRepo;
     private final ImageService imageService;
+    private final GooglePlaceService googlePlaceService;
+    private final RetrievePlaceService retrievePlaceService;
 
-    public ManagePlaceServiceImpl(PlaceRepository placeRepo, ImageService imageService) {
+    public ManagePlaceServiceImpl(
+            PlaceRepository placeRepo,
+            ImageService imageService,
+            GooglePlaceService googlePlaceService,
+            RetrievePlaceService retrievePlaceService) {
         this.placeRepo = placeRepo;
         this.imageService = imageService;
+        this.googlePlaceService = googlePlaceService;
+        this.retrievePlaceService = retrievePlaceService;
     }
 
     @Override
@@ -90,5 +104,56 @@ public class ManagePlaceServiceImpl implements ManagePlaceService {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    @Override
+    public List<GoogleSearchDTO> searchPlacesByText(String text) {
+        JsonNode result = googlePlaceService.searchPlacesByText(text).block();
+        List<GoogleSearchDTO> googleSearchDTOList = new ArrayList<>();
+        if (result != null) {
+            JsonNode placesNode = result.path("places");
+            if (!placesNode.isArray()) return Collections.emptyList();
+
+            for (JsonNode placeNode : placesNode) {
+                JsonNode nameNode = placeNode.path("displayName").path("text");
+                JsonNode googleIdNode = placeNode.path("id");
+                JsonNode formattedAddressNode = placeNode.path("formattedAddress");
+                JsonNode googleMapsUriNode = placeNode.path("googleMapsUri");
+                if (!nameNode.isNull()
+                        && !googleIdNode.isNull()
+                        && !formattedAddressNode.isNull()) {
+
+                    // Check if place already in database so we don't show
+                    Optional<Place> checkExistingPlace =
+                            placeRepo.findByGoogleId(googleIdNode.asText());
+                    if (checkExistingPlace.isPresent()) continue;
+
+                    GoogleSearchDTO place =
+                            new GoogleSearchDTO(
+                                    googleIdNode.asText(),
+                                    nameNode.asText(),
+                                    formattedAddressNode.asText(),
+                                    googleMapsUriNode.asText());
+                    googleSearchDTOList.add(place);
+                }
+            }
+        }
+        return googleSearchDTOList;
+    }
+
+    @Override
+    @Transactional
+    public Place savePlaceByGoogleId(String googleId) {
+        JsonNode placeNode = googlePlaceService.getPlace(googleId).block();
+        if (placeNode == null) return null;
+
+        Place place = new Place();
+        place.setGoogleId(placeNode.path("id").asText());
+        retrievePlaceService.mapGooglePlace(place, placeNode);
+        retrievePlaceService.addOpeningHours(place, placeNode);
+        retrievePlaceService.checkAndAddInterestCategories(place, placeNode);
+        retrievePlaceService.downloadImages(place, placeNode);
+
+        return placeRepo.save(place);
     }
 }
