@@ -4,14 +4,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.Comparator;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
+import java.util.List;
 
 @Entity
 @Getter
@@ -45,9 +46,11 @@ public class Itinerary {
 
     public Long getDisplayImageId() {
         if (itineraryDetails == null || itineraryDetails.isEmpty()) return 0L;
-        if (itineraryDetails.size() == 1 && itineraryDetails.getFirst().getPlace() == null)
-            return 0L;
-        return itineraryDetails.getFirst().getPlace().getId();
+        long placeId = 0L;
+        for (int i = itineraryDetails.size() - 1; i >= 0; i--) {
+            if (itineraryDetails.get(i).getPlace() != null) placeId = itineraryDetails.get(i).getPlaceId();
+        }
+        return placeId;
     }
 
     public Long getDays() {
