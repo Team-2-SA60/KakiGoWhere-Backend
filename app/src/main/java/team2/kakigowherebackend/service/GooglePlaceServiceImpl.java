@@ -42,7 +42,7 @@ public class GooglePlaceServiceImpl implements GooglePlaceService {
                 .uri("https://places.googleapis.com/v1/places:searchText")
                 .header("Content-Type", "application/json")
                 .header("X-Goog-FieldMask", fieldMask)
-                .bodyValue(Map.of("textQuery", text))
+                .bodyValue(Map.of("textQuery", text + " Singapore"))
                 .retrieve()
                 .bodyToMono(JsonNode.class);
     }
