@@ -1,10 +1,6 @@
 package team2.kakigowherebackend.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -14,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
@@ -156,7 +155,8 @@ public class Place {
 
         DayOfWeek day = LocalDate.now().getDayOfWeek(); // return is 1 = Mon, 7 = Sun
         String todayString = day.getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
-        int dayInt = (day.getValue() == 7) ? 0 : day.getValue(); // if Sun, amend to Sun = 0 to match db
+        int dayInt =
+                (day.getValue() == 7) ? 0 : day.getValue(); // if Sun, amend to Sun = 0 to match db
 
         openingHours.forEach(
                 data -> {
