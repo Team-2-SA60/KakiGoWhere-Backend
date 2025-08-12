@@ -18,6 +18,11 @@ public class AdminInterceptor implements HandlerInterceptor {
             HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
 
+        // Let OPTIONS method pass through
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+
         // To check if admin is logged in
         HttpSession session = request.getSession();
 
