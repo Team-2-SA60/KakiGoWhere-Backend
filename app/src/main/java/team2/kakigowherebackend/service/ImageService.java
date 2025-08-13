@@ -6,5 +6,5 @@ import org.springframework.web.multipart.MultipartFile;
 public interface ImageService {
     String download(URI imageUrl, String fileName);
 
-    String upload(MultipartFile imageFile, String imageName);
+    String upload(MultipartFile imageFile, String imageName, int maxWidth, int maxHeight);
 }

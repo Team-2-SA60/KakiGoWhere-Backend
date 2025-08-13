@@ -1,11 +1,13 @@
 package team2.kakigowherebackend.service;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import javax.imageio.ImageIO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -48,12 +50,33 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public String upload(MultipartFile imageFile, String imageName) {
+    public String upload(MultipartFile imageFile, String imageName, int maxWidth, int maxHeight) {
         try {
             Path dirPath = Paths.get(uploadDir);
             Files.createDirectories(dirPath);
+
+            // original image
+            BufferedImage original = ImageIO.read(imageFile.getInputStream());
+
+            // calculate new dimensions to aspect ratio
+            double ratio =
+                    Math.min(
+                            (double) maxWidth / original.getWidth(),
+                            (double) maxHeight / original.getHeight());
+            int newWidth = (int) (original.getWidth() * ratio);
+            int newHeight = (int) (original.getHeight() * ratio);
+
+            // resize
+            Image tmp = original.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+            BufferedImage resized =
+                    new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g2d = resized.createGraphics();
+            g2d.drawImage(tmp, 0, 0, null);
+            g2d.dispose();
+
+            // save
             Path filePath = dirPath.resolve(imageName + ".jpg");
-            Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            ImageIO.write(resized, "jpg", filePath.toFile());
 
             return filePath.toString().replace("./", "/");
         } catch (IOException e) {
