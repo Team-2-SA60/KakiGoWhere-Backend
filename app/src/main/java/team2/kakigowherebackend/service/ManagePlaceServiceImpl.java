@@ -50,6 +50,7 @@ public class ManagePlaceServiceImpl implements ManagePlaceService {
         newPlace.setName(newPlaceDTO.getName());
         newPlace.setDescription(newPlaceDTO.getDescription());
         newPlace.setAddress(newPlaceDTO.getAddress());
+        newPlace.setURL(newPlaceDTO.getURL());
         newPlace.setLatitude(newPlaceDTO.getLatitude());
         newPlace.setLongitude(newPlaceDTO.getLongitude());
         newPlace.setActive(newPlaceDTO.isActive());
