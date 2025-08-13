@@ -95,7 +95,7 @@ public class ManagePlaceServiceImpl implements ManagePlaceService {
             } else {
                 imageName += existingPlace.getId();
             }
-            String imagePath = imageService.upload(image, imageName);
+            String imagePath = imageService.upload(image, imageName, 800, 600);
 
             existingPlace.setImagePath(imagePath);
             placeRepo.save(existingPlace);

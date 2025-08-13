@@ -120,7 +120,7 @@ class ManagePlaceServiceTest {
         MultipartFile image = mock(MultipartFile.class);
 
         when(placeRepo.findById(placeId)).thenReturn(Optional.of(place));
-        when(imageService.upload(image, "google123")).thenReturn("/images/google123.jpg");
+        when(imageService.upload(image, "google123", 800, 600)).thenReturn("/images/google123.jpg");
         when(placeRepo.save(place)).thenReturn(place);
 
         String result = managePlaceService.uploadPlaceImage(placeId, image);
@@ -129,7 +129,7 @@ class ManagePlaceServiceTest {
         assertEquals("/images/google123.jpg", place.getImagePath());
 
         verify(placeRepo).findById(placeId);
-        verify(imageService).upload(image, "google123");
+        verify(imageService).upload(image, "google123", 800, 600);
         verify(placeRepo).save(place);
     }
 
@@ -159,7 +159,7 @@ class ManagePlaceServiceTest {
         MultipartFile image = mock(MultipartFile.class);
 
         when(placeRepo.findById(placeId)).thenReturn(Optional.of(place));
-        when(imageService.upload(image, "google123"))
+        when(imageService.upload(image, "google123", 800, 600))
                 .thenThrow(new RuntimeException("Upload failed"));
 
         String result = managePlaceService.uploadPlaceImage(placeId, image);
@@ -167,7 +167,7 @@ class ManagePlaceServiceTest {
         assertNull(result);
 
         verify(placeRepo).findById(placeId);
-        verify(imageService).upload(image, "google123");
+        verify(imageService).upload(image, "google123", 800, 600);
         verify(placeRepo, never()).save(any());
     }
 }
