@@ -61,8 +61,7 @@ public class AuthController {
     public ResponseEntity<UserDTO> getMe(@RequestParam String role, HttpSession session) {
         Object userId = session.getAttribute(role);
 
-        if (!(userId instanceof Long))
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (!(userId instanceof Long)) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
         User user = authService.findUserByRoleAndId(role, (long) userId);
 
