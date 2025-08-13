@@ -33,10 +33,13 @@ public class WebAppConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(visitInterceptor);
+        // don't count visits for admin
+        registry.addInterceptor(visitInterceptor).excludePathPatterns("/api/admin/**", "/api/auth/admin/**", "/api/interests");
         // restrict placeVisitInterceptor to api/places/id/{placeId} path
         registry.addInterceptor(placeVisitInterceptor).addPathPatterns("/api/places/id/**");
+        // to log all API requests
         registry.addInterceptor(loggingInterceptor);
+        // admin session interceptor
         registry.addInterceptor(adminInterceptor).addPathPatterns("/api/admin/**");
     }
 
