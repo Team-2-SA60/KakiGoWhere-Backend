@@ -31,6 +31,8 @@ public class TouristServiceImpl implements TouristService {
 
     @Override
     public Tourist registerTourist(RegisterRequestDTO request) {
+        if (checkEmailExists(request.getEmail())) return null;
+
         // create entity
         String encodedPassword = PasswordEncoderUtil.encodePassword(request.getPassword());
         Tourist tourist = new Tourist(request.getEmail(), encodedPassword, request.getName());

@@ -32,6 +32,9 @@ public class TouristController {
 
         // create tourist
         Tourist tourist = touristService.registerTourist(request);
+        if (tourist == null) {
+            return ResponseEntity.badRequest().build();
+        }
 
         // increment daily sign-up count
         statService.addSignUp();
