@@ -104,7 +104,7 @@ Assuming you have built all docker images, you can easily start up all container
 2. Copy images into docker volume
 
     ```
-    docker run --rm -v docker_app_image:/data -v ../uploads/images:/src busybox sh -c "cp -r /src/* /data/"
+    docker run --rm -v docker_app_images:/data -v ../uploads/images:/src busybox sh -c "cp -r /src/* /data/"
     ```
 
 3. Build and run SpringBoot + MySQL using Docker Compose
