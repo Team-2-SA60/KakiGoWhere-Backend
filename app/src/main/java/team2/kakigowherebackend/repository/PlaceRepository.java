@@ -16,6 +16,8 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
 
     Optional<Place> findById(long placeId);
 
+    Optional<Place> findByName(String name);
+
     List<Place> findAllByAutoFetch(boolean autoFetch);
 
     List<Place> findAllByActive(boolean active);

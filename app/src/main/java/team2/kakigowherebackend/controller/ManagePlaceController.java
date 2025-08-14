@@ -56,7 +56,7 @@ public class ManagePlaceController {
             @Valid @RequestBody ManagePlaceDetailDTO newPlace) {
         Place createdPlace = mpService.createPlace(newPlace);
 
-        if (createdPlace == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        if (createdPlace == null) return ResponseEntity.status(HttpStatus.CONFLICT).build();
 
         return ResponseEntity.status(HttpStatus.OK).body(new ManagePlaceDetailDTO(createdPlace));
     }
