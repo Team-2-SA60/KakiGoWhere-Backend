@@ -29,7 +29,7 @@ Pre-requisite:
 4. Change directory to KakiGoWhere-Backend
 
     ```
-    cd KakiGoWhere-Backend
+    cd KakiGoWhere-Backend/app
     ```
 
 5. Open application.properties
@@ -47,9 +47,11 @@ Pre-requisite:
 
    > google.places.api.key=***PUT_YOUR_GOOGLE_PLACE_API_KEY_HERE***
 
+---
 **JUMP TO No Key section below** if you do **NOT** have a Google Place API key, certain features will not be available:
    - Add place using google search
    - Monthly scheduler to update place information)
+---
 
 7. Build and run SpringBoot + MySQL using Docker Compose
 
@@ -78,10 +80,10 @@ Pre-requisite:
 \
 Assuming you have built all docker images, you can easily start up all containers by:
 
-11. Changing directory to KakiGoWhere\KakiGoWhere-Backend\app
+11. Changing directory to KakiGoWhere/KakiGoWhere-Backend/app
 
     ```
-    cd KakiGoWhere\KakiGoWhere-Backend\app
+    cd KakiGoWhere/KakiGoWhere-Backend/app
     ```
 
 12. Starting all containers
