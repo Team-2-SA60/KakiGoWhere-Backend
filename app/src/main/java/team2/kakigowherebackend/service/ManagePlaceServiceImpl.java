@@ -45,6 +45,9 @@ public class ManagePlaceServiceImpl implements ManagePlaceService {
     @Override
     @Transactional
     public Place createPlace(ManagePlaceDetailDTO newPlaceDTO) {
+        Place existingPlaceName = placeRepo.findByName(newPlaceDTO.getName()).orElse(null);
+        if (existingPlaceName != null) return null;
+
         Place newPlace = new Place();
 
         newPlace.setName(newPlaceDTO.getName());
