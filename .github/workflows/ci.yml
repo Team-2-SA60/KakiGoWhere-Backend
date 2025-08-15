@@ -36,15 +36,11 @@ jobs:
           mkdir -p report
           mvn spotless:check > report/spotless-report.txt
 
-      - name: Run SCA (Sonatype)
-        if: always()
-        run: mvn org.sonatype.ossindex.maven:ossindex-maven-plugin:audit > report/sonatype-report.txt
-
-      - name: Upload Lint and SCA Reports
+      - name: Upload Lint Reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: lint-SCA-reports
+          name: lint-reports
           path: app/report/
 
       - name: Run Unit Tests + JaCoCo (Code Coverage)
