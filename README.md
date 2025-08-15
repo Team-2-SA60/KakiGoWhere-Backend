@@ -1,3 +1,14 @@
+## Production Server
+
+KakiGoWhere is deployed on Digital Ocean, and will be kept running until 31st August 2025.
+
+You can access our deployed Web Application [here](http://206.189.43.202/admin/login)
+
+Access admin dashboard using
+| Admin         |  Acount        |
+|---------------|----------------|
+| Email         | admin@kaki.com |
+| Password      | admin          |
 
 ## 🛠️ Getting started using 🐳 Docker
 
@@ -37,10 +48,11 @@ Pre-requisite:
     ```
         KakiGoWhere
         ├── KakiGoWhere-Backend
-        │   ├── src
-        │   │   ├── main
-        │   │   │   ├── resources
-        │   │   │   │   └── application.properties
+        │   ├── app
+        │   │   ├── src
+        │   │   │   ├── main
+        │   │   │   │   ├── resources
+        │   │   │   │   │   └── application.properties
     ```
 
 6. (Optional) Input your obtained Google Place API key:
