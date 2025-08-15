@@ -43,6 +43,8 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
 
         List<Place> places = pRepo.findAllByAutoFetch(true);
 
+        boolean addRating = true;
+
         for (int i = 0; i < places.size(); i++) {
             try {
                 Place p = places.get(i);
@@ -68,7 +70,11 @@ public class RetrievePlaceServiceImpl implements RetrievePlaceService {
                 addOpeningHours(updatedPlace, placeNode);
                 checkAndAddInterestCategories(updatedPlace, placeNode);
 
-                if (p.getRatings().isEmpty()) checkAndAddRatings(updatedPlace, placeNode);
+                // check if 1st place already has rating, if it has, then disable for the rest
+                if (!p.getRatings().isEmpty()) {
+                    addRating = false;
+                }
+                if (addRating) checkAndAddRatings(updatedPlace, placeNode);
 
                 // If updatedPlace is different from original Place, commit to download image and
                 // save the updatedPlace

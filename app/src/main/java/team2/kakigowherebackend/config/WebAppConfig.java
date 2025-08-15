@@ -35,6 +35,7 @@ public class WebAppConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         // don't count visits for admin
         registry.addInterceptor(visitInterceptor)
+                .addPathPatterns("/api/**")
                 .excludePathPatterns("/api/admin/**", "/api/auth/admin/**", "/api/interests");
         // restrict placeVisitInterceptor to api/places/id/{placeId} path
         registry.addInterceptor(placeVisitInterceptor).addPathPatterns("/api/places/id/**");

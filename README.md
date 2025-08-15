@@ -1,94 +1,119 @@
-## Commands for local testing
-1. Change directory to app
-```
-cd app
-```
 
-2. Software Composition Analysis (SonaType)
-```
-./mvnw org.sonatype.ossindex.maven:ossindex-maven-plugin:audit   
-```
+## 🛠️ Getting started using 🐳 Docker
 
-3. Lint (Spotless)
+Pre-requisite:
+- Install **Docker Engine** [here](https://docs.docker.com/engine/install/)
+- Install **MySQL Workbench**  (Optional but recommended) [here](https://dev.mysql.com/downloads/workbench/)
+- Obtain **Google Places API key** (Needed for scheduled place updates) from [Google Cloud](https://developers.google.com/maps/documentation/places/web-service/overview)
 
-- Check linting issues
-```
-./mvnw spotless:check
-```
-- Auto-Correct linting issues
-```
-./mvnw spotless:apply
-```
+---
 
-4. JaCoCo and Unit Test
+1. Open terminal / command prompt
 
-JaCoCo report in **target/site/jacoco**
-```
-./mvnw clean verify surefire-report:report
-```
+    ```
+    mkdir KakiGoWhere
+    ```
 
-## Docker
+2. Change directory to KakiGoWhere
 
-The following will run on our **Centralised Test Database** hosted on DigitalOcean
+    ```
+    cd KakiGoWhere
+    ```
 
-1. Build docker image
-```
-docker build -f ../docker/Dockerfile -t kakigowhere-springboot .
-```
+3. Clone repository
 
-2. Run container with volumes for CSV and images
-```
-docker run -d \
-  --name backend \
-  -p 8080:8080 \
-  -e CSV_DIR=/uploads/csv/ \
-  -e UPLOAD_DIR=/uploads/images/ \
-  -v docker_app_csv:/uploads/csv \
-  -v docker_app_images:/uploads/images \
-  kakigowhere-springboot
-```
+    ```
+    git clone https://github.com/Team-2-SA60/KakiGoWhere-Backend.git
+    ```
 
-3. Persist images from local folder
-```
-   docker run --rm \
-   -v docker_app_images:/to \
-   -v ../uploads/images:/from:ro \
-   alpine sh -c "cp /from/* /to/"
-```
+4. Change directory to KakiGoWhere-Backend
 
-4. Persist places.csv data in docker volume by calling http://localhost:8080/api/places/ml/export
+    ```
+    cd KakiGoWhere-Backend/app
+    ```
 
-Persist ratings.csv data in docker volume by calling
-http://localhost:8080/api/ratings/ml/export
+5. Open application.properties
 
-5. (Optional) Check contents (first 20 rows)
-```
-docker run --rm -v docker_app_csv:/from alpine sh -c "head -n 20 /from/places.csv"
-```
-```
-docker run --rm -v docker_app_csv:/from alpine sh -c "head -n 20 /from/ratings.csv"
-```
+    ```
+        KakiGoWhere
+        ├── KakiGoWhere-Backend
+        │   ├── src
+        │   │   ├── main
+        │   │   │   ├── resources
+        │   │   │   │   └── application.properties
+    ```
 
-6. (Optional) Verify images in the volume
-```
-docker run --rm -v docker_app_images:/from alpine sh -c "ls -1 /from | head"
-```
+6. (Optional) Input your obtained Google Place API key:
 
-7. Stop and remove container
-```
-docker rm -f backend
-```
+   > google.places.api.key=***PUT_YOUR_GOOGLE_PLACE_API_KEY_HERE***
 
-## Docker Compose
+---
+**JUMP TO No Key section below** if you do **NOT** have a Google Place API key, certain features will not be available:
+   - Add place using google search
+   - Monthly scheduler to update place information)
+---
 
-The following will run on your **OWN** local database container
+7. Build and run SpringBoot + MySQL using Docker Compose
 
-1. Build and run Springboot + MySQL containers
-```
-docker compose -f ../docker/docker-compose.dev.yml up -d --build
-```
+    ```
+    docker compose -f ../docker/docker-compose.dev.yml up -d --build
+    ```
 
-Add and access local database on your workbench using below:
+8. Fully initialize database by manually triggering Places update (You must do **step 6** for this to work)
+
+    ```
+    curl --header "Content-Type: text/plain" --request POST --data "team2" http://localhost:8080/api/places/retrieve
+    ```
+
+9. Continue steps indicated on [KakiGoWhere-Frontend](https://github.com/Team-2-SA60/KakiGoWhere-Frontend) and [KakiGoWhere-ML](https://github.com/Team-2-SA60/KakiGoWhere-ML) to start the rest of the services
+
+
+10. Finally you should have the following folder structure
+
+    ```
+        KakiGoWhere
+        ├── KakiGoWhere-Backend
+        ├── KakiGoWhere-Frontend
+        ├── KakiGoWhere-ML
+        ├── KakiGoWhere-Android
+    ```
+\
+Assuming you have built all docker images, you can easily start up all containers by:
+
+11. Changing directory to KakiGoWhere/KakiGoWhere-Backend/app
+
+    ```
+    cd KakiGoWhere/KakiGoWhere-Backend/app
+    ```
+
+12. Starting all containers
+
+    ```
+    docker compose -f ../docker/docker-compose.all.yml up -d --build
+    ```
+
+---
+
+## 🔑❎ No Key: Without Google Place API key
+1. Create docker volume
+
+    ```
+    docker volume create docker_app_image
+    ```
+
+2. Copy images into docker volume
+
+    ```
+    docker run --rm -v docker_app_images:/data -v ../uploads/images:/src busybox sh -c "cp -r /src/* /data/"
+    ```
+
+3. Build and run SpringBoot + MySQL using Docker Compose
+
+    ```
+    docker compose -f ../docker/docker-compose.dev.yml up -d --build
+    ```
+
+4. Open MySQL Workbench and access local database container using below:
 
 | Setting   | Value       |
 |-----------|-------------|
@@ -97,9 +122,13 @@ Add and access local database on your workbench using below:
 | Username  | `root`      |
 | Password  | `pw`        |
 
-2. Stop containers
-```
-docker compose -f ../docker/docker-compose.dev.yml down
-```
+5. Open manualDataInit.sql below in MySQL workbench and execute the script
 
-Data will persist when you restart containers due to docker volume
+    ```
+        KakiGoWhere
+        ├── KakiGoWhere-Backend
+        │   ├── data_init
+        │   │   ├── manualDataInit.sql
+    ```
+
+6. Go back to **STEP 9** of Getting started

@@ -19,9 +19,6 @@ services:
   app:
     image: kakigowhere-springboot
     pull_policy: never
-    build:
-      context: ../app
-      dockerfile: ../docker/Dockerfile
     depends_on:
       db:
         condition: service_healthy
@@ -37,7 +34,35 @@ services:
       - app_images:/data/images
       - app_csv:/data/csv
 
+  frontend:
+    image: kakigowhere-react
+    pull_policy: never
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "80:80"
+
+  flask-ml:
+    image: flask-ml
+    pull_policy: never
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "5001:5001"
+    volumes:
+      - app_csv:/data/csv
+      - huggingface-cache:/app/cache/huggingface
+    environment:
+      RAW_CSV: /data/csv/places.csv
+      CATEGORISED_CSV: /data/csv/places_categorised.csv
+      RAW_RATINGS_CSV: /data/csv/ratings.csv
+      KEYWORDS_RATINGS_CSV: /data/csv/ratings_keywords.csv
+      HF_HOME: /app/cache/huggingface
+
 volumes:
   db_data:
   app_images:
   app_csv:
+  huggingface-cache:
