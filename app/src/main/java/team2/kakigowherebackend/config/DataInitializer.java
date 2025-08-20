@@ -28,6 +28,7 @@ public class DataInitializer implements CommandLineRunner {
     private final ExportRatingService exportRatingService;
     private final DailyStatsRepository dailyStatsRepo;
     private final PlaceStatsRepository placeStatsRepo;
+    private final PlaceEventRepository placeEventRepo;
 
     public DataInitializer(
             PlaceRepository placeRepo,
@@ -38,7 +39,8 @@ public class DataInitializer implements CommandLineRunner {
             ExportPlaceService exportPlaceService,
             ExportRatingService exportRatingService,
             DailyStatsRepository dailyStatsRepo,
-            PlaceStatsRepository placeStatsRepo) {
+            PlaceStatsRepository placeStatsRepo,
+            PlaceEventRepository placeEventRepo) {
         this.placeRepo = placeRepo;
         this.touristRepo = touristRepo;
         this.interestCategoryRepo = interestCategoryRepo;
@@ -48,11 +50,13 @@ public class DataInitializer implements CommandLineRunner {
         this.exportRatingService = exportRatingService;
         this.dailyStatsRepo = dailyStatsRepo;
         this.placeStatsRepo = placeStatsRepo;
+        this.placeEventRepo = placeEventRepo;
     }
 
     @Override
     public void run(String... args) throws Exception {
         addPlaces();
+        addPlaceEvents();
         addTourist();
         addCategories();
         addInterests();
@@ -816,6 +820,54 @@ public class DataInitializer implements CommandLineRunner {
         placeRepo.saveAll(places);
 
         log.info("Initialized places");
+    }
+
+    private void addPlaceEvents() {
+        if (placeEventRepo.count() > 0) return; // skip seeding if alr present
+        log.info("Initializing place events...");
+
+        for (long pid = 1; pid <= 20; pid++) {
+            placeRepo
+                    .findById(pid)
+                    .ifPresent(
+                            place -> {
+                                LocalDate start = LocalDate.now();
+                                LocalDate end = start.plusDays(2);
+
+                                PlaceEvent event = new PlaceEvent();
+                                event.setName("Sample Event for " + place.getName());
+                                event.setDescription(
+                                        "Sample Event for "
+                                                + place.getName()
+                                                + ". It exists to test whether the programme can"
+                                                + " run.");
+                                event.setStartDate(start);
+                                event.setEndDate(end);
+                                event.setPlace(place);
+
+                                placeEventRepo.save(event);
+                            });
+        }
+
+        placeRepo
+                .findById(21L)
+                .ifPresent(
+                        place -> {
+                            LocalDate end = LocalDate.now().minusDays(2);
+                            LocalDate start = end.minusDays(30);
+                            PlaceEvent expiredEvent = new PlaceEvent();
+                            expiredEvent.setName("Expired Event for " + place.getName());
+                            expiredEvent.setDescription(
+                                    "Sample Event for "
+                                            + place.getName()
+                                            + ". It should not show up in the Android Studio"
+                                            + " emulator since it has expired.");
+                            expiredEvent.setStartDate(start);
+                            expiredEvent.setEndDate(end);
+                            expiredEvent.setPlace(place);
+
+                            placeEventRepo.save(expiredEvent);
+                        });
     }
 
     private void addTourist() {

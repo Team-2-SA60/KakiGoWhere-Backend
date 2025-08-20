@@ -23,5 +23,7 @@ public class PlaceEvent {
     private LocalDate startDate;
     private LocalDate endDate;
 
-    @ManyToOne private Place place;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "place_id", nullable = false)
+    private Place place;
 }
