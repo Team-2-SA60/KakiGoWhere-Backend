@@ -5,7 +5,7 @@ KakiGoWhere is deployed on Digital Ocean, and will be kept running until 31st Au
 You can access our deployed Web Application [here](http://206.189.43.202/admin/login)
 
 Access admin dashboard using
-| Admin         |  Acount        |
+| Admin         |  Account       |
 |---------------|----------------|
 | Email         | admin@kaki.com |
 | Password      | admin          |
