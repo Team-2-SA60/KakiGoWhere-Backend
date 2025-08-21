@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import team2.kakigowherebackend.dto.PlaceEventRequestDTO;
 import team2.kakigowherebackend.dto.PlaceEventResponseDTO;
 import team2.kakigowherebackend.service.PlaceEventService;
@@ -21,17 +22,25 @@ public class PlaceEventController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<PlaceEventResponseDTO> createEvent(
-            @Valid @RequestBody PlaceEventRequestDTO request) {
-        PlaceEventResponseDTO created = placeEventService.createEvent(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    public ResponseEntity<?> createEvent(@Valid @RequestBody PlaceEventRequestDTO request) {
+        try {
+            PlaceEventResponseDTO created = placeEventService.createEvent(request);
+            return new ResponseEntity<>(created, HttpStatus.CREATED);
+        } catch (ResponseStatusException ex) {
+            // send message from the service impl
+            return ResponseEntity.status(ex.getStatusCode()).body(ex.getReason());
+        }
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<PlaceEventResponseDTO> updateEvent(
+    public ResponseEntity<?> updateEvent(
             @PathVariable Long id, @Valid @RequestBody PlaceEventRequestDTO request) {
-        PlaceEventResponseDTO updated = placeEventService.updateEvent(id, request);
-        return ResponseEntity.status(HttpStatus.OK).body(updated);
+        try {
+            PlaceEventResponseDTO updated = placeEventService.updateEvent(id, request);
+            return new ResponseEntity<>(updated, HttpStatus.OK);
+        } catch (ResponseStatusException ex) {
+            return ResponseEntity.status(ex.getStatusCode()).body(ex.getReason());
+        }
     }
 
     @GetMapping("/id/{id}")
