@@ -54,7 +54,7 @@ public class PlaceEventServiceImpl implements PlaceEventService {
                                                 HttpStatus.BAD_REQUEST, "Place not found"));
 
         boolean exists =
-                placeEventRepo.existsByNameAndStartDateAndEndDateAndPlaceId(
+                placeEventRepo.existsByNameAndStartDateAndEndDateAndPlace_Id(
                         request.getName().trim(),
                         request.getStartDate(),
                         request.getEndDate(),

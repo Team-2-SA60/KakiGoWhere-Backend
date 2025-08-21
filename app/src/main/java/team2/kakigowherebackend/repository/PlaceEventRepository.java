@@ -25,6 +25,6 @@ public interface PlaceEventRepository extends JpaRepository<PlaceEvent, Long> {
             """)
     Page<PlaceEvent> search(@Param("kw") String keyword, Pageable pageable);
 
-    boolean existsByNameAndStartDateAndEndDateAndPlaceId(
+    boolean existsByNameAndStartDateAndEndDateAndPlace_Id(
             String name, LocalDate startDate, LocalDate endDate, Long placeId);
 }
