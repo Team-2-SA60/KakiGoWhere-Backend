@@ -10,6 +10,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import team2.kakigowherebackend.dto.PlaceNameDTO;
 import team2.kakigowherebackend.model.Place;
 import team2.kakigowherebackend.repository.PlaceRepository;
 
@@ -58,5 +59,10 @@ public class PlaceServiceImpl implements PlaceService {
         }
 
         return resource;
+    }
+
+    @Override
+    public List<PlaceNameDTO> getPlaceNames() {
+        return placeRepo.findAllNames();
     }
 }

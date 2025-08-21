@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import team2.kakigowherebackend.dto.ExportPlaceDTO;
 import team2.kakigowherebackend.dto.PlaceDTO;
 import team2.kakigowherebackend.dto.PlaceDetailDTO;
+import team2.kakigowherebackend.dto.PlaceNameDTO;
 import team2.kakigowherebackend.model.Place;
 import team2.kakigowherebackend.service.ExportPlaceService;
 import team2.kakigowherebackend.service.PlaceService;
@@ -89,5 +90,11 @@ public class PlaceController {
 
         retrievePlaceService.retrievePlaces();
         return ResponseEntity.status(HttpStatus.OK).body("Ran retrieved places");
+    }
+
+    @GetMapping("/names")
+    public ResponseEntity<List<PlaceNameDTO>> getPlaceNames() {
+        List<PlaceNameDTO> names = placeService.getPlaceNames();
+        return ResponseEntity.status(HttpStatus.OK).body(names);
     }
 }
