@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import team2.kakigowherebackend.dto.PlaceNameDTO;
 import team2.kakigowherebackend.model.Place;
 
 @Repository
@@ -29,4 +30,12 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
                     + " OR LOWER(ic.description) LIKE LOWER(CONCAT('%', :keyword, '%')) "
                     + "ORDER BY p.name ASC")
     Page<Place> getPlacesBySearch(@Param("keyword") String keyword, Pageable pageable);
+
+    @Query(
+            """
+            SELECT new team2.kakigowherebackend.dto.PlaceNameDTO(p.id, p.name)
+            FROM Place p
+            ORDER BY p.name ASC
+            """)
+    List<PlaceNameDTO> findAllNames();
 }
