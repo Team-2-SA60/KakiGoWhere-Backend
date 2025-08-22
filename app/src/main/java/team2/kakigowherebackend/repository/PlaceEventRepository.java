@@ -27,4 +27,8 @@ public interface PlaceEventRepository extends JpaRepository<PlaceEvent, Long> {
 
     boolean existsByNameAndStartDateAndEndDateAndPlace_Id(
             String name, LocalDate startDate, LocalDate endDate, Long placeId);
+
+    // excludes self id
+    boolean existsByNameAndStartDateAndEndDateAndPlace_IdAndIdNot(
+            String name, LocalDate startDate, LocalDate endDate, Long placeId, Long id);
 }
