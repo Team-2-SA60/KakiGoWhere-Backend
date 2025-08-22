@@ -1,6 +1,6 @@
 package team2.kakigowherebackend.service;
 
-import java.util.List;
+import java.util.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -27,23 +27,8 @@ public class PlaceEventServiceImpl implements PlaceEventService {
 
     @Override
     public PlaceEventResponseDTO createEvent(PlaceEventRequestDTO request) {
-        // further layer of defensive checks
-        if (request.getName() == null || request.getName().trim().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Event name is required");
-        }
-        if (request.getPlaceId() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Place is required");
-        }
-        if (request.getStartDate() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Start date is required");
-        }
-        if (request.getEndDate() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "End date is required");
-        }
-        if (request.getEndDate().isBefore(request.getStartDate())) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "End date must be on/after start date");
-        }
+        validate(request);
+        assertNotDuplicate(request, null);
 
         Place place =
                 placeRepo
@@ -52,18 +37,6 @@ public class PlaceEventServiceImpl implements PlaceEventService {
                                 () ->
                                         new ResponseStatusException(
                                                 HttpStatus.BAD_REQUEST, "Place not found"));
-
-        boolean exists =
-                placeEventRepo.existsByNameAndStartDateAndEndDateAndPlace_Id(
-                        request.getName().trim(),
-                        request.getStartDate(),
-                        request.getEndDate(),
-                        request.getPlaceId());
-
-        if (exists) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT, "Event already exists for this place and date range");
-        }
 
         PlaceEvent e = new PlaceEvent();
         e.setName(request.getName().trim());
@@ -88,24 +61,8 @@ public class PlaceEventServiceImpl implements PlaceEventService {
                                         new ResponseStatusException(
                                                 HttpStatus.NOT_FOUND, "Event not found"));
 
-        // further layer of defensive checks
-        if (request.getName() == null || request.getName().trim().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Event name is required");
-        }
-        if (request.getPlaceId() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Place is required");
-        }
-        if (request.getStartDate() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Start date is required");
-        }
-        if (request.getEndDate() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "End date is required");
-        }
-
-        if (request.getEndDate().isBefore(request.getStartDate())) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "End date must be on/after start date");
-        }
+        validate(request);
+        assertNotDuplicate(request, e.getId());
 
         e.setName(request.getName().trim());
         e.setDescription(request.getDescription());
@@ -113,7 +70,7 @@ public class PlaceEventServiceImpl implements PlaceEventService {
         e.setEndDate(request.getEndDate());
 
         // update place by id
-        if (e.getPlace() == null || e.getPlace().getId() != request.getPlaceId()) {
+        if (e.getPlace() == null || !Objects.equals(e.getPlace().getId(), request.getPlaceId())) {
             Place place =
                     placeRepo
                             .findById(request.getPlaceId())
@@ -167,5 +124,47 @@ public class PlaceEventServiceImpl implements PlaceEventService {
             dto.setPlaceName(e.getPlace().getName());
         }
         return dto;
+    }
+
+    // helper to validate
+    private void validate(PlaceEventRequestDTO request) {
+        if (request.getName() == null || request.getName().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Event name is required");
+        }
+        if (request.getPlaceId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Place is required");
+        }
+        if (request.getStartDate() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Start date is required");
+        }
+        if (request.getEndDate() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "End date is required");
+        }
+        if (request.getEndDate().isBefore(request.getStartDate())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "End date must be on/after start date");
+        }
+    }
+
+    // helper to assert non duplicate
+    private void assertNotDuplicate(PlaceEventRequestDTO r, Long excludeId) {
+        boolean exists =
+                (excludeId == null)
+                        ? placeEventRepo.existsByNameAndStartDateAndEndDateAndPlace_Id(
+                                r.getName().trim(),
+                                r.getStartDate(),
+                                r.getEndDate(),
+                                r.getPlaceId())
+                        : placeEventRepo.existsByNameAndStartDateAndEndDateAndPlace_IdAndIdNot(
+                                r.getName().trim(),
+                                r.getStartDate(),
+                                r.getEndDate(),
+                                r.getPlaceId(),
+                                excludeId);
+
+        if (exists) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, "Event already exists for this place and date range");
+        }
     }
 }
