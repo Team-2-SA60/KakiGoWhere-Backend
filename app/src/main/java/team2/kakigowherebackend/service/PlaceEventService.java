@@ -16,4 +16,6 @@ public interface PlaceEventService {
     Page<PlaceEventResponseDTO> searchEvents(String keyword, Pageable pageable);
 
     List<PlaceEventResponseDTO> getEventsByPlaceId(Long placeId);
+
+    List<PlaceEventResponseDTO> getActiveEventsForPlace(long placeId);
 }

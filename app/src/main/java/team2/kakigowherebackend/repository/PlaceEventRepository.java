@@ -25,6 +25,15 @@ public interface PlaceEventRepository extends JpaRepository<PlaceEvent, Long> {
             """)
     Page<PlaceEvent> search(@Param("kw") String keyword, Pageable pageable);
 
+    @Query(
+            """
+    SELECT e FROM PlaceEvent e
+    WHERE e.place.id = :placeId
+    AND :today BETWEEN e.startDate AND e.endDate
+      """)
+    List<PlaceEvent> findActiveEventsForPlace(
+            @Param("placeId") Long placeId, @Param("today") LocalDate today);
+
     boolean existsByNameAndStartDateAndEndDateAndPlace_Id(
             String name, LocalDate startDate, LocalDate endDate, Long placeId);
 

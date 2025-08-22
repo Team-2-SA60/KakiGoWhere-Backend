@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.*;
 import team2.kakigowherebackend.dto.ExportPlaceDTO;
 import team2.kakigowherebackend.dto.PlaceDTO;
 import team2.kakigowherebackend.dto.PlaceDetailDTO;
+import team2.kakigowherebackend.dto.PlaceEventResponseDTO;
 import team2.kakigowherebackend.dto.PlaceNameDTO;
 import team2.kakigowherebackend.model.Place;
 import team2.kakigowherebackend.service.ExportPlaceService;
+import team2.kakigowherebackend.service.PlaceEventService;
 import team2.kakigowherebackend.service.PlaceService;
 import team2.kakigowherebackend.service.RetrievePlaceService;
 
@@ -23,14 +25,17 @@ public class PlaceController {
     private final PlaceService placeService;
     private final RetrievePlaceService retrievePlaceService;
     private final ExportPlaceService exportPlaceService;
+    private final PlaceEventService placeEventService;
 
     public PlaceController(
             PlaceService placeService,
             RetrievePlaceService retrievePlaceService,
-            ExportPlaceService exportPlaceService) {
+            ExportPlaceService exportPlaceService,
+            PlaceEventService placeEventService) {
         this.placeService = placeService;
         this.retrievePlaceService = retrievePlaceService;
         this.exportPlaceService = exportPlaceService;
+        this.placeEventService = placeEventService;
     }
 
     @GetMapping
@@ -96,5 +101,16 @@ public class PlaceController {
     public ResponseEntity<List<PlaceNameDTO>> getPlaceNames() {
         List<PlaceNameDTO> names = placeService.getPlaceNames();
         return ResponseEntity.status(HttpStatus.OK).body(names);
+    }
+
+    @GetMapping("/id/{placeId}/events/active")
+    public ResponseEntity<List<PlaceEventResponseDTO>> getActiveEventsForPlace(
+            @PathVariable long placeId) {
+        List<PlaceEventResponseDTO> events = placeEventService.getActiveEventsForPlace(placeId);
+
+        if (events.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(events);
     }
 }

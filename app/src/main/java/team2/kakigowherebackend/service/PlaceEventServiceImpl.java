@@ -1,5 +1,7 @@
 package team2.kakigowherebackend.service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -109,6 +111,14 @@ public class PlaceEventServiceImpl implements PlaceEventService {
     @Transactional(readOnly = true)
     public List<PlaceEventResponseDTO> getEventsByPlaceId(Long placeId) {
         return placeEventRepo.findByPlace_Id(placeId).stream().map(this::toDTO).toList();
+    }
+
+    @Override
+    public List<PlaceEventResponseDTO> getActiveEventsForPlace(long placeId) {
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Singapore"));
+        return placeEventRepo.findActiveEventsForPlace(placeId, today).stream()
+                .map(this::toDTO)
+                .toList();
     }
 
     // helper to map PlaceEvent to PlaceEventResponseDTO
